@@ -1,0 +1,185 @@
+package edu.arizona.biosemantics.euler.alignment.client;
+
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.resources.ThemeStyles;
+import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.menu.HeaderMenuItem;
+import com.sencha.gxt.widget.core.client.menu.Item;
+import com.sencha.gxt.widget.core.client.menu.Menu;
+import com.sencha.gxt.widget.core.client.menu.MenuBar;
+import com.sencha.gxt.widget.core.client.menu.MenuBarItem;
+import com.sencha.gxt.widget.core.client.menu.MenuItem;
+
+import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
+import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialog;
+import edu.arizona.biosemantics.euler.alignment.client.common.ColorsDialog;
+import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog;
+import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+
+public class MenuView extends MenuBar {
+
+	protected Model model;
+	protected EventBus eventBus;
+
+	public MenuView(EventBus eventBus) {
+		this.eventBus = eventBus;
+		addStyleName(ThemeStyles.get().style().borderBottom());
+		addItems();
+		
+		bindEvents();
+	}
+
+	private void bindEvents() {
+		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+			@Override
+			public void onLoad(LoadModelEvent event) {
+				model = event.getModel();
+			}
+		});
+	}
+
+	protected void addItems() {
+		add(createTaxonomiesItem());
+		add(createRunItem());
+		add(createAnnotationsItem());
+		add(createQuestionItem());
+	}
+
+	protected Widget createRunItem() {
+		Menu sub = new Menu();
+		MenuBarItem runItem = new MenuBarItem("Run", sub);
+		MenuItem showMirItem = new MenuItem("Show MIR");
+		showMirItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				eventBus.fireEvent(new StartMIREvent(model));
+				Alerter.startLoading();
+			}
+		});
+		MenuItem showInputVisualizationItem = new MenuItem("Input Visualization");
+		showInputVisualizationItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				eventBus.fireEvent(new StartInputVisualizationEvent(model));
+				Alerter.startLoading();
+			}
+		});
+
+		sub.add(showMirItem);
+		sub.add(showInputVisualizationItem);
+		return runItem;
+	}
+
+	protected Widget createTaxonomiesItem() {
+		Menu sub = new Menu();
+		
+		MenuBarItem taxonomiesItem = new MenuBarItem("Taxonomies", sub);
+
+		/*
+		 * MenuItem subMatrixItem = new MenuItem("Load");
+		 * subMatrixItem.addSelectionHandler(new SelectionHandler<Item>() {
+		 * 
+		 * @Override public void onSelection(SelectionEvent<Item> event) { final
+		 * SelectMatrixDialog selectMatrixDialog = new
+		 * SelectMatrixDialog(fullMatrix); selectMatrixDialog.show();
+		 * selectMatrixDialog.addHideHandler(new HideHandler() {
+		 * 
+		 * @Override public void onHide(HideEvent event) {
+		 * if(!selectMatrixDialog.getSelectedCharacters().isEmpty() &&
+		 * !selectMatrixDialog.getSelectedRootTaxa().isEmpty()) { TaxonMatrix
+		 * taxonMatrix = matrixMerger.createSubMatrix(fullMatrix,
+		 * selectMatrixDialog.getSelectedCharacters(),
+		 * selectMatrixDialog.getSelectedRootTaxa()); subMatrixBus.fireEvent(new
+		 * LoadTaxonMatrixEvent(taxonMatrix)); setContent(matrixView); } } }); }
+		 * });
+		 */
+
+		MenuItem saveItem = new MenuItem("Save Progress");
+		saveItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				//fullModelBus.fireEvent(new SaveEvent(model));
+			}
+		});
+		
+		MenuItem downloadItem = new MenuItem("Download Articulations");
+		downloadItem.setTitle("please set your browser to allow popup windows to use this function");
+		downloadItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				eventBus.fireEvent(new DownloadEvent(model));
+			}
+		});
+
+		// sub.add(subMatrixItem);
+		sub.add(saveItem);
+		sub.add(downloadItem);
+		return taxonomiesItem;
+	}
+
+	protected Widget createAnnotationsItem() {
+		Menu sub = new Menu();
+		MenuBarItem annotationsItem = new MenuBarItem("Annotation", sub);
+		sub.add(new HeaderMenuItem("Configure"));
+		MenuItem colorSettingsItem = new MenuItem("Color Settings");
+		colorSettingsItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> arg0) {
+				ColorSettingsDialog dialog = new ColorSettingsDialog(
+						eventBus, model);
+				dialog.show();
+			}
+		});
+		sub.add(colorSettingsItem);
+		sub.add(new HeaderMenuItem("Show"));
+		MenuItem colorsItem = new MenuItem("Color Use");
+		colorsItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> arg0) {
+				ColorsDialog dialog = new ColorsDialog(eventBus, model);
+				dialog.show();
+			}
+		});
+		sub.add(colorsItem);
+		MenuItem commentsItem = new MenuItem("Comments");
+		commentsItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> arg0) {
+				CommentsDialog dialog = new CommentsDialog(eventBus, model);
+				dialog.show();
+			}
+		});
+		sub.add(commentsItem);
+		return annotationsItem;
+	}
+
+	protected Widget createQuestionItem() {
+		Menu sub = new Menu();
+		MenuBarItem questionsItem = new MenuBarItem("Instructions", sub);
+		MenuItem helpItem = new MenuItem("Help");
+		helpItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> arg0) {
+				final Dialog dialog = new Dialog();
+				dialog.setBodyBorder(false);
+				dialog.setHeadingText("Help");
+				dialog.setHideOnButtonClick(true);
+				dialog.setWidget(new HelpView());
+				dialog.setWidth(400);
+				dialog.setHeight(225);
+				dialog.setResizable(true);
+				dialog.setShadow(true);
+				dialog.show();
+			}
+		});
+		sub.add(helpItem);
+		return questionsItem;
+	}
+}
