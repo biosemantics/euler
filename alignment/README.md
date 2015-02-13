@@ -1,5 +1,7 @@
 euler-alignment
 ============
+A gwt-based UI for the for the [EulerX toolkit](https://github.com/EulerProject/EulerX)
+
 
 Contribution
 ----------
