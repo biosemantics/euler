@@ -63,14 +63,16 @@ public class FileTaxonomyReader {
         		parent = new Taxon();
         		parent.setName(parentName);
         		rootTaxa.add(parent);
+            	nameTaxonMap.put(parentName, parent);
         	}
          	
     		for(int i=1; i<parts.length; i++) {
-    			String childName = parts[i];
+    			String childName  = parts[i];
     			Taxon child = new Taxon();
     			child.setName(childName);
     			child.setParent(parent);
-    			parent.addChild(child);
+	    		parent.addChild(child);
+	    		nameTaxonMap.put(childName, child);
     		}
         } else {
         	throw new Exception("Invalid format");
@@ -79,6 +81,11 @@ public class FileTaxonomyReader {
 
 	private String extractName(String line, Taxonomy taxonomy) {
 		return line.trim().replaceFirst("taxonomy", "").trim();
+	}
+	
+	public static void main(String[] args) throws Exception {
+		FileTaxonomyReader fileTaxonomyReader = new FileTaxonomyReader("C:/Users/rodenhausen/etcsite/users/1068/euler/1.txt");
+		Taxonomy t = fileTaxonomyReader.read();
 	}
 	
 }
