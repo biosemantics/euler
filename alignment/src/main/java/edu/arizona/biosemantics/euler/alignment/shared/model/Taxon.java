@@ -22,9 +22,9 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 	/**
 	 * Taxon concept
 	 */
-	private String name;
-	private String author;
-	private String year;
+	private String name = "";
+	private String author = "";
+	private String year = "";
 	
 	/**
 	 * Description
@@ -135,14 +135,14 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 	
 	public String getName() {
 		//by scientific convention
-		if(rank.equals(Rank.GENUS)) {
+		if(rank != null && rank.equals(Rank.GENUS)) {
 			return java.lang.Character.toUpperCase(name.charAt(0)) + name.substring(1);
 		}
 		return name;
 	}
 	
 	public String getFullName() {
-		if(hasParent() && Rank.equalOrBelowGenus(getParent().getRank())) {
+		if(hasParent() && getParent().getRank() != null && Rank.equalOrBelowGenus(getParent().getRank())) {
 			return getParent().getFullName() + " " + getName();
 		} else {
 			return getName();

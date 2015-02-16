@@ -347,17 +347,17 @@ public class TaxonomyView extends ContentPanel {
 		String taxonomy = "";
 		String prefix = "";
 		for(int i=ancestors.size() - 1; i >= 0; i--) {
-			Taxon anchestor = ancestors.get(i);
+			Taxon ancestor = ancestors.get(i);
 			prefix += "-";
 			taxonomy += "<p>" + prefix + " " + 
-					anchestor.getRank().name() + " " + 
-					anchestor.getName() + " " + 
-					anchestor.getAuthor() + " " + 
-					anchestor.getYear() + 
+					(ancestor.getRank() == null ? "" : ancestor.getRank().name()) + " " + 
+					ancestor.getName() + " " + 
+					ancestor.getAuthor() + " " + 
+					ancestor.getYear() + 
 					"</p>";
 		}
 					
-		String infoText = "<p><b>Rank:&nbsp;</b>" + taxon.getRank().name() + "</p>" +
+		String infoText = "<p><b>Rank:&nbsp;</b>" + (taxon.getRank() == null ? "" : taxon.getRank().name()) + "</p>" +
 				"<p><b>Name:&nbsp;</b>" + taxon.getName() + "</p>" +
 				"<p><b>Author:&nbsp;</b>" + taxon.getAuthor() + "</p>" +
 				"<p><b>Year:&nbsp;</b>" + taxon.getYear() + "</p>" +

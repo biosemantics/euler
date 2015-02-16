@@ -11,6 +11,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
+import edu.arizona.biosemantics.euler.io.FileTaxonomyReader;
 
 @SuppressWarnings("serial")
 public class EulerAlignmentService extends RemoteServiceServlet implements IEulerAlignmentService {
@@ -97,6 +98,19 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 		Taxonomies taxonomies = new Taxonomies();
 		taxonomies.add(taxonomy1);
 		taxonomies.add(taxonomy2);
+		
+		try {
+			taxonomies = new Taxonomies();
+			FileTaxonomyReader reader = new FileTaxonomyReader("C:/Users/rodenhausen/etcsite/users/1068/euler/1.txt");
+			Taxonomy taxA = reader.read();
+			reader = new FileTaxonomyReader("C:/Users/rodenhausen/etcsite/users/1068/euler/2.txt");
+			Taxonomy taxB = reader.read();
+			taxonomies.add(taxA);
+			taxonomies.add(taxB);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
 		return new Model(taxonomies);
 	}
 
