@@ -1,5 +1,7 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
-public class RunConfig {
+import java.io.Serializable;
+
+public class RunConfig implements Serializable {
 	//euler parameters?
 }

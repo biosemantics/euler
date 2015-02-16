@@ -5,7 +5,7 @@ import java.util.Date;
 
 public class Articulation implements Serializable {
 	
-	public enum Type {
+	public enum Type implements Serializable {
 		CONGRUENT("is congruent with"), OVERLAP("overlaps with"), A_INCLUDES_B("includes"), B_INCLUDES_A("is included by"), DISJOINT("is disjoint with");
 
 		private String displayName;

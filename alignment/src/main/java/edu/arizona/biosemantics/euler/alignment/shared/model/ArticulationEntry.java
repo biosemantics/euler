@@ -1,6 +1,8 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
-public class ArticulationEntry {
+import java.io.Serializable;
+
+public class ArticulationEntry implements Serializable {
 		private Taxon taxonB;
 		private Taxon taxonA;
 		public ArticulationEntry(Taxon taxonB, Taxon taxonA) {

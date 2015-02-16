@@ -1,8 +1,9 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class Taxonomies extends LinkedList<Taxonomy> /*implements Cloneable*/ {
+public class Taxonomies extends LinkedList<Taxonomy> implements Serializable /*implements Cloneable*/ {
 
 	
 	/*@Override

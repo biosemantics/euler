@@ -1,8 +1,9 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Run {
+public class Run implements Serializable {
 
 	private Taxonomies taxonomies;
 	private Articulations articulations;

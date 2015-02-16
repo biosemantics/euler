@@ -1,5 +1,7 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
-public class Output {
+import java.io.Serializable;
+
+public class Output implements Serializable {
 	//what form of output to consider all?
 }
