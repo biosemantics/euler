@@ -42,8 +42,14 @@
 		<dependency>
 			<groupId>edu.arizona.biosemantics.euler</groupId>
 			<artifactId>alignment</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>0.0.4-SNAPSHOT</version>
 			<classifier>classes</classifier>
+			<exclusions>
+				<exclusion>
+					<artifactId>io</artifactId>
+					<groupId>edu.arizona.biosemantics.euler</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 	</dependencies>
 
