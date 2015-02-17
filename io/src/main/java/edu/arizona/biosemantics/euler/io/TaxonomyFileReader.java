@@ -15,11 +15,11 @@ import edu.arizona.biosemantics.common.log.LogLevel;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
-public class FileTaxonomyReader {
+public class TaxonomyFileReader {
 
 	private String file;
 
-	public FileTaxonomyReader(String file) {
+	public TaxonomyFileReader(String file) {
 		this.file = file;
 	}
 	
@@ -84,7 +84,7 @@ public class FileTaxonomyReader {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		FileTaxonomyReader fileTaxonomyReader = new FileTaxonomyReader("C:/Users/rodenhausen/etcsite/users/1068/euler/1.txt");
+		TaxonomyFileReader fileTaxonomyReader = new TaxonomyFileReader("C:/Users/rodenhausen/etcsite/users/1068/euler/1.txt");
 		Taxonomy t = fileTaxonomyReader.read();
 	}
 	
