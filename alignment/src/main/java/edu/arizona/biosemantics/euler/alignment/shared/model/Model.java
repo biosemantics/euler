@@ -7,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 
 public class Model implements Serializable {
 	
@@ -121,7 +121,7 @@ public class Model implements Serializable {
 		return false;
 	}
 
-	public void changeArticulationType(Articulation articulation, Type newType) {
+	public void changeArticulationType(Articulation articulation, ArticulationType newType) {
 		articulation.setType(newType);
 	}
 	

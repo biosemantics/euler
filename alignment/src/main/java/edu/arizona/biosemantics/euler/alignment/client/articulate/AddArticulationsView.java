@@ -31,7 +31,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationPropert
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 
 public class AddArticulationsView extends ContentPanel {
 
@@ -46,9 +46,9 @@ public class AddArticulationsView extends ContentPanel {
 	private ListStore<Taxon> taxonomyAStore;
 	private ListStore<Taxon> taxonomyBStore;
 	private TextButton addArticulationButton = new TextButton("Add");
-	private ListStore<Type> relationStore;
+	private ListStore<ArticulationType> relationStore;
 	private ArticulateView articulateView;
-	private ListView<Type, Type> relationList;
+	private ListView<ArticulationType, ArticulationType> relationList;
 	
 	public AddArticulationsView(EventBus eventBus, ArticulateView articulateView) {
 		this.eventBus = eventBus;
@@ -84,7 +84,7 @@ public class AddArticulationsView extends ContentPanel {
 					Taxon taxonB = taxonomyBCombo.getValue();
 					ArticulationEntry articulationEntry = new ArticulationEntry(taxonA, taxonB);
 					if(!model.containsArticulationEntry(articulationEntry)) {
-						for(Type type : relationList.getSelectionModel().getSelectedItems()) {
+						for(ArticulationType type : relationList.getSelectionModel().getSelectedItems()) {
 							Articulation articulation = new Articulation(taxonA, taxonB, type);
 							eventBus.fireEvent(new AddArticulationsEvent(articulation));
 						} 
@@ -120,22 +120,22 @@ public class AddArticulationsView extends ContentPanel {
 		});
 	}
 
-	private ListView<Type, Type> createRelationWidget() {
-		relationStore = new ListStore<Articulation.Type>(new ModelKeyProvider<Articulation.Type>() {
+	private ListView<ArticulationType, ArticulationType> createRelationWidget() {
+		relationStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
 			@Override
-			public String getKey(Articulation.Type item) {
+			public String getKey(ArticulationType item) {
 				return item.toString();
 			}
 		});
-		relationStore.addAll(Arrays.asList(Articulation.Type.values()));
-		ComboBox<Type> relationCombo = new ComboBox<Type>(relationStore, new LabelProvider<Type>() {
+		relationStore.addAll(Arrays.asList(ArticulationType.values()));
+		ComboBox<ArticulationType> relationCombo = new ComboBox<ArticulationType>(relationStore, new LabelProvider<ArticulationType>() {
 			@Override
-			public String getLabel(Type item) {
+			public String getLabel(ArticulationType item) {
 				return item.toString();
 			}
 		});
 		
-		relationList = new ListView<Type, Type>(relationStore, new IdentityValueProvider<Type>());
+		relationList = new ListView<ArticulationType, ArticulationType>(relationStore, new IdentityValueProvider<ArticulationType>());
 		relationList.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 	    
 		/*relationCombo.setForceSelection(false);

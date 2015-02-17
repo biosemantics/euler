@@ -56,7 +56,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationPropert
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 
 public class ArticulationsGridView extends ContentPanel {
 
@@ -65,18 +65,18 @@ public class ArticulationsGridView extends ContentPanel {
 	
 	private ListStore<Articulation> articulationsStore;
 	private Grid<Articulation> grid;
-	private ListStore<Type> typesStore;
+	private ListStore<ArticulationType> typesStore;
 
 	public ArticulationsGridView(EventBus eventBus) {
 		this.eventBus = eventBus;
 
-		typesStore = new ListStore<Type>(new ModelKeyProvider<Type>() {
+		typesStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
 			@Override
-			public String getKey(Type item) {
+			public String getKey(ArticulationType item) {
 				return item.toString();
 			}
 		});
-		typesStore.addAll(Arrays.asList(Articulation.Type.values()));
+		typesStore.addAll(Arrays.asList(ArticulationType.values()));
 		
 		setHeadingText("Articulations");
 		add(createArticulationsGrid());
@@ -124,7 +124,7 @@ public class ArticulationsGridView extends ContentPanel {
 		final ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
 				new ArticulationProperties.TaxonAStringValueProvider(), 400, "Taxon A");
 		taxonACol.setCell(colorableCell);
-		final ColumnConfig<Articulation, Type> relationCol = new ColumnConfig<Articulation, Type>(
+		final ColumnConfig<Articulation, ArticulationType> relationCol = new ColumnConfig<Articulation, ArticulationType>(
 				articulationProperties.type(), 190, "Relation");
 		relationCol.setCell(colorableCell);
 		final ColumnConfig<Articulation, String> taxonBCol = new ColumnConfig<Articulation, String>(
@@ -178,7 +178,7 @@ public class ArticulationsGridView extends ContentPanel {
 		StringFilter<Articulation> taxonBFilter = new StringFilter<Articulation>(new ArticulationProperties.TaxonBStringValueProvider());
 		StringFilter<Articulation> commentFilter = new StringFilter<Articulation>(commentValueProvider);
 		
-		ListFilter<Articulation, Type> relationFilter = new ListFilter<Articulation, Type>(
+		ListFilter<Articulation, ArticulationType> relationFilter = new ListFilter<Articulation, ArticulationType>(
 				articulationProperties.type(), this.typesStore);
 
 		GridFilters<Articulation> filters = new GridFilters<Articulation>();
@@ -191,7 +191,7 @@ public class ArticulationsGridView extends ContentPanel {
 
 		GridInlineEditing<Articulation> editing = new GridInlineEditing<Articulation>(grid);
 		
-		ComboBox<Type> relationCombo = createRelationCombo();
+		ComboBox<ArticulationType> relationCombo = createRelationCombo();
 		
 		editing.addEditor(relationCol, relationCombo);
 		editing.addEditor(commentCol, new TextField());
@@ -202,7 +202,7 @@ public class ArticulationsGridView extends ContentPanel {
 				Articulation articulation = grid.getStore().get(cell.getRow());
 				ColumnConfig<Articulation, ?> config = grid.getColumnModel().getColumn(cell.getCol());
 				if(config.equals(relationCol)) {
-					Type type = (Type)config.getValueProvider().getValue(articulation);
+					ArticulationType type = (ArticulationType)config.getValueProvider().getValue(articulation);
 					eventBus.fireEvent(new ModifyArticulationEvent(articulation, type));
 				}
 			}
@@ -210,10 +210,10 @@ public class ArticulationsGridView extends ContentPanel {
 		return grid;
 	}
 
-	private ComboBox<Type> createRelationCombo() {
-		ComboBox<Type> relationCombo = new ComboBox<Type>(typesStore, new LabelProvider<Type>() {
+	private ComboBox<ArticulationType> createRelationCombo() {
+		ComboBox<ArticulationType> relationCombo = new ComboBox<ArticulationType>(typesStore, new LabelProvider<ArticulationType>() {
 			@Override
-			public String getLabel(Type item) {
+			public String getLabel(ArticulationType item) {
 				return item.toString();
 			}
 		});

@@ -6,7 +6,7 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 
 public interface ArticulationProperties extends PropertyAccess<Taxon> {
 
@@ -16,7 +16,7 @@ public interface ArticulationProperties extends PropertyAccess<Taxon> {
 	  @Path("text")
 	  LabelProvider<Articulation> nameLabel();
 	 
-	  ValueProvider<Articulation, Type> type();
+	  ValueProvider<Articulation, ArticulationType> type();
 	
 	  ValueProvider<Articulation, Taxon> taxonA();
 	  

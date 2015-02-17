@@ -5,34 +5,15 @@ import java.util.Date;
 
 public class Articulation implements Serializable {
 	
-	public enum Type implements Serializable {
-		CONGRUENT("is congruent with"), OVERLAP("overlaps with"), A_INCLUDES_B("includes"), B_INCLUDES_A("is included by"), DISJOINT("is disjoint with");
-
-		private String displayName;
-
-		Type(String displayName) {
-			this.displayName = displayName;
-		}
-		
-		public String displayName() {
-			return displayName;
-		}
-		
-		@Override
-		public String toString() {
-			return displayName;
-		}
-	}
-
 	public static int ID = 0;	
 	private int id = ID++;
 	private Date created = new Date();
 	
 	private Taxon taxonA;
 	private Taxon taxonB;
-	private Type type;
+	private ArticulationType type;
 
-	public Articulation(Taxon taxonA, Taxon taxonB, Type type) {
+	public Articulation(Taxon taxonA, Taxon taxonB, ArticulationType type) {
 		this.taxonA = taxonA;
 		this.taxonB = taxonB;
 		this.type = type;
@@ -46,16 +27,16 @@ public class Articulation implements Serializable {
 		return taxonB;
 	}
 
-	public Type getType() {
+	public ArticulationType getType() {
 		return type;
 	}
 
-	public void setType(Type type) {
+	public void setType(ArticulationType type) {
 		this.type = type;
 	}
 	
 	public String getText() {
-		return taxonA.getFullName() + " " + type.displayName + " " + taxonB.getFullName();
+		return taxonA.getFullName() + " " + type.getDisplayName() + " " + taxonB.getFullName();
 	}
 	
 	public int getId() {
