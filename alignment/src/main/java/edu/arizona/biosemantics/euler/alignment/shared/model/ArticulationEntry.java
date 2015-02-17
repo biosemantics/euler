@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class ArticulationEntry implements Serializable {
 		private Taxon taxonB;
 		private Taxon taxonA;
+		public ArticulationEntry() { }
+		
 		public ArticulationEntry(Taxon taxonB, Taxon taxonA) {
 			super();
 			this.taxonB = taxonB;

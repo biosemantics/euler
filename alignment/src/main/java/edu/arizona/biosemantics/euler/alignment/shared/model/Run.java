@@ -10,6 +10,8 @@ public class Run implements Serializable {
 	private RunConfig runConfig;
 	private Output output;
 	
+	public Run() { }
+	
 	public Run(Taxonomies taxonomies, Articulations articulations,
 			RunConfig runConfig) {
 		super();

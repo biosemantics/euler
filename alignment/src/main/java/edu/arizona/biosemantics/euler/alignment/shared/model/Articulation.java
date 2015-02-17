@@ -13,6 +13,8 @@ public class Articulation implements Serializable {
 	private Taxon taxonB;
 	private ArticulationType type;
 
+	public Articulation() {}
+	
 	public Articulation(Taxon taxonA, Taxon taxonB, ArticulationType type) {
 		this.taxonA = taxonA;
 		this.taxonB = taxonB;
