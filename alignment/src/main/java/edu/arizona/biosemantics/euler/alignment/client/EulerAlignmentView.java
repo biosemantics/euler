@@ -106,14 +106,12 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 		eventBus.addHandler(EndMIREvent.TYPE, new EndMIREvent.EndMIREventHandler() {
 			@Override
 			public void onShow(EndMIREvent event) {
-				Alerter.stopLoading();
 				Window.open(event.getResultURL(), "_blank", "");
 			}
 		});
 		eventBus.addHandler(EndInputVisualizationEvent.TYPE, new EndInputVisualizationEvent.EndInputVisualizationEventHandler() {
 			@Override
 			public void onShow(EndInputVisualizationEvent event) {
-				Alerter.stopLoading();
 				Window.open(event.getResultURL(), "_blank", "");
 			}
 		});

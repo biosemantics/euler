@@ -71,7 +71,6 @@ public class MenuView extends MenuBar {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
 				eventBus.fireEvent(new StartMIREvent(model));
-				Alerter.startLoading();
 			}
 		});
 		MenuItem showInputVisualizationItem = new MenuItem("Input Visualization");
@@ -79,7 +78,6 @@ public class MenuView extends MenuBar {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
 				eventBus.fireEvent(new StartInputVisualizationEvent(model));
-				Alerter.startLoading();
 			}
 		});
 
