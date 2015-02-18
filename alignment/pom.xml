@@ -4,7 +4,7 @@
 	<groupId>edu.arizona.biosemantics.euler</groupId>
 	<artifactId>alignment</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.7-SNAPSHOT</version>
+	<version>0.0.8-SNAPSHOT</version>
 	
 	<properties>
 		<gwtVersion>2.6.1</gwtVersion>
@@ -73,11 +73,11 @@
 			<artifactId>eventbinder</artifactId>
 			<version>1.1.0</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>edu.arizona.biosemantics.euler</groupId>
 			<artifactId>io</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
 
 	</dependencies>
 
