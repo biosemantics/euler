@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Map;
 
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 
 public class EulerInputFileWriter {
 
@@ -75,7 +75,7 @@ public class EulerInputFileWriter {
 		}
 	}
 	
-	public String getEulerRelationName(Articulation.Type type) {
+	public String getEulerRelationName(ArticulationType type) {
 		switch(type) {
 		case A_INCLUDES_B:
 			return "includes";
@@ -116,10 +116,10 @@ public class EulerInputFileWriter {
 		model.getTaxonomies().add(taxonomyA);
 		model.getTaxonomies().add(taxonomyB);
 		
-		model.addArticulation(new Articulation(a, b, Type.OVERLAP));
-		model.addArticulation(new Articulation(a, b, Type.B_INCLUDES_A));
-		model.addArticulation(new Articulation(rootA, rootB, Type.DISJOINT));
-		model.addArticulation(new Articulation(rootB, rootA, Type.CONGRUENT));
+		model.addArticulation(new Articulation(a, b, ArticulationType.OVERLAP));
+		model.addArticulation(new Articulation(a, b, ArticulationType.B_INCLUDES_A));
+		model.addArticulation(new Articulation(rootA, rootB, ArticulationType.DISJOINT));
+		model.addArticulation(new Articulation(rootB, rootA, ArticulationType.CONGRUENT));
 		
 		
 		EulerInputFileWriter fw = new EulerInputFileWriter("out.txt");
