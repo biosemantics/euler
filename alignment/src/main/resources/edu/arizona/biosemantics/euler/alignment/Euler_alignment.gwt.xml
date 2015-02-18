@@ -29,7 +29,7 @@
   <stylesheet src="reset.css" />
 
   <!-- Specify the app entry point class.                         -->
-  <!-- <entry-point class='edu.arizona.biosemantics.euler.alignment.client.EulerAlignment'/> -->
+  <entry-point class='edu.arizona.biosemantics.euler.alignment.client.EulerAlignment'/>
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>

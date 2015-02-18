@@ -31,6 +31,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEven
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
+import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsync;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -41,7 +42,7 @@ public class MenuView extends MenuBar {
 
 	protected Model model;
 	protected EventBus eventBus;
-	private IEulerAlignmentServiceAsync eulerAlignmentService = GWT.create(IEulerAlignmentServiceAsync.class);
+	private IEulerAlignmentServiceAsync eulerAlignmentService = GWT.create(IEulerAlignmentService.class);
 
 	public MenuView(EventBus eventBus) {
 		this.eventBus = eventBus;
