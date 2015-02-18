@@ -5,7 +5,13 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.resources.ThemeStyles;
+import com.sencha.gxt.core.client.util.Format;
+import com.sencha.gxt.core.client.util.Params;
 import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.box.MultiLinePromptMessageBox;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
+import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
+import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.menu.HeaderMenuItem;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.Menu;
@@ -18,10 +24,15 @@ import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialo
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
+import edu.arizona.biosemantics.euler.io.ArticulationsReader;
 
 public class MenuView extends MenuBar {
 
@@ -109,6 +120,28 @@ public class MenuView extends MenuBar {
 			}
 		});
 		
+		MenuItem importItem = new MenuItem("Import Articulations");
+		importItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				final MultiLinePromptMessageBox box = new MultiLinePromptMessageBox("Articulations", "");				
+				box.addHideHandler(new HideHandler() {
+					@Override
+					public void onHide(HideEvent event) {
+						ArticulationsReader articulationsReader = new ArticulationsReader();
+						try {
+							Articulations articulations = articulationsReader.read(box.getValue(), model);
+							eventBus.fireEvent(new ImportArticulationsEvent(articulations));
+						} catch(Exception e) {
+							Alerter.failedToImportArticulations(e);
+						}
+						Info.display("Imoprt successful", 4 + "articulations successfully imported");
+					}
+				});
+				box.show();
+			}
+		});
+		
 		MenuItem downloadItem = new MenuItem("Download Articulations");
 		downloadItem.setTitle("please set your browser to allow popup windows to use this function");
 		downloadItem.addSelectionHandler(new SelectionHandler<Item>() {
@@ -120,6 +153,7 @@ public class MenuView extends MenuBar {
 
 		// sub.add(subMatrixItem);
 		sub.add(saveItem);
+		sub.add(importItem);
 		sub.add(downloadItem);
 		return taxonomiesItem;
 	}

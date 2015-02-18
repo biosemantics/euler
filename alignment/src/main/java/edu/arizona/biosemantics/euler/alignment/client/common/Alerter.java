@@ -32,6 +32,10 @@ public class Alerter {
 				+ "and select the relationship that holds between them to create an articulation");
 	}
 	
+	public static MessageBox failedToImportArticulations(Exception e) {
+		return showAlert("Import Failed", "Failed to import articulations", e);
+	}
+	
 	private static MessageBox showAlert(String title, String message, Throwable caught) {
 		if(caught != null)
 			caught.printStackTrace();
@@ -57,6 +61,8 @@ public class Alerter {
         box.show();
         return box;
 	}
+
+
 
 
 	

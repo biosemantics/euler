@@ -45,6 +45,7 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
@@ -103,6 +104,13 @@ public class ArticulationsGridView extends ContentPanel {
 			public void onRemove(RemoveArticulationsEvent event) {
 				for(Articulation articulation : event.getArticulations())
 					articulationsStore.remove(articulation);
+			}
+		});
+		eventBus.addHandler(ImportArticulationsEvent.TYPE, new ImportArticulationsEvent.ImportArticulationsEventHandler() {
+			@Override
+			public void onImport(ImportArticulationsEvent event) {
+				articulationsStore.clear();
+				articulationsStore.addAll(event.getArticulations());
 			}
 		});
 	}

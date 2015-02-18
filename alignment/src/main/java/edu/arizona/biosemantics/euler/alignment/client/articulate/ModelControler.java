@@ -3,6 +3,8 @@ package edu.arizona.biosemantics.euler.alignment.client.articulate;
 import com.google.gwt.event.shared.EventBus;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent.ImportArticulationsEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
@@ -29,7 +31,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.RunConfig;
 public class ModelControler implements LoadModelEventHandler, SetColorsEventHandler,  
 	SetTaxonCommentEventHandler, SetTaxonColorEventHandler, AddArticulationEventHandler, 
 	SetArticulationCommentEventHandler, SetArticulationColorEventHandler, RemoveArticulationsEventHandler, 
-	ModifyArticulationEventHandler, StartMIREventHandler {
+	ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler {
 
 	protected EventBus eventBus;
 	protected Model model;
@@ -51,6 +53,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 		eventBus.addHandler(RemoveArticulationsEvent.TYPE, this);
 		eventBus.addHandler(ModifyArticulationEvent.TYPE, this);
 		eventBus.addHandler(StartMIREvent.TYPE, this);
+		eventBus.addHandler(ImportArticulationsEvent.TYPE, this);
 	}
 
 	@Override
@@ -102,6 +105,12 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 	@Override
 	public void onShow(StartMIREvent event) {
 		model.addRun(new Run(model.getTaxonomies(), model.getArticulations(), new RunConfig()));
+	}
+
+	@Override
+	public void onImport(ImportArticulationsEvent event) {
+		model.clearArticulations();
+		model.addArticulations(event.getArticulations());
 	}
 
 }
