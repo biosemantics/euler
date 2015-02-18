@@ -2,10 +2,7 @@ package edu.arizona.biosemantics.euler.io;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,6 +23,7 @@ public class TaxonomyFileReader {
 	public Taxonomy read() throws Exception {
 		try(BufferedReader in = new BufferedReader(new InputStreamReader(
                       new FileInputStream(file), "UTF8"))) {
+			String year = "";
 			String name = "";
 			List<Taxon> rootTaxa = new LinkedList<Taxon>();
 			Map<String, Taxon> nameTaxonMap = new HashMap<String, Taxon>();
@@ -35,13 +33,15 @@ public class TaxonomyFileReader {
 	        while ((line = in.readLine()) != null) {
 	        	Taxonomy taxonomy = new Taxonomy();
 	        	if(!firstLine) {
-	        		name = extractName(line, taxonomy);
+	        		String[] yearName = extractYearName(line, taxonomy);
+	        		year = yearName[0];
+	        		name = yearName[1];
 	        		firstLine = true;
 	        	} else {
 	        		handleEdgeline(line, rootTaxa, nameTaxonMap);
 	        	}
 	        }
-			return new Taxonomy(name, rootTaxa);
+			return new Taxonomy(year, name, rootTaxa);
 		} catch (Exception e) {
 			log(LogLevel.ERROR, "Couldn't read input file", e);
 			throw e;
@@ -79,8 +79,8 @@ public class TaxonomyFileReader {
         }
 	}
 
-	private String extractName(String line, Taxonomy taxonomy) {
-		return line.trim().replaceFirst("taxonomy", "").trim();
+	private String[] extractYearName(String line, Taxonomy taxonomy) {
+		return line.trim().replaceFirst("taxonomy", "").trim().split(" ");
 	}
 	
 	public static void main(String[] args) throws Exception {

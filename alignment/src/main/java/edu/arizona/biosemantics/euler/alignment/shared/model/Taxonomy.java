@@ -54,13 +54,15 @@ public class Taxonomy implements Serializable, Cloneable {
 		}
 	}
 	
+	private String year;
 	private String name;
 	private List<Taxon> rootTaxa = new ArrayList<Taxon>();
 
 	public Taxonomy() {
 	}
 
-	public Taxonomy(String name, List<Taxon> rootTaxa) {
+	public Taxonomy(String year, String name, List<Taxon> rootTaxa) {
+		this.year = year;
 		this.name = name;
 		this.rootTaxa = rootTaxa;
 	}
@@ -79,6 +81,10 @@ public class Taxonomy implements Serializable, Cloneable {
 	
 	public String getName() {
 		return name;
+	}
+	
+	public String getYear() {
+		return year;
 	}
 	
 	@Override

@@ -1,7 +1,6 @@
 package edu.arizona.biosemantics.euler.io;
 
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -14,7 +13,6 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
 public class EulerInputFileWriter {
@@ -26,43 +24,41 @@ public class EulerInputFileWriter {
 	}
 	
 	public void write(Model model) throws IOException {
+		Map<Taxon, Taxonomy> taxonTaxonomyMap = new HashMap<Taxon, Taxonomy>();
 		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
-			String taxonomiesString = "";
+			String taxonomiesYearString = "";
+			String taxonomiesNameString = "";
 			for(Taxonomy taxonomy : model.getTaxonomies()) {
-				bw.append("taxonomy " + taxonomy.getName() + "\n");
-				for(Taxon rootTaxon : taxonomy.getRootTaxa()) {
+				bw.append("taxonomy " + taxonomy.getYear() + " " + taxonomy.getName() + "\n");
+				
+				for(Taxon taxon : taxonomy.getTaxaDFS()) 
+					taxonTaxonomyMap.put(taxon, taxonomy);
+				for(Taxon rootTaxon : taxonomy.getRootTaxa()) 
 					appendTaxon(rootTaxon, bw);
-				}
+				
 				bw.append("\n");
-				taxonomiesString += taxonomy.getName() + "-";
+				taxonomiesYearString += taxonomy.getYear() + "-";
+				taxonomiesNameString += taxonomy.getName() + "-";
+				
 			}
-			bw.append("articulation " + taxonomiesString.substring(0, taxonomiesString.length() - 1) + "\n");
-			for(Articulation articuation : model.getArticulations()) {
-				appendArticulation(articuation, bw, model);
-			}
+			bw.append("articulation " + taxonomiesYearString.substring(0, taxonomiesYearString.length() - 1) + " "  +
+					taxonomiesNameString.substring(0, taxonomiesNameString.length() - 1) + "\n");
+			
+			for(Articulation articuation : model.getArticulations()) 
+				appendArticulation(articuation, bw, model, taxonTaxonomyMap);
 		}
 	}
 
-	private void appendArticulation(Articulation articulation, BufferedWriter bw, Model model) throws IOException {
+	private void appendArticulation(Articulation articulation, BufferedWriter bw, Model model, Map<Taxon, Taxonomy> taxonTaxonomyMap) throws IOException {
 		Taxon taxonA = articulation.getTaxonA();
 		Taxon taxonB = articulation.getTaxonB();
-		int taxonomyIdA = getId(taxonA, model);
-		int taxonomyIdB = getId(taxonB, model);
 		String relation = getEulerRelationName(articulation.getType());
 		if(relation != null) {
-			bw.append("[" + taxonomyIdA + "." + taxonA.getName() + " " + relation + " " + taxonomyIdB + "." + taxonB.getName() + "]\n");
+			bw.append("[" + taxonTaxonomyMap.get(taxonA).getYear() + "." + taxonA.getName() + " " + relation + " " + 
+					taxonTaxonomyMap.get(taxonB).getYear() + "." + taxonB.getName() + "]\n");
 		}
 	}
-
-	private int getId(Taxon taxon, Model model) {
-		for(int i=0; i<model.getTaxonomies().size(); i++) {
-			Taxonomy taxonomy = model.getTaxonomies().get(i);
-			if(taxonomy.getTaxaDFS().contains(taxon))
-				return i;
-		}
-		return -1;
-	}
-
+	
 	private void appendTaxon(Taxon taxon, BufferedWriter bw) throws IOException {
 		String line = "(" + taxon.getName();
 		for(Taxon child : taxon.getChildren()) {
@@ -102,7 +98,7 @@ public class EulerInputFileWriter {
 		Taxon a = new Taxon();
 		a.setName("a");
 		rootA.addChild(a);
-		Taxonomy taxonomyA = new Taxonomy("tax a", rootTaxaA);
+		Taxonomy taxonomyA = new Taxonomy("2001", "tax a", rootTaxaA);
 		
 		List<Taxon> rootTaxaB = new LinkedList<Taxon>();
 		Taxon rootB = new Taxon();
@@ -111,7 +107,7 @@ public class EulerInputFileWriter {
 		Taxon b = new Taxon();
 		b.setName("b");
 		rootB.addChild(b);
-		Taxonomy taxonomyB = new Taxonomy("tax b", rootTaxaB);
+		Taxonomy taxonomyB = new Taxonomy("2005", "tax b", rootTaxaB);
 		
 		model.getTaxonomies().add(taxonomyA);
 		model.getTaxonomies().add(taxonomyB);
