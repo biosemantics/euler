@@ -630,37 +630,43 @@ public class Euler {
 		this.mirStats = mirStats;
 	}
 
-	private String runCommand(String command) throws IOException, EulerException {
+	private String runCommand(String command) throws EulerException {
 		StringBuilder input = new StringBuilder();
 		StringBuilder error = new StringBuilder();
 		long time = System.currentTimeMillis();
-		Process p = Runtime.getRuntime().exec(command);
-		
-		try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(
-				p.getInputStream()))) {
-			String s = "";
-			int i = 0;
-			while ((s = stdInput.readLine()) != null) {
-				log(LogLevel.DEBUG, s + " at "
-						+ (System.currentTimeMillis() - time) / 1000 + " seconds");
-				input.append(s + "\n");
+		Process p;
+		try {
+			p = Runtime.getRuntime().exec(command);
+			
+			try (BufferedReader stdInput = new BufferedReader(new InputStreamReader(
+					p.getInputStream()))) {
+				String s = "";
+				int i = 0;
+				while ((s = stdInput.readLine()) != null) {
+					log(LogLevel.DEBUG, s + " at "
+							+ (System.currentTimeMillis() - time) / 1000 + " seconds");
+					input.append(s + "\n");
+				}
 			}
-		}
-		
-		try (BufferedReader errInput = new BufferedReader(new InputStreamReader(
-					p.getErrorStream()))) {
-			String e = "";
-			while ((e = errInput.readLine()) != null) {
-				log(LogLevel.DEBUG, e + " at "
-						+ (System.currentTimeMillis() - time) / 1000 + " seconds");
-				error.append(e + "\n");
+			
+			try (BufferedReader errInput = new BufferedReader(new InputStreamReader(
+						p.getErrorStream()))) {
+				String e = "";
+				while ((e = errInput.readLine()) != null) {
+					log(LogLevel.DEBUG, e + " at "
+							+ (System.currentTimeMillis() - time) / 1000 + " seconds");
+					error.append(e + "\n");
+				}
 			}
+			
+			int exitStatus = p.waitFor();
+			if(exitStatus == 0)
+				return input.toString() + "\n" + error.toString();
+		} catch (IOException | InterruptedException e) {
+			log(LogLevel.ERROR, "Couldn't execute euler", e);
+			throw new EulerException("Euler exeuction failed: \n" + error.toString());
 		}
-		
-		if(p.exitValue() == 0)
-			return input.toString() + "\n" + error.toString();
 		throw new EulerException("Euler exeuction failed: \n" + error.toString());
 	}
-	
 	
 }
