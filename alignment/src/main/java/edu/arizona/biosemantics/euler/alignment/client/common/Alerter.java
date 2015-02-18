@@ -32,7 +32,7 @@ public class Alerter {
 				+ "and select the relationship that holds between them to create an articulation");
 	}
 	
-	public static MessageBox failedToImportArticulations(Exception e) {
+	public static MessageBox failedToImportArticulations(Throwable e) {
 		return showAlert("Import Failed", "Failed to import articulations", e);
 	}
 	

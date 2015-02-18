@@ -7,10 +7,12 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
+import edu.arizona.biosemantics.euler.io.ArticulationsReader;
 
 @SuppressWarnings("serial")
 public class EulerAlignmentService extends RemoteServiceServlet implements IEulerAlignmentService {
@@ -19,6 +21,8 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 	public Model getModel() {
 		return createSampleModel();
 	}
+	
+	
 	
 	private Model createSampleModel() {
 		Taxon t1 = new Taxon(Rank.FAMILY, "rosacea", "author1", "1979", "this is the description about t1");
@@ -112,6 +116,14 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 		}*/
 		
 		return new Model(taxonomies);
+	}
+
+
+
+	@Override
+	public Articulations getArticulations(String text, Model model) throws Exception {
+		ArticulationsReader articulationsReader = new ArticulationsReader();
+		return articulationsReader.read(text, model);
 	}
 
 }

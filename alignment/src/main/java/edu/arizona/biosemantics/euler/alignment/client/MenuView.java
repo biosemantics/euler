@@ -1,8 +1,10 @@
 package edu.arizona.biosemantics.euler.alignment.client;
 
+import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.resources.ThemeStyles;
 import com.sencha.gxt.core.client.util.Format;
@@ -29,6 +31,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEven
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
+import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsync;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
@@ -38,6 +41,7 @@ public class MenuView extends MenuBar {
 
 	protected Model model;
 	protected EventBus eventBus;
+	private IEulerAlignmentServiceAsync eulerAlignmentService = GWT.create(IEulerAlignmentServiceAsync.class);
 
 	public MenuView(EventBus eventBus) {
 		this.eventBus = eventBus;
@@ -126,14 +130,17 @@ public class MenuView extends MenuBar {
 				box.addHideHandler(new HideHandler() {
 					@Override
 					public void onHide(HideEvent event) {
-						ArticulationsReader articulationsReader = new ArticulationsReader();
-						try {
-							Articulations articulations = articulationsReader.read(box.getValue(), model);
-							eventBus.fireEvent(new ImportArticulationsEvent(articulations));
-						} catch(Exception e) {
-							Alerter.failedToImportArticulations(e);
-						}
-						Info.display("Imoprt successful", 4 + "articulations successfully imported");
+						eulerAlignmentService.getArticulations(box.getValue(), model, new AsyncCallback<Articulations>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								Alerter.failedToImportArticulations(caught);								
+							}
+							@Override
+							public void onSuccess(Articulations result) {
+								eventBus.fireEvent(new ImportArticulationsEvent(result));
+								Info.display("Imoprt successful", 4 + "articulations successfully imported");
+							}
+						});
 					}
 				});
 				box.show();
