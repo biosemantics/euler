@@ -89,7 +89,7 @@ public class MenuView extends MenuBar {
 				dialog.show();
 			}
 		});
-		this.addBeforeShowHandler(new BeforeShowHandler() {
+		sub.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
 				if(model.getRunHistory().isEmpty())
@@ -106,6 +106,7 @@ public class MenuView extends MenuBar {
 			}
 		});
 
+		sub.add(runEulerItem);
 		sub.add(showEulerResult);
 		sub.add(showInputVisualizationItem);
 		return runItem;
