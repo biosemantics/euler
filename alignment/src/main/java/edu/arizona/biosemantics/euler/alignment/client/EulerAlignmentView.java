@@ -117,6 +117,12 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 				//Window.open(event.getResultURL(), "_blank", "");
 			}
 		});
+		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+			@Override
+			public void onLoad(LoadModelEvent event) {
+				model = event.getModel();
+			}
+		});
 	}
 
 	protected void showDesktop() {
