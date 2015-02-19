@@ -5,7 +5,9 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.GwtEvent.Type;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent.StartMIREventHandler;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 
 public class StartMIREvent extends GwtEvent<StartMIREventHandler> {
 
@@ -14,10 +16,12 @@ public class StartMIREvent extends GwtEvent<StartMIREventHandler> {
 	}
 	
     public static Type<StartMIREventHandler> TYPE = new Type<StartMIREventHandler>();
-	private Model model;
+	private Taxonomies taxonomies;
+	private Articulations articulations;
 
-    public StartMIREvent(Model model) {
-    	this.model = model;
+    public StartMIREvent(Taxonomies taxonomies, Articulations articulations) {
+    	this.taxonomies = taxonomies;
+    	this.articulations = articulations;
     }
     
 	@Override
@@ -30,8 +34,14 @@ public class StartMIREvent extends GwtEvent<StartMIREventHandler> {
 		handler.onShow(this);
 	}
 
-	public Model getModel() {
-		return model;
+	public Taxonomies getTaxonomies() {
+		return taxonomies;
 	}
+
+	public Articulations getArticulations() {
+		return articulations;
+	}
+
+	
 
 }

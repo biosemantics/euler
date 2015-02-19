@@ -6,18 +6,19 @@ import com.google.gwt.event.shared.GwtEvent.Type;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.run.EndMIREvent.EndMIREventHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.RunOutput;
 
 public class EndMIREvent extends GwtEvent<EndMIREventHandler> {
 
 	public interface EndMIREventHandler extends EventHandler {
-		void onShow(EndMIREvent event);
+		void onEnd(EndMIREvent event);
 	}
 	
     public static Type<EndMIREventHandler> TYPE = new Type<EndMIREventHandler>();
-	private String resultURL;
+	private RunOutput output;
 
-    public EndMIREvent(String resultURL) {
-    	this.resultURL = resultURL;
+    public EndMIREvent(RunOutput output) {
+    	this.output = output;
     }
     
 	@Override
@@ -27,11 +28,11 @@ public class EndMIREvent extends GwtEvent<EndMIREventHandler> {
 
 	@Override
 	protected void dispatch(EndMIREventHandler handler) {
-		handler.onShow(this);
+		handler.onEnd(this);
 	}
 
-	public String getResultURL() {
-		return resultURL;
+	public RunOutput getOutput() {
+		return output;
 	}
 
 }

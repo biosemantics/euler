@@ -1,12 +1,8 @@
 package edu.arizona.biosemantics.euler.io;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import edu.arizona.biosemantics.common.log.LogLevel;

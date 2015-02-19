@@ -11,6 +11,7 @@ import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.client.util.Params;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.box.MultiLinePromptMessageBox;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -20,7 +21,9 @@ import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuBar;
 import com.sencha.gxt.widget.core.client.menu.MenuBarItem;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
 
+import edu.arizona.biosemantics.euler.alignment.client.articulate.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorsDialog;
@@ -69,15 +72,32 @@ public class MenuView extends MenuBar {
 	}
 
 	protected Widget createRunItem() {
-		Menu sub = new Menu();
+		final Menu sub = new Menu();
 		MenuBarItem runItem = new MenuBarItem("Run", sub);
-		MenuItem showMirItem = new MenuItem("Show MIR");
-		showMirItem.addSelectionHandler(new SelectionHandler<Item>() {
+		MenuItem runEulerItem = new MenuItem("Run Euler");
+		runEulerItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new StartMIREvent(model));
+				eventBus.fireEvent(new StartMIREvent(model.getTaxonomies(), model.getArticulations()));
 			}
 		});
+		final MenuItem showEulerResult = new MenuItem("Show Euler Result");
+		showEulerResult.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
+				dialog.show();
+			}
+		});
+		this.addBeforeShowHandler(new BeforeShowHandler() {
+			@Override
+			public void onBeforeShow(BeforeShowEvent event) {
+				if(model.getRunHistory().isEmpty())
+					sub.remove(showEulerResult);
+					showEulerResult.removeFromParent();
+			}
+		});
+		
 		MenuItem showInputVisualizationItem = new MenuItem("Input Visualization");
 		showInputVisualizationItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
@@ -86,7 +106,7 @@ public class MenuView extends MenuBar {
 			}
 		});
 
-		sub.add(showMirItem);
+		sub.add(showEulerResult);
 		sub.add(showInputVisualizationItem);
 		return runItem;
 	}

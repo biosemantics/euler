@@ -14,6 +14,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateMenuView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ModelControler;
+import edu.arizona.biosemantics.euler.alignment.client.articulate.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.desktop.DesktopView;
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDesktopEvent;
@@ -105,14 +106,15 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 		});
 		eventBus.addHandler(EndMIREvent.TYPE, new EndMIREvent.EndMIREventHandler() {
 			@Override
-			public void onShow(EndMIREvent event) {
-				Window.open(event.getResultURL(), "_blank", "");
+			public void onEnd(EndMIREvent event) {
+				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
+				dialog.show();
 			}
 		});
 		eventBus.addHandler(EndInputVisualizationEvent.TYPE, new EndInputVisualizationEvent.EndInputVisualizationEventHandler() {
 			@Override
 			public void onShow(EndInputVisualizationEvent event) {
-				Window.open(event.getResultURL(), "_blank", "");
+				//Window.open(event.getResultURL(), "_blank", "");
 			}
 		});
 	}

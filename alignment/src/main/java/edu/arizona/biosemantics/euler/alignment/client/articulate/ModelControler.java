@@ -22,6 +22,8 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulati
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorsEvent.SetColorsEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonColorEvent.SetTaxonColorEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent.SetTaxonCommentEventHandler;
+import edu.arizona.biosemantics.euler.alignment.client.event.run.EndMIREvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.run.EndMIREvent.EndMIREventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent.StartMIREventHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -31,7 +33,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.RunConfig;
 public class ModelControler implements LoadModelEventHandler, SetColorsEventHandler,  
 	SetTaxonCommentEventHandler, SetTaxonColorEventHandler, AddArticulationEventHandler, 
 	SetArticulationCommentEventHandler, SetArticulationColorEventHandler, RemoveArticulationsEventHandler, 
-	ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler {
+	ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler, EndMIREventHandler {
 
 	protected EventBus eventBus;
 	protected Model model;
@@ -54,6 +56,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 		eventBus.addHandler(ModifyArticulationEvent.TYPE, this);
 		eventBus.addHandler(StartMIREvent.TYPE, this);
 		eventBus.addHandler(ImportArticulationsEvent.TYPE, this);
+		eventBus.addHandler(EndMIREvent.TYPE, this);
 	}
 
 	@Override
@@ -111,6 +114,12 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 	public void onImport(ImportArticulationsEvent event) {
 		model.clearArticulations();
 		model.addArticulations(event.getArticulations());
+	}
+
+	@Override
+	public void onEnd(EndMIREvent event) {
+		if(!model.getRunHistory().isEmpty())
+			model.getRunHistory().getLast().setOutput(event.getOutput());
 	}
 
 }

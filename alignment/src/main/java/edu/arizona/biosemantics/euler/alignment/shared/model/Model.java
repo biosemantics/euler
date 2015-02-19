@@ -17,7 +17,7 @@ public class Model implements Serializable {
 	private Map<Object, Color> coloreds = new HashMap<Object, Color>();
 	private Map<Object, String> comments = new HashMap<Object, String>();
 	
-	private List<Run> runHistory = new LinkedList<Run>();
+	private LinkedList<Run> runHistory = new LinkedList<Run>();
 	
 	public Model() { }
 	
@@ -128,5 +128,11 @@ public class Model implements Serializable {
 	public void addRun(Run run) {
 		this.runHistory.add(run);
 	}
+
+	public LinkedList<Run> getRunHistory() {
+		return runHistory;
+	}
+	
+	
 	
 }

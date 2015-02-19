@@ -8,7 +8,7 @@ public class Run implements Serializable {
 	private Taxonomies taxonomies;
 	private Articulations articulations;
 	private RunConfig runConfig;
-	private Output output;
+	private RunOutput output;
 	
 	public Run() { }
 	
@@ -19,7 +19,7 @@ public class Run implements Serializable {
 		this.articulations = (Articulations)articulations.getClone();
 		this.runConfig = runConfig;
 	}
-	public void setOutput(Output output) {
+	public void setOutput(RunOutput output) {
 		this.output = output;
 	}
 	public List<Taxonomy> getTaxonomies() {
@@ -31,7 +31,7 @@ public class Run implements Serializable {
 	public RunConfig getRunConfig() {
 		return runConfig;
 	}
-	public Output getOutput() {
+	public RunOutput getOutput() {
 		return output;
 	}
 	
