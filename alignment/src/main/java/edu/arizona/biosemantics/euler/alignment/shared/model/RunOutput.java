@@ -7,22 +7,16 @@ import java.util.List;
 public class RunOutput implements Serializable {
 	//what form of output to consider all?
 	
-	public enum Type {
-		CONFLICT,
-		ONE,
-		MULTIPLE
-	}
-	
-	private Type type;
+	private RunOutputType type;
 	private List<PossibleWorld> possibleWorlds = new LinkedList<PossibleWorld>();
 
 	public RunOutput() { }
 	
-	public RunOutput(Type type) {
+	public RunOutput(RunOutputType type) {
 		this.type = type;
 	}
 	
-	public RunOutput(Type type, List<PossibleWorld> possibleWorlds) {
+	public RunOutput(RunOutputType type, List<PossibleWorld> possibleWorlds) {
 		super();
 		this.type = type;
 		this.possibleWorlds = possibleWorlds;
@@ -32,7 +26,7 @@ public class RunOutput implements Serializable {
 		return possibleWorlds;
 	}	
 	
-	public Type getType() {
+	public RunOutputType getType() {
 		return type;
 	}
 }

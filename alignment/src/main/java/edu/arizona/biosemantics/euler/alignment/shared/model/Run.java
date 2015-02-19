@@ -35,4 +35,8 @@ public class Run implements Serializable {
 		return output;
 	}
 	
+	public boolean hasOutput() {
+		return output != null;
+	}
+	
 }

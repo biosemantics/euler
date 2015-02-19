@@ -33,7 +33,7 @@ public class ViewResultsDialog extends Dialog {
 		this.model = model;
 		
 		resultStore = new ListStore<PossibleWorld>(possibleWorldProperties.key());
-		if(!model.getRunHistory().isEmpty())
+		if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput())
 			resultStore.addAll(model.getRunHistory().getLast().getOutput().getPossibleWorlds());
 		resultList = new ListView<PossibleWorld, String>(resultStore, possibleWorldProperties.displayName());
 		resultList.getSelectionModel().setSelectionMode(SelectionMode.MULTI);

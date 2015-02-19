@@ -74,7 +74,7 @@ public class MenuView extends MenuBar {
 	protected Widget createRunItem() {
 		final Menu sub = new Menu();
 		MenuBarItem runItem = new MenuBarItem("Run", sub);
-		MenuItem runEulerItem = new MenuItem("Run Euler");
+		final MenuItem runEulerItem = new MenuItem("Run Euler");
 		runEulerItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
@@ -92,9 +92,13 @@ public class MenuView extends MenuBar {
 		sub.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
-				if(model.getRunHistory().isEmpty())
+				if(model.getRunHistory().isEmpty()) {
 					sub.remove(showEulerResult);
 					showEulerResult.removeFromParent();
+				} else {
+					int index = sub.getWidgetIndex(runEulerItem);
+					sub.insert(showEulerResult, index + 1);
+				}
 			}
 		});
 		
@@ -107,7 +111,6 @@ public class MenuView extends MenuBar {
 		});
 
 		sub.add(runEulerItem);
-		sub.add(showEulerResult);
 		sub.add(showInputVisualizationItem);
 		return runItem;
 	}
