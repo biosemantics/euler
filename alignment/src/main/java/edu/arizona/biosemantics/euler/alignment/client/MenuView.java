@@ -29,6 +29,7 @@ import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialo
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.SaveEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
@@ -119,31 +120,11 @@ public class MenuView extends MenuBar {
 		Menu sub = new Menu();
 		
 		MenuBarItem taxonomiesItem = new MenuBarItem("Taxonomies", sub);
-
-		/*
-		 * MenuItem subMatrixItem = new MenuItem("Load");
-		 * subMatrixItem.addSelectionHandler(new SelectionHandler<Item>() {
-		 * 
-		 * @Override public void onSelection(SelectionEvent<Item> event) { final
-		 * SelectMatrixDialog selectMatrixDialog = new
-		 * SelectMatrixDialog(fullMatrix); selectMatrixDialog.show();
-		 * selectMatrixDialog.addHideHandler(new HideHandler() {
-		 * 
-		 * @Override public void onHide(HideEvent event) {
-		 * if(!selectMatrixDialog.getSelectedCharacters().isEmpty() &&
-		 * !selectMatrixDialog.getSelectedRootTaxa().isEmpty()) { TaxonMatrix
-		 * taxonMatrix = matrixMerger.createSubMatrix(fullMatrix,
-		 * selectMatrixDialog.getSelectedCharacters(),
-		 * selectMatrixDialog.getSelectedRootTaxa()); subMatrixBus.fireEvent(new
-		 * LoadTaxonMatrixEvent(taxonMatrix)); setContent(matrixView); } } }); }
-		 * });
-		 */
-
 		MenuItem saveItem = new MenuItem("Save Progress");
 		saveItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				//fullModelBus.fireEvent(new SaveEvent(model));
+				eventBus.fireEvent(new SaveEvent(model));
 			}
 		});
 		
