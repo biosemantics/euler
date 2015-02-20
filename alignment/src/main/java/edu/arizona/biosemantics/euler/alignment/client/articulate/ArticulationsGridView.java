@@ -90,6 +90,7 @@ public class ArticulationsGridView extends ContentPanel {
 			@Override
 			public void onLoad(LoadModelEvent event) {
 				model = event.getModel();
+				articulationsStore.clear();
 				articulationsStore.addAll(model.getArticulations());
 			}
 		});
