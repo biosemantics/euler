@@ -28,6 +28,7 @@ import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog;
+import edu.arizona.biosemantics.euler.alignment.client.common.ImportDialog;
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SaveEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
@@ -132,23 +133,8 @@ public class MenuView extends MenuBar {
 		importItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				final MultiLinePromptMessageBox box = new MultiLinePromptMessageBox("Articulations", "");				
-				box.addHideHandler(new HideHandler() {
-					@Override
-					public void onHide(HideEvent event) {
-						eulerAlignmentService.getArticulations(box.getValue(), model, new AsyncCallback<Articulations>() {
-							@Override
-							public void onFailure(Throwable caught) {
-								Alerter.failedToImportArticulations(caught);								
-							}
-							@Override
-							public void onSuccess(Articulations result) {
-								eventBus.fireEvent(new ImportArticulationsEvent(result));
-							}
-						});
-					}
-				});
-				box.show();
+				ImportDialog importDialog = new ImportDialog(eventBus, model);
+				importDialog.show();
 			}
 		});
 		
