@@ -144,7 +144,6 @@ public class MenuView extends MenuBar {
 							@Override
 							public void onSuccess(Articulations result) {
 								eventBus.fireEvent(new ImportArticulationsEvent(result));
-								Info.display("Imoprt successful", 4 + "articulations successfully imported");
 							}
 						});
 					}

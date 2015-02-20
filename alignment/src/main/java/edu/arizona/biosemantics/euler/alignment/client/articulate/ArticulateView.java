@@ -60,13 +60,15 @@ public class ArticulateView extends SplitLayoutPanel {
 		taxaViewA.addSelectionChangeHandler(new SelectionChangedHandler<Taxon>() {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<Taxon> event) {
-				addArticulationsView.setTaxonA(event.getSelection().get(0));
+				if(event.getSelection() != null)
+					addArticulationsView.setTaxonA(event.getSelection().get(0));
 			}
 		});
 		taxaViewB.addSelectionChangeHandler(new SelectionChangedHandler<Taxon>() {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<Taxon> event) {
-				addArticulationsView.setTaxonB(event.getSelection().get(0));
+				if(event.getSelection() != null)
+					addArticulationsView.setTaxonB(event.getSelection().get(0));
 			}
 		});
 	}

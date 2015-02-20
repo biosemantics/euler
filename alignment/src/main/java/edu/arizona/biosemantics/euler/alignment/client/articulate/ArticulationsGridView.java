@@ -112,6 +112,7 @@ public class ArticulationsGridView extends ContentPanel {
 			public void onImport(ImportArticulationsEvent event) {
 				articulationsStore.clear();
 				articulationsStore.addAll(event.getArticulations());
+				Info.display("Imoprt successful", event.getArticulations().size() + " articulations successfully imported");
 			}
 		});
 	}
