@@ -22,7 +22,7 @@ public class ArticulateView extends SplitLayoutPanel {
 	
 	private TaxonomyView taxaViewA;
 	private TaxonomyView taxaViewB;
-	private ArticulationsGridView articulationsGridView;
+	private CurrentArticulationsGridView articulationsGridView;
 	private AddArticulationsView addArticulationsView;
 	
 	public ArticulateView(final EventBus eventBus) {
@@ -38,7 +38,7 @@ public class ArticulateView extends SplitLayoutPanel {
 		addArticulationsView = new AddArticulationsView(eventBus, this);
 		verticalLayoutPanel.add(addArticulationsView, new VerticalLayoutData(1.0, -1.0));
 		
-		articulationsGridView = new ArticulationsGridView(eventBus);
+		articulationsGridView = new CurrentArticulationsGridView(eventBus);
 		verticalLayoutPanel.add(articulationsGridView, new VerticalLayoutData(1.0, 1.0));
 		addSouth(verticalLayoutPanel, 0);
 		add(horizontalLayoutContainer);

@@ -1,10 +1,15 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 public class Run implements Serializable {
 
+	public static int ID = 0;	
+	private int id = ID++;
+	private Date created = new Date();
+	
 	private Taxonomies taxonomies;
 	private Articulations articulations;
 	private RunConfig runConfig;
@@ -37,6 +42,14 @@ public class Run implements Serializable {
 	
 	public boolean hasOutput() {
 		return output != null;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public Date getCreated() {
+		return created;
 	}
 	
 }

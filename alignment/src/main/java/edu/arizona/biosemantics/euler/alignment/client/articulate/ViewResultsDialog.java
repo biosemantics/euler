@@ -18,6 +18,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorld;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorldProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.RunOutput;
 
 public class ViewResultsDialog extends Dialog {
 	
@@ -26,6 +27,7 @@ public class ViewResultsDialog extends Dialog {
 	private ListStore<PossibleWorld> resultStore;
 	private ListView<PossibleWorld, String> resultList;
 	private TextButton viewButton = new TextButton("View");
+	private TextButton aggregateButton = new TextButton("Aggregate");
 	private PossibleWorldProperties possibleWorldProperties = GWT.create(PossibleWorldProperties.class);
 
 	public ViewResultsDialog(final EventBus eventBus, final Model model) {
@@ -33,7 +35,7 @@ public class ViewResultsDialog extends Dialog {
 		this.model = model;
 		
 		resultStore = new ListStore<PossibleWorld>(possibleWorldProperties.key());
-		if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput())
+		if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
 			resultStore.addAll(model.getRunHistory().getLast().getOutput().getPossibleWorlds());
 		resultList = new ListView<PossibleWorld, String>(resultStore, possibleWorldProperties.displayName());
 		resultList.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
@@ -46,19 +48,29 @@ public class ViewResultsDialog extends Dialog {
 			}
 		});
 		
+		aggregateButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				if(model.getRunHistory().getLast().hasOutput())
+					Window.open(model.getRunHistory().getLast().getOutput().getAggregateUrl(), "_blank", "");
+			}
+		});
+		
 		ContentPanel panel = new ContentPanel();
+		panel.setHeadingText("Possible Worlds");
 		VerticalLayoutContainer verticalLayoutContainer = new VerticalLayoutContainer();
 		verticalLayoutContainer.add(resultList, new VerticalLayoutData(1, 1));
 		verticalLayoutContainer.add(viewButton, new VerticalLayoutData(1, -1, new Margins(5)));
+		verticalLayoutContainer.add(aggregateButton, new VerticalLayoutData(1, -1, new Margins(5)));
 		panel.add(verticalLayoutContainer);
-		this.setPredefinedButtons(PredefinedButton.CLOSE);
-		
 		add(panel);
+		
 		setBodyBorder(false);
 		setHeadingText("MIR Results");
 		setWidth(200);
 		setHeight(400);
 		setHideOnButtonClick(true);
 		setModal(true);
+		setPredefinedButtons(PredefinedButton.CLOSE);
 	}
 }

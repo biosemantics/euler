@@ -59,7 +59,7 @@ public class ImportDialog extends Dialog {
 		add(panel);
 		setBodyBorder(false);
 		setHeadingText("Import Articulations");
-		setWidth(200);
+		setWidth(600);
 		setHeight(400);
 		setHideOnButtonClick(true);
 		setModal(true);

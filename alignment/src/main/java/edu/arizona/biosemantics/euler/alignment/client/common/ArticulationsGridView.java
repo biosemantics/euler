@@ -1,4 +1,4 @@
-package edu.arizona.biosemantics.euler.alignment.client.articulate;
+package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,13 +61,18 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 
 public class ArticulationsGridView extends ContentPanel {
 
-	private EventBus eventBus;
-	private Model model;
+	protected EventBus eventBus;
+	protected Model model;
 	
-	private ListStore<Articulation> articulationsStore;
-	private Grid<Articulation> grid;
-	private ListStore<ArticulationType> typesStore;
+	protected ListStore<Articulation> articulationsStore;
+	protected Grid<Articulation> grid;
+	protected ListStore<ArticulationType> typesStore;
 
+	public ArticulationsGridView(EventBus eventBus, Model model) {
+		this(eventBus);
+		this.model = model;
+	}
+	
 	public ArticulationsGridView(EventBus eventBus) {
 		this.eventBus = eventBus;
 
@@ -81,40 +86,29 @@ public class ArticulationsGridView extends ContentPanel {
 		
 		setHeadingText("Articulations");
 		add(createArticulationsGrid());
-		
-		bindEvents();
 	}
 
-	private void bindEvents() {
+	protected void bindEvents() {
 		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
 			@Override
 			public void onLoad(LoadModelEvent event) {
 				model = event.getModel();
-				articulationsStore.clear();
-				articulationsStore.addAll(model.getArticulations());
 			}
 		});
-		eventBus.addHandler(AddArticulationsEvent.TYPE, new AddArticulationsEvent.AddArticulationEventHandler() {
-			@Override
-			public void onAdd(AddArticulationsEvent event) {
-				articulationsStore.addAll(event.getArticulations());
-			}
-		});
-		eventBus.addHandler(RemoveArticulationsEvent.TYPE, new RemoveArticulationsEvent.RemoveArticulationsEventHandler() {
-			@Override
-			public void onRemove(RemoveArticulationsEvent event) {
-				for(Articulation articulation : event.getArticulations())
-					articulationsStore.remove(articulation);
-			}
-		});
-		eventBus.addHandler(ImportArticulationsEvent.TYPE, new ImportArticulationsEvent.ImportArticulationsEventHandler() {
-			@Override
-			public void onImport(ImportArticulationsEvent event) {
-				articulationsStore.clear();
-				articulationsStore.addAll(event.getArticulations());
-				Info.display("Imoprt successful", event.getArticulations().size() + " articulations successfully imported");
-			}
-		});
+	}
+
+	public void setArticulations(List<Articulation> articulations) {
+		articulationsStore.clear();
+		articulationsStore.addAll(articulations);
+	}
+
+	public void removeArticulations(List<Articulation> articulations) {
+		for(Articulation articulation : articulations)
+			articulationsStore.remove(articulation);
+	}
+
+	public void addArticulations(List<Articulation> articulations) {
+		articulationsStore.addAll(articulations);
 	}
 
 	private Widget createArticulationsGrid() {		
@@ -132,13 +126,13 @@ public class ArticulationsGridView extends ContentPanel {
 		ColorableCell colorableCell = new ColorableCell(eventBus);
 		colorableCell.setArticulationsStore(articulationsStore);
 		final ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonAStringValueProvider(), 400, "Taxon A");
+				new ArticulationProperties.TaxonAStringValueProvider(), 100, "Taxon A");
 		taxonACol.setCell(colorableCell);
 		final ColumnConfig<Articulation, ArticulationType> relationCol = new ColumnConfig<Articulation, ArticulationType>(
-				articulationProperties.type(), 190, "Relation");
+				articulationProperties.type(), 100, "Relation");
 		relationCol.setCell(colorableCell);
 		final ColumnConfig<Articulation, String> taxonBCol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonBStringValueProvider(), 400, "Taxon B");
+				new ArticulationProperties.TaxonBStringValueProvider(), 100, "Taxon B");
 		taxonBCol.setCell(colorableCell);
 		
 		ValueProvider<Articulation, String> commentValueProvider = new ValueProvider<Articulation, String>() {
@@ -234,7 +228,7 @@ public class ArticulationsGridView extends ContentPanel {
 		return relationCombo;
 	}
 
-	private Menu createArticulationsContextMenu() {
+	protected Menu createArticulationsContextMenu() {
 		final Menu menu = new Menu();
 		menu.add(new HeaderMenuItem("Annotation"));
 		MenuItem deleteItem = new MenuItem("Remove");

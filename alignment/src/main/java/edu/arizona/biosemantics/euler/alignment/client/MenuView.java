@@ -23,6 +23,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuBarItem;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
 
+import edu.arizona.biosemantics.euler.alignment.client.articulate.ViewHistoryDialog;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialog;
@@ -76,6 +77,14 @@ public class MenuView extends MenuBar {
 	protected Widget createRunItem() {
 		final Menu sub = new Menu();
 		MenuBarItem runItem = new MenuBarItem("Run", sub);
+		MenuItem showInputVisualizationItem = new MenuItem("Input Visualization");
+		showInputVisualizationItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				eventBus.fireEvent(new StartInputVisualizationEvent(model));
+			}
+		});
+		
 		final MenuItem runEulerItem = new MenuItem("Run Euler");
 		runEulerItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
@@ -83,7 +92,7 @@ public class MenuView extends MenuBar {
 				eventBus.fireEvent(new StartMIREvent(model.getTaxonomies(), model.getArticulations()));
 			}
 		});
-		final MenuItem showEulerResult = new MenuItem("Show Euler Result");
+		final MenuItem showEulerResult = new MenuItem("Show Last Euler Result");
 		showEulerResult.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
@@ -103,17 +112,18 @@ public class MenuView extends MenuBar {
 				}
 			}
 		});
-		
-		MenuItem showInputVisualizationItem = new MenuItem("Input Visualization");
-		showInputVisualizationItem.addSelectionHandler(new SelectionHandler<Item>() {
+		final MenuItem showEulerRunHistory = new MenuItem("Show Run Euler History");
+		showEulerRunHistory.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new StartInputVisualizationEvent(model));
+				ViewHistoryDialog dialog = new ViewHistoryDialog(eventBus, model);
+				dialog.show();
 			}
 		});
-
-		sub.add(runEulerItem);
+		
 		sub.add(showInputVisualizationItem);
+		sub.add(runEulerItem);
+		sub.add(showEulerRunHistory);
 		return runItem;
 	}
 
