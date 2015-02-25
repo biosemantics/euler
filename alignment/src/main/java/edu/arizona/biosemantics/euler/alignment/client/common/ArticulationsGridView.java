@@ -223,6 +223,11 @@ public class ArticulationsGridView extends ContentPanel {
 		relationCombo.setEditable(false);
 		return relationCombo;
 	}
+	
+	protected void updateStore(Articulation articulation) {
+		if(articulationsStore.hasRecord(articulation))
+			articulationsStore.update(articulation);
+	}
 
 	protected Menu createArticulationsContextMenu() {
 		final Menu menu = new Menu();
@@ -235,7 +240,7 @@ public class ArticulationsGridView extends ContentPanel {
 				eventBus.fireEvent(new RemoveArticulationsEvent(grid.getSelectionModel().getSelectedItems()));
 			}
 		});
-		MenuItem commentItem = new MenuItem("Comment");
+		final MenuItem commentItem = new MenuItem("Comment");
 		commentItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
@@ -253,7 +258,7 @@ public class ArticulationsGridView extends ContentPanel {
 					public void onHide(HideEvent event) {
 						for(Articulation articulation : articulations) { 
 							eventBus.fireEvent(new SetCommentEvent(articulation, box.getValue()));
-							articulationsStore.update(articulation);
+							updateStore(articulation);
 						}
 						String comment = Format.ellipse(box.getValue(), 80);
 						String message = Format.substitute("'{0}' saved", new Params(comment));
@@ -264,14 +269,14 @@ public class ArticulationsGridView extends ContentPanel {
 			}
 		});
 		menu.add(commentItem);
-		final MenuItem colorizeItem = new MenuItem("Colorize");
-		menu.add(colorizeItem);
 		
+		final MenuItem colorizeItem = new MenuItem("Colorize");
 		menu.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
 				if(!model.getColors().isEmpty()) {
-					//refresh colors, they may have changed since last show
+					menu.insert(colorizeItem, menu.getWidgetIndex(commentItem));
+					//colors can change, refresh
 					colorizeItem.setSubMenu(createColorizeMenu());
 				} else {
 					menu.remove(colorizeItem);	
@@ -291,7 +296,7 @@ public class ArticulationsGridView extends ContentPanel {
 				final List<Articulation> articulations = getSelectedArticulations();
 				for(Articulation articulation : articulations) {
 					eventBus.fireEvent(new SetColorEvent(articulation, null));
-					articulationsStore.update(articulation);
+					updateStore(articulation);
 				}
 			}
 		});
@@ -305,7 +310,7 @@ public class ArticulationsGridView extends ContentPanel {
 					final List<Articulation> articulations = getSelectedArticulations();
 					for(Articulation articulation : articulations) {
 						eventBus.fireEvent(new SetColorEvent(articulation, color));
-						articulationsStore.update(articulation);
+						updateStore(articulation);
 					}
 				}
 			});

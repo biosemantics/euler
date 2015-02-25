@@ -113,7 +113,7 @@ public class TaxonomyView extends ContentPanel {
 			@Override
 			public void onSet(SetColorEvent event) {
 				if(event.getObject() instanceof Taxon) {
-					store.update((Taxon)event.getObject());
+					updateStore((Taxon)event.getObject());
 				}
 			}
 		});
@@ -121,7 +121,7 @@ public class TaxonomyView extends ContentPanel {
 			@Override
 			public void onSet(SetCommentEvent event) {
 				if(event.getObject() instanceof Taxon) {
-					store.update((Taxon)event.getObject());
+					updateStore((Taxon)event.getObject());
 				}
 			}
 		});
@@ -130,9 +130,9 @@ public class TaxonomyView extends ContentPanel {
 			public void onAdd(AddArticulationsEvent event) {
 				for(Articulation articulation : event.getArticulations()) {
 					if(taxonomyA)
-						store.update(articulation.getTaxonA());
+						updateStore(articulation.getTaxonA());
 					else
-						store.update(articulation.getTaxonB());
+						updateStore(articulation.getTaxonB());
 				}
 			}
 		});
@@ -141,9 +141,9 @@ public class TaxonomyView extends ContentPanel {
 			public void onRemove(RemoveArticulationsEvent event) {
 				for(Articulation articulation : event.getArticulations()) {
 					if(taxonomyA)
-						store.update(articulation.getTaxonA());
+						updateStore(articulation.getTaxonA());
 					else 
-						store.update(articulation.getTaxonB());
+						updateStore(articulation.getTaxonB());
 				}
 			}
 		});
@@ -158,6 +158,11 @@ public class TaxonomyView extends ContentPanel {
 			}
 		});
 		
+	}
+
+	protected void updateStore(Taxon taxon) {
+		if(store.hasRecord(taxon)) 
+			store.update(taxon);
 	}
 
 	protected void markNotArticulated(List<Articulation> articulations) {
@@ -223,10 +228,10 @@ public class TaxonomyView extends ContentPanel {
 		menu.add(item);
 		
 		menu.add(new HeaderMenuItem("Annotation"));
-		item = new MenuItem();
-		item.setText("Comment");
-		// item.setIcon(header.getAppearance().sortAscendingIcon());
-		item.addSelectionHandler(new SelectionHandler<Item>() {
+		final MenuItem commentItem = new MenuItem();
+		commentItem.setText("Comment");
+		// commentItem.setIcon(header.getAppearance().sortAscendingIcon());
+		commentItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
 				final List<Taxon> taxa = getSelectedTaxa();
@@ -242,7 +247,7 @@ public class TaxonomyView extends ContentPanel {
 					public void onHide(HideEvent event) {
 						for(Taxon taxon : taxa) { 
 							eventBus.fireEvent(new SetCommentEvent(taxon, box.getValue()));
-							store.update(taxon);
+							updateStore(taxon);
 						}
 						String comment = Format.ellipse(box.getValue(), 80);
 						String message = Format.substitute("'{0}' saved", new Params(comment));
@@ -252,15 +257,15 @@ public class TaxonomyView extends ContentPanel {
 				box.show();
 			}
 		});
-		menu.add(item);
+		menu.add(commentItem);
+		
 		final MenuItem colorizeItem = new MenuItem("Colorize");
-		menu.add(colorizeItem);
-			
 		menu.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
 				if(!model.getColors().isEmpty()) {
-					//refresh colors, they may have changed since last show
+					menu.insert(colorizeItem, menu.getWidgetIndex(commentItem));
+					//colors can change, refresh
 					colorizeItem.setSubMenu(createColorizeMenu());
 				} else {
 					menu.remove(colorizeItem);
@@ -301,7 +306,7 @@ public class TaxonomyView extends ContentPanel {
 				final List<Taxon> taxa = getSelectedTaxa();
 				for(Taxon taxon : taxa) {
 					eventBus.fireEvent(new SetColorEvent(taxon, null));
-					store.update(taxon);
+					updateStore(taxon);
 				}
 			}
 		});
@@ -315,7 +320,7 @@ public class TaxonomyView extends ContentPanel {
 					final List<Taxon> taxa = getSelectedTaxa();
 					for(Taxon taxon : taxa) {
 						eventBus.fireEvent(new SetColorEvent(taxon, color));
-						store.update(taxon);
+						updateStore(taxon);
 					}
 				}
 			});
