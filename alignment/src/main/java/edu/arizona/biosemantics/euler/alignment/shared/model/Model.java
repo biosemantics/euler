@@ -133,6 +133,13 @@ public class Model implements Serializable {
 		return runHistory;
 	}
 	
+	public Map<Object, String> getComments() {
+		return comments;
+	}
+	
+	public Map<Object, Color> getColoreds() {
+		return coloreds;
+	}
 	
 	
 }

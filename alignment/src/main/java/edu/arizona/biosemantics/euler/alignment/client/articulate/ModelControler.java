@@ -11,6 +11,10 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticul
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulationColorEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulationCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetRunColorEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetRunColorEvent.SetRunColorEventHandler;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetRunCommentEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetRunCommentEvent.SetRunCommentEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonColorEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent.AddArticulationEventHandler;
@@ -26,14 +30,17 @@ import edu.arizona.biosemantics.euler.alignment.client.event.run.EndMIREvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.EndMIREvent.EndMIREventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent.StartMIREventHandler;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunConfig;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 
 public class ModelControler implements LoadModelEventHandler, SetColorsEventHandler,  
 	SetTaxonCommentEventHandler, SetTaxonColorEventHandler, AddArticulationEventHandler, 
 	SetArticulationCommentEventHandler, SetArticulationColorEventHandler, RemoveArticulationsEventHandler, 
-	ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler, EndMIREventHandler {
+	ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler, EndMIREventHandler, SetRunCommentEventHandler, SetRunColorEventHandler {
 
 	protected EventBus eventBus;
 	protected Model model;
@@ -49,6 +56,8 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 		eventBus.addHandler(SetColorsEvent.TYPE, this);
 		eventBus.addHandler(SetTaxonCommentEvent.TYPE, this);
 		eventBus.addHandler(SetTaxonColorEvent.TYPE, this);
+		eventBus.addHandler(SetRunCommentEvent.TYPE, this);
+		eventBus.addHandler(SetRunColorEvent.TYPE, this);
 		eventBus.addHandler(SetArticulationColorEvent.TYPE, this);
 		eventBus.addHandler(SetArticulationCommentEvent.TYPE, this);
 		eventBus.addHandler(AddArticulationsEvent.TYPE, this);
@@ -107,7 +116,18 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 
 	@Override
 	public void onShow(StartMIREvent event) {
-		model.addRun(new Run(model.getTaxonomies(), model.getArticulations(), new RunConfig()));
+		Taxonomies taxonomies = model.getTaxonomies(); //taxonomies.clone(); not necessary to clone if taxonomies can not be editted
+		Articulations clonedArticulations = new Articulations();
+		for(Articulation articulation : model.getArticulations()) {
+			Articulation clone = articulation.getClone();
+			clonedArticulations.add(clone);
+			if(model.hasColor(articulation))
+				model.setColor(clone, model.getColor(articulation));
+			if(model.hasComment(articulation))
+				model.setComment(clone, model.getComment(articulation));
+		}
+		RunConfig runConfig = new RunConfig();
+		model.addRun(new Run(taxonomies, clonedArticulations, runConfig));
 	}
 
 	@Override
@@ -120,6 +140,16 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 	public void onEnd(EndMIREvent event) {
 		if(!model.getRunHistory().isEmpty())
 			model.getRunHistory().getLast().setOutput(event.getOutput());
+	}
+
+	@Override
+	public void onSet(SetRunColorEvent event) {
+		model.setColor(event.getRun(), event.getColor());
+	}
+
+	@Override
+	public void onSet(SetRunCommentEvent event) {
+		model.setComment(event.getRun(), event.getComment());
 	}
 
 }

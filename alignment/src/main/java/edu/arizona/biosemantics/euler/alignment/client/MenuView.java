@@ -23,13 +23,13 @@ import com.sencha.gxt.widget.core.client.menu.MenuBarItem;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
 
-import edu.arizona.biosemantics.euler.alignment.client.articulate.ViewHistoryDialog;
-import edu.arizona.biosemantics.euler.alignment.client.articulate.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ImportDialog;
+import edu.arizona.biosemantics.euler.alignment.client.common.ViewHistoryDialog;
+import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SaveEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
@@ -97,13 +97,15 @@ public class MenuView extends MenuBar {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
 				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
+				if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
+					dialog.setRun(model.getRunHistory().getLast());
 				dialog.show();
 			}
 		});
 		sub.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
-				if(model.getRunHistory().isEmpty()) {
+				if(model.getRunHistory().isEmpty() || !model.getRunHistory().getLast().hasOutput()) {
 					sub.remove(showEulerResult);
 					showEulerResult.removeFromParent();
 				} else {

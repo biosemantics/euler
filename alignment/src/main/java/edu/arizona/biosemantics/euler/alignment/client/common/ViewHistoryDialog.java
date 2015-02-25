@@ -1,4 +1,4 @@
-package edu.arizona.biosemantics.euler.alignment.client.articulate;
+package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import com.google.gwt.core.shared.GWT;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
@@ -18,7 +18,6 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
-import edu.arizona.biosemantics.euler.alignment.client.common.ArticulationsGridView;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
@@ -62,9 +61,12 @@ public class ViewHistoryDialog extends Dialog {
 			@Override
 			public void onSelect(SelectEvent event) {
 				Run run = runList.getSelectionModel().getSelectedItem();
-				// TODO ViewResultsDialog instantiated from Run
+				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
+				dialog.setRun(run);
+				dialog.show();
 			}
 		});
+		viewResultButton.setEnabled(false);
 		runConfigPanel.setEnabled(false);
 
 		BorderLayoutContainer layout = new BorderLayoutContainer();
@@ -73,7 +75,7 @@ public class ViewHistoryDialog extends Dialog {
 		ContentPanel panel = new ContentPanel();
 		panel.setHeadingText("Run History");
 		BorderLayoutContainer.BorderLayoutData data = new BorderLayoutContainer.BorderLayoutData(
-				150);
+				300);
 		data.setMargins(new Margins(0, 5, 0, 0));
 		panel.setLayoutData(data);
 		VerticalLayoutContainer verticalLayoutContainer = new VerticalLayoutContainer();
@@ -107,5 +109,6 @@ public class ViewHistoryDialog extends Dialog {
 	protected void setRun(Run run) {
 		runConfigPanel.setRunConfig(run.getRunConfig());
 		articulationsGridView.setArticulations(run.getArticulations());
+		viewResultButton.setEnabled(run.hasOutput());
 	}
 }

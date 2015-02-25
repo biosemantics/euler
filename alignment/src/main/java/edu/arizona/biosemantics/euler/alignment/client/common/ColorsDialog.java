@@ -39,11 +39,14 @@ import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog.CommentType;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulationColorEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetRunColorEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonColorEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ColorProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
@@ -51,7 +54,8 @@ public class ColorsDialog extends Dialog {
 
 	public enum ColorEntryType {
 		taxonType("Taxon"),
-		articulation("Articulation");
+		articulation("Articulation"),
+		run("Run");
 		
 		private String readable;
 
@@ -212,6 +216,15 @@ public class ColorsDialog extends Dialog {
 					case taxonType:
 						Taxon taxon = (Taxon)colorEntry.getObject();
 						eventBus.fireEvent(new SetTaxonColorEvent(taxon, selectedColor));
+						colorEntriesStore.update(colorEntry);
+						break;
+					case articulation:
+						Articulation articulation = (Articulation)colorEntry.getObject();
+						eventBus.fireEvent(new SetArticulationColorEvent(articulation, selectedColor));
+						colorEntriesStore.update(colorEntry);
+					case run:
+						Run run = (Run)colorEntry.getObject();
+						eventBus.fireEvent(new SetRunColorEvent(run, selectedColor));
 						colorEntriesStore.update(colorEntry);
 						break;
 					default:

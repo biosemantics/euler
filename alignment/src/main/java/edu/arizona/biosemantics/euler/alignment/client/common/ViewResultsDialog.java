@@ -1,4 +1,4 @@
-package edu.arizona.biosemantics.euler.alignment.client.articulate;
+package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.shared.EventBus;
@@ -18,6 +18,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorld;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorldProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunOutput;
 
 public class ViewResultsDialog extends Dialog {
@@ -29,14 +30,17 @@ public class ViewResultsDialog extends Dialog {
 	private TextButton viewButton = new TextButton("View");
 	private TextButton aggregateButton = new TextButton("Aggregate");
 	private PossibleWorldProperties possibleWorldProperties = GWT.create(PossibleWorldProperties.class);
+	
+	public void setRun(Run run) {
+		if(run.hasOutput())
+			resultStore.addAll(run.getOutput().getPossibleWorlds());
+	}
 
 	public ViewResultsDialog(final EventBus eventBus, final Model model) {
 		this.eventBus = eventBus;
 		this.model = model;
 		
 		resultStore = new ListStore<PossibleWorld>(possibleWorldProperties.key());
-		if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
-			resultStore.addAll(model.getRunHistory().getLast().getOutput().getPossibleWorlds());
 		resultList = new ListView<PossibleWorld, String>(resultStore, possibleWorldProperties.displayName());
 		resultList.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
 		viewButton.addSelectHandler(new SelectHandler() {
@@ -73,4 +77,5 @@ public class ViewResultsDialog extends Dialog {
 		setModal(true);
 		setPredefinedButtons(PredefinedButton.CLOSE);
 	}
+
 }

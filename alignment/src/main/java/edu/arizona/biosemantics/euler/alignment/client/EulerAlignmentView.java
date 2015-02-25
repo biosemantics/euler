@@ -14,8 +14,8 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateMenuView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ModelControler;
-import edu.arizona.biosemantics.euler.alignment.client.articulate.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
+import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.desktop.DesktopView;
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDesktopEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.ToggleDesktopEvent;
@@ -108,6 +108,8 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 			@Override
 			public void onEnd(EndMIREvent event) {
 				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
+				if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
+					dialog.setRun(model.getRunHistory().getLast());
 				dialog.show();
 			}
 		});

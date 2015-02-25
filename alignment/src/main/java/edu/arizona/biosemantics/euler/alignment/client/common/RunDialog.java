@@ -1,4 +1,4 @@
-package edu.arizona.biosemantics.euler.alignment.client.articulate;
+package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import com.sencha.gxt.widget.core.client.Dialog;
 

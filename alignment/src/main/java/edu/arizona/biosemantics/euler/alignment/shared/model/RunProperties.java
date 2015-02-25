@@ -1,8 +1,7 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
-import java.text.SimpleDateFormat;
-
 import com.google.gwt.editor.client.Editor.Path;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
@@ -14,10 +13,26 @@ public interface RunProperties extends PropertyAccess<Run> {
 
 	public static class DisplayNameValueProvider implements
 			ValueProvider<Run, String> {
-
+		private DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/YYYY HH:mm:ss");
 		@Override
-		public String getValue(Run object) {
-			return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(object.getCreated()).toString() + " (" + object.getOutput().getType().toString() + ")";
+		public String getValue(Run run) {
+			String runName = format.format(run.getCreated());
+			if(run.hasOutput()) {
+				runName += " " + run.getOutput().getType().toString();
+				switch(run.getOutput().getType()) {
+				case CONFLICT:
+					break;
+				case MULTIPLE:
+					runName += " (" + run.getOutput().getPossibleWorlds().size() + "PWs )";
+					break;
+				case ONE:
+					break;
+				default:
+					break;
+				}
+				
+			}
+			return runName;
 		}
 
 		@Override

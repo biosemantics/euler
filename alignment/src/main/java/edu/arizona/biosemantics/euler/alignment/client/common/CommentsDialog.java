@@ -34,9 +34,13 @@ import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulationCommentEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetRunCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
+import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
@@ -44,7 +48,8 @@ public class CommentsDialog extends Dialog {
 
 	public enum CommentType {
 		taxonType("Taxon"),
-		articulation("Articulation");
+		articulation("Articulation"),
+		run("Run");
 		
 		private String readable;
 
@@ -77,6 +82,8 @@ public class CommentsDialog extends Dialog {
 				type = CommentType.taxonType;
 			if (object instanceof Articulation)
 				type = CommentType.articulation;
+			if (object instanceof Run)
+				type = CommentType.run;
 			this.source = source;
 			this.text = text;
 		}
@@ -130,7 +137,6 @@ public class CommentsDialog extends Dialog {
 	}
 
 	private EventBus eventBus;
-	private EventBus subModelBus;
 	private Model model;
 	private ListStore<Comment> commentStore;
 	private Grid<Comment> grid;
@@ -220,7 +226,14 @@ public class CommentsDialog extends Dialog {
 					case taxonType:
 						Taxon taxon = (Taxon)comment.getObject();
 						eventBus.fireEvent(new SetTaxonCommentEvent(taxon, comment.getText()));
-						subModelBus.fireEvent(new SetTaxonCommentEvent(taxon, comment.getText()));
+						break;
+					case articulation:
+						Articulation articulation = (Articulation)comment.getObject();
+						eventBus.fireEvent(new SetArticulationCommentEvent(articulation, comment.getText()));
+						break;
+					case run:
+						Run run = (Run)comment.getObject();
+						eventBus.fireEvent(new SetRunCommentEvent(run, comment.getText()));
 						break;
 					default:
 						break;
@@ -265,6 +278,7 @@ public class CommentsDialog extends Dialog {
 
 	private List<Comment> createComments() {
 		List<Comment> comments = new LinkedList<Comment>();
+		
 		for(Taxonomy taxonomy : model.getTaxonomies()) {
 			for (Taxon taxon : taxonomy.getTaxaDFS()) {
 				if (model.hasComment(taxon))
@@ -275,6 +289,18 @@ public class CommentsDialog extends Dialog {
 		for(Articulation articulation : model.getArticulations()) {
 			if(model.hasComment(articulation)) {
 				comments.add(new Comment("articulation-" + articulation.getId(), articulation, articulation.getText(), model.getComment(articulation)));
+			}
+		}
+		for(Run run : model.getRunHistory()) {
+			RunProperties.DisplayNameValueProvider nameProvider = new RunProperties.DisplayNameValueProvider();
+			String runName = nameProvider.getValue(run);
+			if(model.hasComment(run))
+				comments.add(new Comment("run-" + run.getId(), run, runName, model.getComment(run)));
+			
+			for(Articulation articulation : run.getArticulations()) {
+				if(model.hasComment(articulation)) {
+					comments.add(new Comment("articulation-" + articulation.getId(), articulation, "(Run: " + runName + " " + articulation.getText() + ")", model.getComment(articulation)));
+				}
 			}
 		}
 		return comments;

@@ -67,14 +67,10 @@ public class ArticulationsGridView extends ContentPanel {
 	protected ListStore<Articulation> articulationsStore;
 	protected Grid<Articulation> grid;
 	protected ListStore<ArticulationType> typesStore;
-
-	public ArticulationsGridView(EventBus eventBus, Model model) {
-		this(eventBus);
-		this.model = model;
-	}
 	
-	public ArticulationsGridView(EventBus eventBus) {
+	public ArticulationsGridView(EventBus eventBus, Model model) {
 		this.eventBus = eventBus;
+		this.model = model;
 
 		typesStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
 			@Override
@@ -123,7 +119,7 @@ public class ArticulationsGridView extends ContentPanel {
 
 		checkBoxSelectionModel.setSelectionMode(SelectionMode.MULTI);
 
-		ColorableCell colorableCell = new ColorableCell(eventBus);
+		ColorableCell colorableCell = new ColorableCell(eventBus, model);
 		colorableCell.setArticulationsStore(articulationsStore);
 		final ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
 				new ArticulationProperties.TaxonAStringValueProvider(), 100, "Taxon A");
@@ -208,6 +204,10 @@ public class ArticulationsGridView extends ContentPanel {
 				if(config.equals(relationCol)) {
 					ArticulationType type = (ArticulationType)config.getValueProvider().getValue(articulation);
 					eventBus.fireEvent(new ModifyArticulationEvent(articulation, type));
+				}
+				if(config.equals(commentCol)) {
+					String comment = (String)config.getValueProvider().getValue(articulation);
+					eventBus.fireEvent(new SetArticulationCommentEvent(articulation, comment));
 				}
 			}
 		});

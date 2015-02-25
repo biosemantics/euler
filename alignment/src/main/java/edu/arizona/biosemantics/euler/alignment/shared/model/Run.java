@@ -21,7 +21,7 @@ public class Run implements Serializable {
 			RunConfig runConfig) {
 		super();
 		this.taxonomies = taxonomies; //taxonomies.clone(); not necessary to clone if taxonomies can not be editted
-		this.articulations = (Articulations)articulations.getClone();
+		this.articulations = articulations;
 		this.runConfig = runConfig;
 	}
 	public void setOutput(RunOutput output) {

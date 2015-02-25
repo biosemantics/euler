@@ -48,14 +48,15 @@ public class ColorableCell<T> extends AbstractCell<T> {
 	private Model model;
 	private ListStore<Articulation> articulationsStore;
 	
-	public ColorableCell(EventBus eventBus) {
-		this(GWT.<ColumnHeaderAppearance> create(ColumnHeaderAppearance.class), GWT.<GridAppearance> create(GridAppearance.class), eventBus);
+	public ColorableCell(EventBus eventBus, Model model) {
+		this(GWT.<ColumnHeaderAppearance> create(ColumnHeaderAppearance.class), GWT.<GridAppearance> create(GridAppearance.class), eventBus, model);
 	}
 	
-	public ColorableCell(ColumnHeaderAppearance columnHeaderAppearance, GridAppearance gridAppearance, EventBus eventBus) {
+	public ColorableCell(ColumnHeaderAppearance columnHeaderAppearance, GridAppearance gridAppearance, EventBus eventBus, Model model) {
 		super(BrowserEvents.MOUSEOVER, BrowserEvents.MOUSEOUT, BrowserEvents.CLICK);
 		
 		this.eventBus = eventBus;
+		this.model = model;
 		this.columnHeaderAppearance = columnHeaderAppearance;
 		this.gridAppearance = gridAppearance;
 		columnHeaderStyles = columnHeaderAppearance.styles();
@@ -98,7 +99,7 @@ public class ColorableCell<T> extends AbstractCell<T> {
 			return;
 		String quickTipText = "";		
 		String comment = model.getComment(articulation);
-		if(!comment.isEmpty())
+		if(comment != null && !comment.isEmpty())
 			quickTipText += "<br>Comment:" + comment;
 		Color color = model.getColor(articulation);
 

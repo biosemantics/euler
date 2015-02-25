@@ -12,9 +12,8 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 
 public class CurrentArticulationsGridView extends ArticulationsGridView {
 
-
 	public CurrentArticulationsGridView(EventBus eventBus) {
-		super(eventBus);		
+		super(eventBus, null);		
 		bindEvents();
 	}
 
