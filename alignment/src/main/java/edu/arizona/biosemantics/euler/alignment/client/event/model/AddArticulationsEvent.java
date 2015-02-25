@@ -5,12 +5,10 @@ import java.util.List;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.GwtEvent.Type;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.PrintableEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent.AddArticulationEventHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class AddArticulationsEvent extends GwtEvent<AddArticulationEventHandler> implements PrintableEvent {
 

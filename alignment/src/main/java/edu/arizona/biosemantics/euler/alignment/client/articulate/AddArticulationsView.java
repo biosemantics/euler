@@ -28,10 +28,10 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEven
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationEntry;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 
 public class AddArticulationsView extends ContentPanel {
 

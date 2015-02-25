@@ -6,8 +6,6 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
-
 public interface ArticulationProperties extends PropertyAccess<Taxon> {
 
 	  @Path("id")

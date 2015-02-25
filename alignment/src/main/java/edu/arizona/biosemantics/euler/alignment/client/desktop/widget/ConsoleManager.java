@@ -14,14 +14,14 @@ import edu.arizona.biosemantics.euler.alignment.client.event.PrintableEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDesktopEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.ToggleDesktopEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonColorEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 
 public class ConsoleManager extends AbstractWindowManager {
 
 	private class ConsoleEventsHandler implements LoadModelEvent.LoadModelEventHandler, SetColorsEvent.SetColorsEventHandler,
-		SetTaxonColorEvent.SetTaxonColorEventHandler, SetTaxonCommentEvent.SetTaxonCommentEventHandler, 
+		SetColorEvent.SetColorEventHandler, SetCommentEvent.SetCommentEventHandler, 
 		ShowDesktopEvent.ShowDesktopEventHandler, ToggleDesktopEvent.ToggleDesktopEventHandler {
 		
 		public ConsoleEventsHandler() {
@@ -32,8 +32,8 @@ public class ConsoleManager extends AbstractWindowManager {
 			eventBus.addHandler(SetColorsEvent.TYPE, this);
 			eventBus.addHandler(LoadModelEvent.TYPE, this);
 			eventBus.addHandler(SetColorsEvent.TYPE, this);
-			eventBus.addHandler(SetTaxonColorEvent.TYPE, this);
-			eventBus.addHandler(SetTaxonCommentEvent.TYPE, this);
+			eventBus.addHandler(SetColorEvent.TYPE, this);
+			eventBus.addHandler(SetCommentEvent.TYPE, this);
 			eventBus.addHandler(ShowDesktopEvent.TYPE, this);
 			eventBus.addHandler(ToggleDesktopEvent.TYPE, this);
 		}
@@ -59,17 +59,7 @@ public class ConsoleManager extends AbstractWindowManager {
 		public void onShow(ShowDesktopEvent event) {
 			printToConsole(event);
 		}
-	
-		@Override
-		public void onSet(SetTaxonCommentEvent event) {
-			printToConsole(event);
-		}
-	
-		@Override
-		public void onSet(SetTaxonColorEvent event) {
-			printToConsole(event);
-		}
-	
+		
 		@Override
 		public void onLoad(LoadModelEvent event) {
 			printToConsole(event);
@@ -77,6 +67,16 @@ public class ConsoleManager extends AbstractWindowManager {
 	
 		@Override
 		public void onSet(SetColorsEvent event) {
+			printToConsole(event);
+		}
+
+		@Override
+		public void onSet(SetCommentEvent event) {
+			printToConsole(event);
+		}
+
+		@Override
+		public void onSet(SetColorEvent event) {
 			printToConsole(event);
 		}		
 	}

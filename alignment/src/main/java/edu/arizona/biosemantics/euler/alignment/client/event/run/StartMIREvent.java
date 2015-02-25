@@ -2,11 +2,9 @@ package edu.arizona.biosemantics.euler.alignment.client.event.run;
 
 import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
-import com.google.gwt.event.shared.GwtEvent.Type;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent.StartMIREventHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 
 public class StartMIREvent extends GwtEvent<StartMIREventHandler> {

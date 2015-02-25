@@ -34,9 +34,7 @@ import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulationCommentEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetRunCommentEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
@@ -221,25 +219,8 @@ public class CommentsDialog extends Dialog {
 				GridCell cell = event.getEditCell();
 				Comment comment = grid.getStore().get(cell.getRow());
 				ColumnConfig<Comment, String> config = grid.getColumnModel().getColumn(cell.getCol());
-				if(config.equals(textCol)) {
-					switch(comment.getType()) {
-					case taxonType:
-						Taxon taxon = (Taxon)comment.getObject();
-						eventBus.fireEvent(new SetTaxonCommentEvent(taxon, comment.getText()));
-						break;
-					case articulation:
-						Articulation articulation = (Articulation)comment.getObject();
-						eventBus.fireEvent(new SetArticulationCommentEvent(articulation, comment.getText()));
-						break;
-					case run:
-						Run run = (Run)comment.getObject();
-						eventBus.fireEvent(new SetRunCommentEvent(run, comment.getText()));
-						break;
-					default:
-						break;
-					
-					}
-				}
+				if(config.equals(textCol)) 
+					eventBus.fireEvent(new SetCommentEvent(comment.getObject(), comment.getText()));
 			}
 		});
 
@@ -265,11 +246,7 @@ public class CommentsDialog extends Dialog {
 				for (Comment comment : grid.getSelectionModel()
 						.getSelectedItems()) {
 					commentStore.remove(comment);
-					Object object = comment.getObject();
-					if (object instanceof Taxon) {
-						eventBus.fireEvent(new SetTaxonCommentEvent(
-								(Taxon) object, ""));
-					}
+					eventBus.fireEvent(new SetCommentEvent(comment.getObject(), ""));
 				}
 			}
 		});
@@ -299,7 +276,7 @@ public class CommentsDialog extends Dialog {
 			
 			for(Articulation articulation : run.getArticulations()) {
 				if(model.hasComment(articulation)) {
-					comments.add(new Comment("articulation-" + articulation.getId(), articulation, "(Run: " + runName + " " + articulation.getText() + ")", model.getComment(articulation)));
+					comments.add(new Comment("articulation-" + articulation.getId(), articulation, "(Run: " + runName + ") " + articulation.getText(), model.getComment(articulation)));
 				}
 			}
 		}

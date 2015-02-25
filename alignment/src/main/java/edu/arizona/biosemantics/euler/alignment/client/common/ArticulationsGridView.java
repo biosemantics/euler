@@ -17,13 +17,14 @@ import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.client.util.Params;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
+import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.box.MultiLinePromptMessageBox;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
-import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
-import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
+import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
@@ -41,23 +42,18 @@ import com.sencha.gxt.widget.core.client.menu.HeaderMenuItem;
 import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
-import com.sencha.gxt.data.shared.ModelKeyProvider;
 
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulationColorEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulationCommentEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonColorEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 
 public class ArticulationsGridView extends ContentPanel {
 
@@ -207,7 +203,7 @@ public class ArticulationsGridView extends ContentPanel {
 				}
 				if(config.equals(commentCol)) {
 					String comment = (String)config.getValueProvider().getValue(articulation);
-					eventBus.fireEvent(new SetArticulationCommentEvent(articulation, comment));
+					eventBus.fireEvent(new SetCommentEvent(articulation, comment));
 				}
 			}
 		});
@@ -256,7 +252,7 @@ public class ArticulationsGridView extends ContentPanel {
 					@Override
 					public void onHide(HideEvent event) {
 						for(Articulation articulation : articulations) { 
-							eventBus.fireEvent(new SetArticulationCommentEvent(articulation, box.getValue()));
+							eventBus.fireEvent(new SetCommentEvent(articulation, box.getValue()));
 							articulationsStore.update(articulation);
 						}
 						String comment = Format.ellipse(box.getValue(), 80);
@@ -294,7 +290,7 @@ public class ArticulationsGridView extends ContentPanel {
 			public void onSelection(SelectionEvent<Item> event) {
 				final List<Articulation> articulations = getSelectedArticulations();
 				for(Articulation articulation : articulations) {
-					eventBus.fireEvent(new SetArticulationColorEvent(articulation, null));
+					eventBus.fireEvent(new SetColorEvent(articulation, null));
 					articulationsStore.update(articulation);
 				}
 			}
@@ -308,7 +304,7 @@ public class ArticulationsGridView extends ContentPanel {
 				public void onSelection(SelectionEvent<Item> event) {
 					final List<Articulation> articulations = getSelectedArticulations();
 					for(Articulation articulation : articulations) {
-						eventBus.fireEvent(new SetArticulationColorEvent(articulation, color));
+						eventBus.fireEvent(new SetColorEvent(articulation, color));
 						articulationsStore.update(articulation);
 					}
 				}

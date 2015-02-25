@@ -16,7 +16,6 @@ import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
@@ -31,8 +30,8 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.Hor
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
-import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
+import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
 import com.sencha.gxt.widget.core.client.form.FieldSet;
 import com.sencha.gxt.widget.core.client.info.Info;
@@ -44,18 +43,18 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
 
+import edu.arizona.biosemantics.euler.alignment.client.event.ShowDescriptionEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
-import edu.arizona.biosemantics.euler.alignment.client.event.ShowDescriptionEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonColorEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonCommentEvent;
 
 public class TaxonomyView extends ContentPanel {
 	
@@ -110,16 +109,20 @@ public class TaxonomyView extends ContentPanel {
 				model = event.getModel();
 			}
 		});
-		eventBus.addHandler(SetTaxonColorEvent.TYPE, new SetTaxonColorEvent.SetTaxonColorEventHandler() {
+		eventBus.addHandler(SetColorEvent.TYPE, new SetColorEvent.SetColorEventHandler() {
 			@Override
-			public void onSet(SetTaxonColorEvent event) {
-				store.update(event.getTaxon());
+			public void onSet(SetColorEvent event) {
+				if(event.getObject() instanceof Taxon) {
+					store.update((Taxon)event.getObject());
+				}
 			}
 		});
-		eventBus.addHandler(SetTaxonCommentEvent.TYPE, new SetTaxonCommentEvent.SetTaxonCommentEventHandler() {
+		eventBus.addHandler(SetCommentEvent.TYPE, new SetCommentEvent.SetCommentEventHandler() {
 			@Override
-			public void onSet(SetTaxonCommentEvent event) {
-				store.update(event.getTaxon());
+			public void onSet(SetCommentEvent event) {
+				if(event.getObject() instanceof Taxon) {
+					store.update((Taxon)event.getObject());
+				}
 			}
 		});
 		eventBus.addHandler(AddArticulationsEvent.TYPE, new AddArticulationsEvent.AddArticulationEventHandler() {
@@ -238,7 +241,7 @@ public class TaxonomyView extends ContentPanel {
 					@Override
 					public void onHide(HideEvent event) {
 						for(Taxon taxon : taxa) { 
-							eventBus.fireEvent(new SetTaxonCommentEvent(taxon, box.getValue()));
+							eventBus.fireEvent(new SetCommentEvent(taxon, box.getValue()));
 							store.update(taxon);
 						}
 						String comment = Format.ellipse(box.getValue(), 80);
@@ -297,7 +300,7 @@ public class TaxonomyView extends ContentPanel {
 			public void onSelection(SelectionEvent<Item> event) {
 				final List<Taxon> taxa = getSelectedTaxa();
 				for(Taxon taxon : taxa) {
-					eventBus.fireEvent(new SetTaxonColorEvent(taxon, null));
+					eventBus.fireEvent(new SetColorEvent(taxon, null));
 					store.update(taxon);
 				}
 			}
@@ -311,7 +314,7 @@ public class TaxonomyView extends ContentPanel {
 				public void onSelection(SelectionEvent<Item> event) {
 					final List<Taxon> taxa = getSelectedTaxa();
 					for(Taxon taxon : taxa) {
-						eventBus.fireEvent(new SetTaxonColorEvent(taxon, color));
+						eventBus.fireEvent(new SetColorEvent(taxon, color));
 						store.update(taxon);
 					}
 				}

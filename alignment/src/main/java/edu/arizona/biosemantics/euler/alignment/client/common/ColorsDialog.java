@@ -38,15 +38,13 @@ import com.sencha.gxt.widget.core.client.menu.Item;
 import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
-import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog.CommentType;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetArticulationColorEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetRunColorEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.SetTaxonColorEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ColorProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
+import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
@@ -212,24 +210,8 @@ public class ColorsDialog extends Dialog {
 					CellSelectionEvent cellEvent = (CellSelectionEvent)event;
 					final ColorEntry colorEntry = grid.getStore().get(cellEvent.getContext().getIndex());
 					colorEntry.setColor(selectedColor);
-					switch(colorEntry.getType()) {
-					case taxonType:
-						Taxon taxon = (Taxon)colorEntry.getObject();
-						eventBus.fireEvent(new SetTaxonColorEvent(taxon, selectedColor));
-						colorEntriesStore.update(colorEntry);
-						break;
-					case articulation:
-						Articulation articulation = (Articulation)colorEntry.getObject();
-						eventBus.fireEvent(new SetArticulationColorEvent(articulation, selectedColor));
-						colorEntriesStore.update(colorEntry);
-					case run:
-						Run run = (Run)colorEntry.getObject();
-						eventBus.fireEvent(new SetRunColorEvent(run, selectedColor));
-						colorEntriesStore.update(colorEntry);
-						break;
-					default:
-						break;
-					}
+					eventBus.fireEvent(new SetColorEvent(colorEntry.getObject(), selectedColor));
+					colorEntriesStore.update(colorEntry);
 				}
 			}
 		});
@@ -376,7 +358,7 @@ public class ColorsDialog extends Dialog {
 					colorEntriesStore.remove(colorEntry);
 					Object object = colorEntry.getObject();
 					if(object instanceof Taxon) {
-						eventBus.fireEvent(new SetTaxonColorEvent((Taxon)object, null));
+						eventBus.fireEvent(new SetColorEvent((Taxon)object, null));
 					}
 				}
 			}
@@ -384,7 +366,7 @@ public class ColorsDialog extends Dialog {
 		return menu;
 	}
 
-	private List<ColorEntry> createColorEntries() {
+	private List<ColorEntry> createColorEntries() {	
 		List<ColorEntry> colorEntries = new LinkedList<ColorEntry>();
 				
 		for(Taxonomy taxonomy : model.getTaxonomies()) {
@@ -398,6 +380,19 @@ public class ColorsDialog extends Dialog {
 			if(model.hasColor(articulation))
 				colorEntries.add(new ColorEntry("articulation-" + articulation.getId(), articulation, articulation.getText(), model
 					.getColor(articulation)));
+		}
+		
+		for(Run run : model.getRunHistory()) {
+			RunProperties.DisplayNameValueProvider nameProvider = new RunProperties.DisplayNameValueProvider();
+			String runName = nameProvider.getValue(run);
+			if(model.hasColor(run))
+				colorEntries.add(new ColorEntry("run-" + run.getId(), run, runName, model.getColor(run)));
+			
+			for(Articulation articulation : run.getArticulations()) {
+				if(model.hasColor(articulation)) {
+					colorEntries.add(new ColorEntry("articulation-" + articulation.getId(), articulation, "(Run: " + runName + ") " + articulation.getText(), model.getColor(articulation)));
+				}
+			}
 		}
 		return colorEntries;
 	}

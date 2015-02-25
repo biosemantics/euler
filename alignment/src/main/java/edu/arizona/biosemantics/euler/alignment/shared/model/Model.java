@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
-
 public class Model implements Serializable {
 	
 	private Taxonomies taxonomies = new Taxonomies();

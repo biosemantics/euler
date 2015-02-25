@@ -14,7 +14,6 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateMenuView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ModelControler;
-import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.desktop.DesktopView;
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDesktopEvent;

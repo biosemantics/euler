@@ -8,7 +8,6 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulati
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 
 public class CurrentArticulationsGridView extends ArticulationsGridView {
 

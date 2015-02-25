@@ -19,7 +19,6 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorld;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorldProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
-import edu.arizona.biosemantics.euler.alignment.shared.model.RunOutput;
 
 public class ViewResultsDialog extends Dialog {
 	
