@@ -5,6 +5,7 @@ import com.google.gwt.event.shared.GwtEvent;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent.StartMIREventHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
+import edu.arizona.biosemantics.euler.alignment.shared.model.RunConfig;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 
 public class StartMIREvent extends GwtEvent<StartMIREventHandler> {
@@ -16,10 +17,12 @@ public class StartMIREvent extends GwtEvent<StartMIREventHandler> {
     public static Type<StartMIREventHandler> TYPE = new Type<StartMIREventHandler>();
 	private Taxonomies taxonomies;
 	private Articulations articulations;
+	private RunConfig runConfig;
 
-    public StartMIREvent(Taxonomies taxonomies, Articulations articulations) {
+    public StartMIREvent(Taxonomies taxonomies, Articulations articulations, RunConfig runConfig) {
     	this.taxonomies = taxonomies;
     	this.articulations = articulations;
+    	this.runConfig = runConfig;
     }
     
 	@Override
@@ -40,6 +43,7 @@ public class StartMIREvent extends GwtEvent<StartMIREventHandler> {
 		return articulations;
 	}
 
-	
-
+	public RunConfig getRunConfig() {
+		return runConfig;
+	}
 }

@@ -14,6 +14,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateMenuView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ModelControler;
+import edu.arizona.biosemantics.euler.alignment.client.common.ViewDiagnosisDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.desktop.DesktopView;
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDesktopEvent;
@@ -106,10 +107,21 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 		eventBus.addHandler(EndMIREvent.TYPE, new EndMIREvent.EndMIREventHandler() {
 			@Override
 			public void onEnd(EndMIREvent event) {
-				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
-				if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
-					dialog.setRun(model.getRunHistory().getLast());
-				dialog.show();
+				switch(event.getOutput().getType()) {
+				case CONFLICT:
+					ViewDiagnosisDialog dialog = new ViewDiagnosisDialog(eventBus, model);
+					if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
+						dialog.setRun(model.getRunHistory().getLast());
+					dialog.show();
+					break;
+				case MULTIPLE:
+				case ONE:
+					ViewResultsDialog viewResultsDialog = new ViewResultsDialog(eventBus, model);
+					if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
+						viewResultsDialog.setRun(model.getRunHistory().getLast());
+					viewResultsDialog.show();
+					break;
+				}
 			}
 		});
 		eventBus.addHandler(EndInputVisualizationEvent.TYPE, new EndInputVisualizationEvent.EndInputVisualizationEventHandler() {

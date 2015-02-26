@@ -32,4 +32,10 @@ public class RunConfigPanel extends VerticalLayoutContainer  {
 	public void setEnabled(boolean enabled) {
 		this.simplifyAggregateCheckBox.setEnabled(enabled);
 	}
+
+	public RunConfig getRunConfig() {
+		RunConfig runConfig = new RunConfig();
+		runConfig.setSimplifyAggregateView(simplifyAggregateCheckBox.getValue());
+		return runConfig;
+	}
 }

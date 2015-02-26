@@ -42,7 +42,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorsEven
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
-public class ColorSettingsDialog extends Dialog {
+public class ColorSettingsDialog extends CommonDialog {
 
 	public ColorSettingsDialog(final EventBus eventBus, final Model model) {
 		final CellTable<Color> colorsTable = new CellTable<Color>();

@@ -20,6 +20,12 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class ColorableCell<T> extends AbstractCell<T> {
 
+	public interface CommentColorizableObjectsProvider {
+		
+		public Object provide(Object source);
+		
+	}
+	
 	interface Templates extends SafeHtmlTemplates {
 		@SafeHtmlTemplates.Template("<div class=\"{0}\" qtip=\"{4}\">" +
 				"<div class=\"{1}\" " +
@@ -44,7 +50,8 @@ public class ColorableCell<T> extends AbstractCell<T> {
 	protected static Templates templates = GWT.create(Templates.class);
 	private EventBus eventBus;
 	private Model model;
-	private ListStore<Articulation> articulationsStore;
+	private ListStore commentColorizableObjectsStore;
+	private CommentColorizableObjectsProvider commentColorizableObjectsProvider;
 	
 	public ColorableCell(EventBus eventBus, Model model) {
 		this(GWT.<ColumnHeaderAppearance> create(ColumnHeaderAppearance.class), GWT.<GridAppearance> create(GridAppearance.class), eventBus, model);
@@ -91,15 +98,22 @@ public class ColorableCell<T> extends AbstractCell<T> {
 	@Override
 	public void render(Context context,	T value, SafeHtmlBuilder sb) {
 		int rowIndex = context.getIndex();
-		Articulation articulation = articulationsStore.get(rowIndex);
+		Object source = commentColorizableObjectsStore.get(rowIndex);
+		Object commentColorizableObject = commentColorizableObjectsProvider.provide(source);
 		
 		if (value == null)
 			return;
-		String quickTipText = "";		
-		String comment = model.getComment(articulation);
-		if(comment != null && !comment.isEmpty())
-			quickTipText += "<br>Comment:" + comment;
-		Color color = model.getColor(articulation);
+		String quickTipText = "";
+		String comment = null;
+		if(commentColorizableObject != null) {
+			comment = model.getComment(commentColorizableObject);
+			if(comment != null && !comment.isEmpty())
+				quickTipText += "<br>Comment:" + comment;
+		}
+		Color color = null;
+		if(commentColorizableObject != null) {
+			color = model.getColor(commentColorizableObject);
+		}
 
 		String colorHex = "";
 		if(color != null) 
@@ -111,7 +125,8 @@ public class ColorableCell<T> extends AbstractCell<T> {
 		sb.append(rendered);
 	}
 	
-	public void setArticulationsStore(ListStore<Articulation> articulationsStore) {
-		this.articulationsStore = articulationsStore;
+	public void setCommentColorizableObjectsStore(ListStore<Object> commentColorizableObjectsStore, CommentColorizableObjectsProvider commentColorizableObjectsProvider) {
+		this.commentColorizableObjectsStore = commentColorizableObjectsStore;
+		this.commentColorizableObjectsProvider = commentColorizableObjectsProvider;
 	}
 }

@@ -10,6 +10,7 @@ public class RunOutput implements Serializable {
 	private RunOutputType type;
 	private List<PossibleWorld> possibleWorlds = new LinkedList<PossibleWorld>();
 	private String aggregateUrl;
+	private String diagnosisUrl;
 	
 	public RunOutput() { }
 	
@@ -18,11 +19,12 @@ public class RunOutput implements Serializable {
 	}
 		
 	public RunOutput(RunOutputType type, List<PossibleWorld> possibleWorlds,
-			String aggregateUrl) {
+			String aggregateUrl, String diagnosisUrl) {
 		super();
 		this.type = type;
 		this.possibleWorlds = possibleWorlds;
 		this.aggregateUrl = aggregateUrl;
+		this.diagnosisUrl = diagnosisUrl;
 	}
 
 	public List<PossibleWorld> getPossibleWorlds() {
@@ -35,6 +37,10 @@ public class RunOutput implements Serializable {
 
 	public String getAggregateUrl() {
 		return aggregateUrl;
+	}
+	
+	public String getDiagnosisUrl() {
+		return diagnosisUrl;
 	}
 	
 }

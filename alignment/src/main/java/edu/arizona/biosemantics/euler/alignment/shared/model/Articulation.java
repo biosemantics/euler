@@ -55,5 +55,29 @@ public class Articulation implements Serializable {
 		clone.created = (Date)created.clone();
 		return clone;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Articulation other = (Articulation) obj;
+		if (taxonA == null) {
+			if (other.taxonA != null)
+				return false;
+		} else if (!taxonA.equals(other.taxonA))
+			return false;
+		if (taxonB == null) {
+			if (other.taxonB != null)
+				return false;
+		} else if (!taxonB.equals(other.taxonB))
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
+	}
 	
 }

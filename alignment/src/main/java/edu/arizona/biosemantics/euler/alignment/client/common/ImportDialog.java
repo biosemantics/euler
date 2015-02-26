@@ -16,7 +16,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsy
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
-public class ImportDialog extends Dialog {
+public class ImportDialog extends CommonDialog {
 	
 	private EventBus eventBus;
 	private Model model;

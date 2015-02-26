@@ -14,7 +14,7 @@
 //import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 //import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 //
-//public class TaxonModifyDialog extends Dialog {
+//public class TaxonModifyDialog extends CommonDialog {
 //		
 //		private TaxonInformationContainer taxonInformationContainer;
 //

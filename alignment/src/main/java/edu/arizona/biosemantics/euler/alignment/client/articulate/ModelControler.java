@@ -93,8 +93,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 			if(model.hasComment(articulation))
 				model.setComment(clone, model.getComment(articulation));
 		}
-		RunConfig runConfig = new RunConfig();
-		model.addRun(new Run(taxonomies, clonedArticulations, runConfig));
+		model.addRun(new Run(taxonomies, clonedArticulations, event.getRunConfig()));
 	}
 
 	@Override

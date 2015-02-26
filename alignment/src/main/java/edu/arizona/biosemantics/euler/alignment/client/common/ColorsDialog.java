@@ -48,7 +48,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
-public class ColorsDialog extends Dialog {
+public class ColorsDialog extends CommonDialog {
 
 	public enum ColorEntryType {
 		taxonType("Taxon"),

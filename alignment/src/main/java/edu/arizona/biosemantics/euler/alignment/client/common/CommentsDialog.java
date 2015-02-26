@@ -42,7 +42,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
-public class CommentsDialog extends Dialog {
+public class CommentsDialog extends CommonDialog {
 
 	public enum CommentType {
 		taxonType("Taxon"),

@@ -20,6 +20,7 @@ import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialo
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ImportDialog;
+import edu.arizona.biosemantics.euler.alignment.client.common.RunDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewHistoryDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
@@ -76,7 +77,8 @@ public class MenuView extends MenuBar {
 		runEulerItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new StartMIREvent(model.getTaxonomies(), model.getArticulations()));
+				RunDialog runDialog = new RunDialog(eventBus, model);
+				runDialog.show();
 			}
 		});
 		final MenuItem showEulerResult = new MenuItem("Show Last Euler Result");

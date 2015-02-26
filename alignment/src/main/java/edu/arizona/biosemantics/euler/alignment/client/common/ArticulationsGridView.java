@@ -22,10 +22,14 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.box.MultiLinePromptMessageBox;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
+import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent.BeforeStartEditHandler;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
 import com.sencha.gxt.widget.core.client.event.HideEvent;
 import com.sencha.gxt.widget.core.client.event.HideEvent.HideHandler;
+import com.sencha.gxt.widget.core.client.event.StartEditEvent;
+import com.sencha.gxt.widget.core.client.event.StartEditEvent.StartEditHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
@@ -44,6 +48,7 @@ import com.sencha.gxt.widget.core.client.menu.Menu;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
+import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell.CommentColorizableObjectsProvider;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
@@ -62,19 +67,31 @@ public class ArticulationsGridView extends ContentPanel {
 	
 	protected ListStore<Articulation> articulationsStore;
 	protected Grid<Articulation> grid;
-	protected ListStore<ArticulationType> typesStore;
+	protected ListStore<ArticulationType> allTypesStore;
+	protected ListStore<ArticulationType> availableTypesStore;
+	private boolean relationEditEnabled;
+	private boolean removeEnabled;
 	
-	public ArticulationsGridView(EventBus eventBus, Model model) {
+	public ArticulationsGridView(EventBus eventBus, Model model, boolean relationEditEnabled, boolean removeEnabled) {
 		this.eventBus = eventBus;
 		this.model = model;
+		
+		this.relationEditEnabled = relationEditEnabled;
+		this.removeEnabled = removeEnabled;
 
-		typesStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
+		availableTypesStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
 			@Override
 			public String getKey(ArticulationType item) {
 				return item.toString();
 			}
 		});
-		typesStore.addAll(Arrays.asList(ArticulationType.values()));
+		allTypesStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
+			@Override
+			public String getKey(ArticulationType item) {
+				return item.toString();
+			}
+		});
+		allTypesStore.addAll(Arrays.asList(ArticulationType.values()));
 		
 		setHeadingText("Articulations");
 		add(createArticulationsGrid());
@@ -116,7 +133,12 @@ public class ArticulationsGridView extends ContentPanel {
 		checkBoxSelectionModel.setSelectionMode(SelectionMode.MULTI);
 
 		ColorableCell colorableCell = new ColorableCell(eventBus, model);
-		colorableCell.setArticulationsStore(articulationsStore);
+		colorableCell.setCommentColorizableObjectsStore(articulationsStore, new CommentColorizableObjectsProvider() {
+			@Override
+			public Object provide(Object source) {
+				return source;
+			}
+		});
 		final ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
 				new ArticulationProperties.TaxonAStringValueProvider(), 100, "Taxon A");
 		taxonACol.setCell(colorableCell);
@@ -175,7 +197,7 @@ public class ArticulationsGridView extends ContentPanel {
 		StringFilter<Articulation> commentFilter = new StringFilter<Articulation>(commentValueProvider);
 		
 		ListFilter<Articulation, ArticulationType> relationFilter = new ListFilter<Articulation, ArticulationType>(
-				articulationProperties.type(), this.typesStore);
+				articulationProperties.type(), this.allTypesStore);
 
 		GridFilters<Articulation> filters = new GridFilters<Articulation>();
 		filters.addFilter(taxonAFilter);
@@ -189,8 +211,27 @@ public class ArticulationsGridView extends ContentPanel {
 		
 		ComboBox<ArticulationType> relationCombo = createRelationCombo();
 		
-		editing.addEditor(relationCol, relationCombo);
+		if(this.relationEditEnabled)
+			editing.addEditor(relationCol, relationCombo);
 		editing.addEditor(commentCol, new TextField());
+		editing.addStartEditHandler(new StartEditHandler<Articulation>() {
+			@Override
+			public void onStartEdit(StartEditEvent<Articulation> event) {
+				Articulation articulation = grid.getStore().get(event.getEditCell().getRow());
+				List<ArticulationType> availableTypes = getAvailableTypes(articulation);
+				availableTypesStore.clear();
+				availableTypesStore.addAll(availableTypes);
+			}
+		});
+		/*editing.addBeforeStartEditHandler(new BeforeStartEditHandler<Articulation>() {
+
+			@Override
+			public void onBeforeStartEdit(
+					BeforeStartEditEvent<Articulation> event) {
+				event.get
+			}
+			
+		}); */
 		editing.addCompleteEditHandler(new CompleteEditHandler<Articulation>() {
 			@Override
 			public void onCompleteEdit(CompleteEditEvent<Articulation> event) {			
@@ -210,8 +251,19 @@ public class ArticulationsGridView extends ContentPanel {
 		return grid;
 	}
 
+	protected List<ArticulationType> getAvailableTypes(Articulation fromArticulation) {
+		List<ArticulationType> types = new ArrayList<ArticulationType>(allTypesStore.getAll());
+		for(Articulation articulation : model.getArticulations()) {
+			if(articulation.getTaxonA().equals(fromArticulation.getTaxonA()) && 
+					articulation.getTaxonB().equals(fromArticulation.getTaxonB())) {
+				types.remove(articulation.getType());
+			}
+		}
+		return types;
+	}
+
 	private ComboBox<ArticulationType> createRelationCombo() {
-		ComboBox<ArticulationType> relationCombo = new ComboBox<ArticulationType>(typesStore, new LabelProvider<ArticulationType>() {
+		ComboBox<ArticulationType> relationCombo = new ComboBox<ArticulationType>(availableTypesStore, new LabelProvider<ArticulationType>() {
 			@Override
 			public String getLabel(ArticulationType item) {
 				return item.toString();
@@ -225,21 +277,25 @@ public class ArticulationsGridView extends ContentPanel {
 	}
 	
 	protected void updateStore(Articulation articulation) {
-		if(articulationsStore.hasRecord(articulation))
+		//if(articulationsStore.hasRecord(articulation))
+		if(articulationsStore.findModel(articulation) != null)
 			articulationsStore.update(articulation);
 	}
 
 	protected Menu createArticulationsContextMenu() {
 		final Menu menu = new Menu();
 		menu.add(new HeaderMenuItem("Annotation"));
-		MenuItem deleteItem = new MenuItem("Remove");
-		menu.add(deleteItem);
-		deleteItem.addSelectionHandler(new SelectionHandler<Item>() {
-			@Override
-			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new RemoveArticulationsEvent(grid.getSelectionModel().getSelectedItems()));
-			}
-		});
+		
+		if(this.removeEnabled) {
+			MenuItem deleteItem = new MenuItem("Remove");
+			menu.add(deleteItem);
+			deleteItem.addSelectionHandler(new SelectionHandler<Item>() {
+				@Override
+				public void onSelection(SelectionEvent<Item> event) {
+					eventBus.fireEvent(new RemoveArticulationsEvent(grid.getSelectionModel().getSelectedItems()));
+				}
+			});
+		}
 		final MenuItem commentItem = new MenuItem("Comment");
 		commentItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override

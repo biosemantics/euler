@@ -20,7 +20,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorld;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorldProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 
-public class ViewResultsDialog extends Dialog {
+public class ViewResultsDialog extends CommonDialog {
 	
 	private EventBus eventBus;
 	private Model model;
@@ -29,8 +29,10 @@ public class ViewResultsDialog extends Dialog {
 	private TextButton viewButton = new TextButton("View");
 	private TextButton aggregateButton = new TextButton("Aggregate");
 	private PossibleWorldProperties possibleWorldProperties = GWT.create(PossibleWorldProperties.class);
+	private Run run;
 	
 	public void setRun(Run run) {
+		this.run = run;
 		if(run.hasOutput())
 			resultStore.addAll(run.getOutput().getPossibleWorlds());
 	}
@@ -55,7 +57,7 @@ public class ViewResultsDialog extends Dialog {
 			@Override
 			public void onSelect(SelectEvent event) {
 				if(model.getRunHistory().getLast().hasOutput())
-					Window.open(model.getRunHistory().getLast().getOutput().getAggregateUrl(), "_blank", "");
+					Window.open(run.getOutput().getAggregateUrl(), "_blank", "");
 			}
 		});
 		
