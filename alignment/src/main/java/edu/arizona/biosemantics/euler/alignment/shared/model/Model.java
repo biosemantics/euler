@@ -2,10 +2,13 @@ package edu.arizona.biosemantics.euler.alignment.shared.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Model implements Serializable {
 	
@@ -93,7 +96,7 @@ public class Model implements Serializable {
 			this.addArticulation(articulation);
 	}
 	
-	public void removeArticulations(List<Articulation> articulations) {
+	public void removeArticulations(Collection<Articulation> articulations) {
 		for(Articulation articulation : articulations) 
 			this.removeArticulation(articulation);
 	}
@@ -137,6 +140,45 @@ public class Model implements Serializable {
 	
 	public Map<Object, Color> getColoreds() {
 		return coloreds;
+	}
+
+	public List<Articulation> getArticulations(Taxon taxonA, Taxon taxonB) {
+		List<Articulation> result = new LinkedList<Articulation>();
+		for(Articulation articulation : articulations) {
+			if(articulation.getTaxonA().equals(taxonA) && articulation.getTaxonB().equals(taxonB)) {
+				result.add(articulation);
+			}
+		}
+		return result;
+	}
+	
+	public Set<ArticulationType> getArticulationTypes(
+			Taxon taxonA, Taxon taxonB) {
+		Set<ArticulationType> articulationTypes = new HashSet<ArticulationType>();
+		for(Articulation articulation : articulations) {
+			if(articulation.getTaxonA().equals(taxonA) && articulation.getTaxonB().equals(taxonB)) {
+				articulationTypes.add(articulation.getType());
+			}
+		}
+		return articulationTypes;
+	}
+
+	public Articulation getArticulation(Taxon taxonA, Taxon taxonB,
+			ArticulationType type) {
+		for(Articulation articulation : articulations) {
+			if(articulation.getTaxonA().equals(taxonA) && articulation.getTaxonB().equals(taxonB) && articulation.getType().equals(type)) 
+				return articulation;
+		}
+		return null;
+	}
+
+	public List<Articulation> getArticulationsFor(Taxon taxon) {
+		List<Articulation> result = new LinkedList<Articulation>();
+		for(Articulation articulation : articulations) {
+			if(articulation.getTaxonA().equals(taxon) || articulation.getTaxonB().equals(taxon))
+				result.add(articulation);
+		}
+		return result;
 	}
 	
 	

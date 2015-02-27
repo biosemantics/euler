@@ -2,6 +2,7 @@ package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
@@ -111,7 +112,7 @@ public class ArticulationsGridView extends ContentPanel {
 		articulationsStore.addAll(articulations);
 	}
 
-	public void removeArticulations(List<Articulation> articulations) {
+	public void removeArticulations(Collection<Articulation> articulations) {
 		for(Articulation articulation : articulations)
 			articulationsStore.remove(articulation);
 	}
@@ -277,7 +278,6 @@ public class ArticulationsGridView extends ContentPanel {
 	}
 	
 	protected void updateStore(Articulation articulation) {
-		//if(articulationsStore.hasRecord(articulation))
 		if(articulationsStore.findModel(articulation) != null)
 			articulationsStore.update(articulation);
 	}

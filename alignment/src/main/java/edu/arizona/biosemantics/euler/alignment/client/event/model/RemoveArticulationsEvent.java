@@ -1,5 +1,6 @@
 package edu.arizona.biosemantics.euler.alignment.client.event.model;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,14 +18,14 @@ public class RemoveArticulationsEvent extends GwtEvent<RemoveArticulationsEventH
 	}
 	
 	public static Type<RemoveArticulationsEventHandler> TYPE = new Type<RemoveArticulationsEventHandler>();
-	private List<Articulation> articulations;
+	private Collection<Articulation> articulations;
 	
 	public RemoveArticulationsEvent(Articulation articulation) {
 		this.articulations = new LinkedList<Articulation>();
 		this.articulations.add(articulation);
 	}
 	
-	public RemoveArticulationsEvent(List<Articulation> articulations) {
+	public RemoveArticulationsEvent(Collection<Articulation> articulations) {
 		this.articulations = articulations;
 	}
 	
@@ -42,7 +43,7 @@ public class RemoveArticulationsEvent extends GwtEvent<RemoveArticulationsEventH
 		return TYPE;
 	}
 
-	public List<Articulation> getArticulations() {
+	public Collection<Articulation> getArticulations() {
 		return articulations;
 	}
 

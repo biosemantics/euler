@@ -157,25 +157,6 @@ public class TaxonomyView extends ContentPanel {
 				}
 			}
 		});
-		
-	}
-
-	protected void updateStore(Taxon taxon) {
-		if(store.hasRecord(taxon)) 
-			store.update(taxon);
-	}
-
-	protected void markNotArticulated(List<Articulation> articulations) {
-		
-	}
-
-	protected void markArticulated(List<Articulation> articulations) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private Tree<Taxon, Taxon> createTree() {
-		final Tree<Taxon, Taxon> tree = new Tree<Taxon, Taxon>(store, new IdentityValueProvider<Taxon>());	
 		tree.getSelectionModel().addSelectionHandler(new SelectionHandler<Taxon>() {
 			@Override
 			public void onSelection(SelectionEvent<Taxon> event) {
@@ -185,6 +166,17 @@ public class TaxonomyView extends ContentPanel {
 			}
 		});
 		
+	}
+
+	protected void updateStore(Taxon taxon) {
+		if(store.findModel(taxon) != null) 
+			store.update(taxon);
+		if(tree.getSelectionModel().isSelected(taxon))
+			updateTextArea(taxon);
+	}
+
+	private Tree<Taxon, Taxon> createTree() {
+		final Tree<Taxon, Taxon> tree = new Tree<Taxon, Taxon>(store, new IdentityValueProvider<Taxon>());	
 		tree.setContextMenu(createTreeContextMenu(tree));
 		tree.setCell(new AbstractCell<Taxon>() {
 			@Override
@@ -247,7 +239,6 @@ public class TaxonomyView extends ContentPanel {
 					public void onHide(HideEvent event) {
 						for(Taxon taxon : taxa) { 
 							eventBus.fireEvent(new SetCommentEvent(taxon, box.getValue()));
-							updateStore(taxon);
 						}
 						String comment = Format.ellipse(box.getValue(), 80);
 						String message = Format.substitute("'{0}' saved", new Params(comment));
@@ -306,7 +297,6 @@ public class TaxonomyView extends ContentPanel {
 				final List<Taxon> taxa = getSelectedTaxa();
 				for(Taxon taxon : taxa) {
 					eventBus.fireEvent(new SetColorEvent(taxon, null));
-					updateStore(taxon);
 				}
 			}
 		});
@@ -320,7 +310,6 @@ public class TaxonomyView extends ContentPanel {
 					final List<Taxon> taxa = getSelectedTaxa();
 					for(Taxon taxon : taxa) {
 						eventBus.fireEvent(new SetColorEvent(taxon, color));
-						updateStore(taxon);
 					}
 				}
 			});
@@ -375,6 +364,13 @@ public class TaxonomyView extends ContentPanel {
 			infoText +=	"<p><b>Comment:&nbsp;</b>" + model.getComment(taxon) + "</p>";
 		if(model.hasColor(taxon))
 			infoText += "<p><b>Color:&nbsp;</b>" + model.getColor(taxon).getUse() + "</p>";
+		
+		String articulationsText = "";
+		List<Articulation> articulations = model.getArticulationsFor(taxon);
+		for(Articulation articulation : articulations) 
+			articulationsText += articulation.getText() + "</br>";
+		if(!articulations.isEmpty()) 
+			infoText += "<p><b>Articulations:&nbsp;</b></br>" + articulationsText + "</p>";
 		
 		infoHtml.setHTML(SafeHtmlUtils.fromSafeConstant(infoText));
 	}
