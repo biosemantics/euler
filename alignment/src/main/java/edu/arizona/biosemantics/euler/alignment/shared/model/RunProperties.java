@@ -13,24 +13,28 @@ public interface RunProperties extends PropertyAccess<Run> {
 
 	public static class DisplayNameValueProvider implements
 			ValueProvider<Run, String> {
-		private DateTimeFormat format = DateTimeFormat.getFormat("MM/dd/YYYY HH:mm:ss");
+		private DateTimeFormat format = DateTimeFormat
+				.getFormat("MM/dd/YYYY HH:mm:ss");
+
 		@Override
 		public String getValue(Run run) {
 			String runName = format.format(run.getCreated());
-			if(run.hasOutput()) {
+			if (run.hasOutput()) {
 				runName += " " + run.getOutput().getType().toString();
-				switch(run.getOutput().getType()) {
+				switch (run.getOutput().getType()) {
 				case CONFLICT:
 					break;
 				case MULTIPLE:
-					runName += " (" + run.getOutput().getPossibleWorlds().size() + "PWs )";
+					runName += " ("
+							+ run.getOutput().getPossibleWorlds().size()
+							+ "PWs )";
 					break;
 				case ONE:
 					break;
 				default:
 					break;
 				}
-				
+
 			}
 			return runName;
 		}
@@ -44,6 +48,44 @@ public interface RunProperties extends PropertyAccess<Run> {
 			return "displayName";
 		}
 
+	}
+	
+
+	public static class RunOutputTypeValueProvider implements ValueProvider<Run, RunOutputType> {
+		@Override
+		public RunOutputType getValue(Run run) {
+			if(!run.hasOutput())
+				return null;
+			return run.getOutput().getType();
+		}
+
+		@Override
+		public void setValue(Run object, RunOutputType value) {
+		}
+
+		@Override
+		public String getPath() {
+			return "runOutputType";
+		}
+	}
+
+
+	public static class ResultValueProvider implements ValueProvider<Run, String> {
+		@Override
+		public String getValue(Run run) {
+			if(!run.hasOutput())
+				return "";
+			return run.getOutput().getType().toString();
+		}
+
+		@Override
+		public void setValue(Run object, String value) {
+		}
+
+		@Override
+		public String getPath() {
+			return "result";
+		}
 	}
 
 }

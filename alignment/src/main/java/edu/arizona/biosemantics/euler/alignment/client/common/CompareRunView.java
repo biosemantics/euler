@@ -21,6 +21,7 @@ import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -35,17 +36,18 @@ public class CompareRunView  extends BorderLayoutContainer {
 
 	private EventBus eventBus;
 	private Model model;
-	private ListStore<Run> runStore;
-	private ListView<Run, String> runList;
+	//private ListStore<Run> runStore;
+	//private ListView<Run, String> runList;
 	//private ArticulationsGridView articulationsGridView;
 	//private RunConfigPanel runConfigPanel = new RunConfigPanel();
 	//private TextButton viewResultButton = new TextButton("View Result");
 	
-	private RunProperties runProperties = GWT.create(RunProperties.class);
+	//private RunProperties runProperties = GWT.create(RunProperties.class);
 	private RunConfigPanel runConfigPanel1;
 	private RunConfigPanel runConfigPanel2;
 	private HorizontalLayoutContainer runConfigsPanel;
 	private ComparedArticulationsGridView comparedArticulationsGridView;
+	private RunGridView runGridView;
 	
 	public CompareRunView(final EventBus eventBus, final Model model) {
 		this.eventBus = eventBus;
@@ -53,19 +55,20 @@ public class CompareRunView  extends BorderLayoutContainer {
 		
 		comparedArticulationsGridView = new ComparedArticulationsGridView(eventBus, model);
 		
-		runStore = new ListStore<Run>(runProperties.key());
+		runGridView = new RunGridView(eventBus, model);
+		/*runStore = new ListStore<Run>(runProperties.key());
 		runStore.addAll(model.getRunHistory());
 		runList = new ListView<Run, String>(runStore,
-				new RunProperties.DisplayNameValueProvider());
-		runList.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
-		runList.getSelectionModel().addBeforeSelectionHandler(new BeforeSelectionHandler<Run>() {
+				new RunProperties.DisplayNameValueProvider());*/
+		runGridView.getSelectionModel().setSelectionMode(SelectionMode.MULTI);
+		runGridView.getSelectionModel().addBeforeSelectionHandler(new BeforeSelectionHandler<Run>() {
 			@Override
 			public void onBeforeSelection(BeforeSelectionEvent<Run> event) {
-				if(runList.getSelectionModel().getSelection().size() >= 2)
+				if(runGridView.getSelectionModel().getSelection().size() >= 2)
 					event.cancel();
 			}
 		});
-		runList.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Run>() {
+		runGridView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Run>() {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<Run> event) {
 				List<Run> selection = event.getSelection();
@@ -107,12 +110,15 @@ public class CompareRunView  extends BorderLayoutContainer {
 		*/
 		ContentPanel panel = new ContentPanel();
 		panel.setHeadingText("Run History");
-		BorderLayoutContainer.BorderLayoutData data = new BorderLayoutContainer.BorderLayoutData(
-				300);
-		data.setMargins(new Margins(0, 5, 0, 0));
-		panel.setLayoutData(data);
+		
+		BorderLayoutData westData = new BorderLayoutData(400);
+		westData.setMargins(new Margins(1));
+		westData.setCollapsible(true);
+		westData.setSplit(true);
+		panel.setLayoutData(westData);
+		
 		VerticalLayoutContainer verticalLayoutContainer = new VerticalLayoutContainer();
-		verticalLayoutContainer.add(runList,
+		verticalLayoutContainer.add(runGridView,
 				new VerticalLayoutData(1, 1, new Margins(5)));
 		//verticalLayoutContainer.add(viewResultButton, new VerticalLayoutData(1,
 		//		-1, new Margins(5)));
@@ -122,6 +128,13 @@ public class CompareRunView  extends BorderLayoutContainer {
 		
 		// Layout - center
 		panel = new ContentPanel();
+		
+		BorderLayoutData centerData = new BorderLayoutData(500);
+		centerData.setMargins(new Margins(1));
+		centerData.setCollapsible(true);
+		centerData.setSplit(true);
+		panel.setLayoutData(centerData);
+		
 		verticalLayoutContainer = new VerticalLayoutContainer();
 		verticalLayoutContainer.add(comparedArticulationsGridView,
 				new VerticalLayoutData(1, 0.5, new Margins(5)));

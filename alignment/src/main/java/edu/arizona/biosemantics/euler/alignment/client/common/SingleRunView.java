@@ -24,8 +24,9 @@ public class SingleRunView extends BorderLayoutContainer {
 
 	private EventBus eventBus;
 	private Model model;
-	private ListStore<Run> runStore;
-	private ListView<Run, String> runList;
+	//private ListStore<Run> runStore;
+	//private ListView<Run, String> runList;
+	private RunGridView runGridView;
 	private ArticulationsGridView articulationsGridView;
 	private RunConfigPanel runConfigPanel = new RunConfigPanel();
 	private TextButton viewResultButton = new TextButton("View Result");
@@ -38,12 +39,13 @@ public class SingleRunView extends BorderLayoutContainer {
 		
 		articulationsGridView = new ArticulationsGridView(eventBus, model, false, false);
 
-		runStore = new ListStore<Run>(runProperties.key());
+		runGridView = new RunGridView(eventBus, model);
+		/*runStore = new ListStore<Run>(runProperties.key());
 		runStore.addAll(model.getRunHistory());
 		runList = new ListView<Run, String>(runStore,
-				new RunProperties.DisplayNameValueProvider());
-		runList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-		runList.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Run>() {
+				new RunProperties.DisplayNameValueProvider());*/
+		runGridView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		runGridView.getSelectionModel().addSelectionChangedHandler(new SelectionChangedHandler<Run>() {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<Run> event) {
 				Run choice = null;
@@ -56,7 +58,7 @@ public class SingleRunView extends BorderLayoutContainer {
 		viewResultButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				Run run = runList.getSelectionModel().getSelectedItem();
+				Run run = runGridView.getSelectionModel().getSelectedItem();//.getSelectionModel().getSelectedItem();
 				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
 				dialog.setRun(run);
 				dialog.show();
@@ -68,20 +70,31 @@ public class SingleRunView extends BorderLayoutContainer {
 
 		ContentPanel panel = new ContentPanel();
 		panel.setHeadingText("Run History");
-		BorderLayoutContainer.BorderLayoutData data = new BorderLayoutContainer.BorderLayoutData(
-				300);
-		data.setMargins(new Margins(0, 5, 0, 0));
-		panel.setLayoutData(data);
+		
+		BorderLayoutData westData = new BorderLayoutData(400);
+		westData.setMargins(new Margins(1));
+		westData.setCollapsible(true);
+		westData.setSplit(true);
+		panel.setLayoutData(westData);
+		
 		VerticalLayoutContainer verticalLayoutContainer = new VerticalLayoutContainer();
-		verticalLayoutContainer.add(runList,
+		verticalLayoutContainer.add(runGridView,
 				new VerticalLayoutData(1, 1, new Margins(5)));
 		verticalLayoutContainer.add(viewResultButton, new VerticalLayoutData(1,
 				-1, new Margins(5)));
 		panel.add(verticalLayoutContainer);
 		setWestWidget(panel);
 
+		
 		// Layout - center
 		panel = new ContentPanel();
+		
+		BorderLayoutData centerData = new BorderLayoutData(500);
+		centerData.setMargins(new Margins(1));
+		centerData.setCollapsible(true);
+		centerData.setSplit(true);
+		panel.setLayoutData(centerData);
+		
 		verticalLayoutContainer = new VerticalLayoutContainer();
 		verticalLayoutContainer.add(articulationsGridView,
 				new VerticalLayoutData(1, 0.5, new Margins(5)));
