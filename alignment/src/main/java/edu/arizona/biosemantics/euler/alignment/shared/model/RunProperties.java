@@ -14,7 +14,7 @@ public interface RunProperties extends PropertyAccess<Run> {
 	public static class DisplayNameValueProvider implements
 			ValueProvider<Run, String> {
 		private DateTimeFormat format = DateTimeFormat
-				.getFormat("MM/dd/YYYY HH:mm:ss");
+				.getFormat("MM/dd/yyyy HH:mm:ss");
 
 		@Override
 		public String getValue(Run run) {

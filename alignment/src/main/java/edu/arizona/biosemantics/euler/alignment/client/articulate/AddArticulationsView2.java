@@ -1,6 +1,5 @@
 package edu.arizona.biosemantics.euler.alignment.client.articulate;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,33 +12,24 @@ import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
-import com.sencha.gxt.core.client.IdentityValueProvider;
-import com.sencha.gxt.core.client.Style.SelectionMode;
-import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
-import com.sencha.gxt.data.shared.event.StoreAddEvent;
-import com.sencha.gxt.data.shared.event.StoreAddEvent.StoreAddHandler;
-import com.sencha.gxt.data.shared.event.StoreClearEvent;
-import com.sencha.gxt.data.shared.event.StoreClearEvent.StoreClearHandler;
-import com.sencha.gxt.data.shared.event.StoreRemoveEvent;
-import com.sencha.gxt.data.shared.event.StoreRemoveEvent.StoreRemoveHandler;
+import com.sencha.gxt.dnd.core.client.ListViewDragSource;
+import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
+import com.sencha.gxt.dnd.core.client.DND.Feedback;
 import com.sencha.gxt.widget.core.client.ContentPanel;
-import com.sencha.gxt.widget.core.client.ListView;
-import com.sencha.gxt.widget.core.client.button.TextButton;
-import com.sencha.gxt.widget.core.client.event.SelectEvent;
-import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
 import com.sencha.gxt.widget.core.client.form.DualListField;
+import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
 import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
+import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
+import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 
-import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationEntry;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationTypeProperties;
@@ -62,7 +52,7 @@ public class AddArticulationsView2 extends ContentPanel {
 	
 	private ListStore<ArticulationType> fromRelationsStore;
 	private ListStore<ArticulationType> pickedRelationsStore;
-	private DualListField<ArticulationType, String>  relationList;
+	private MyDualListField  relationList;
 	
 	private ArticulateView articulateView;
 	
@@ -131,7 +121,7 @@ public class AddArticulationsView2 extends ContentPanel {
 		
 	}
 
-	private DualListField<ArticulationType, String> createRelationWidget() {
+	private MyDualListField createRelationWidget() {
 		fromRelationsStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
 			@Override
 			public String getKey(ArticulationType item) {
@@ -144,7 +134,11 @@ public class AddArticulationsView2 extends ContentPanel {
 				return item.toString();
 			}
 		});
-		DualListField<ArticulationType, String> relationList = new DualListField<ArticulationType, String>(fromRelationsStore, 
+		MyDualListField relationList = new MyDualListField(fromRelationsStore, 
+				pickedRelationsStore, articulationTypeProperties.displayName(),
+		          new TextCell(), eventBus, model, taxonomyACombo, taxonomyBCombo);
+		
+		/*DualListField<ArticulationType, String> relationList = new DualListField<ArticulationType, String>(fromRelationsStore, 
 				pickedRelationsStore, articulationTypeProperties.displayName(),
 		          new TextCell()) {
 			
@@ -196,7 +190,9 @@ public class AddArticulationsView2 extends ContentPanel {
 				
 				eventBus.fireEvent(new AddArticulationsEvent(articulations));
 			}
-		};
+		};*/ // doesn't support the dnd, and overwriting the enablednd won't have access to some fields.. hence MyDualListField
+		relationList.setWidth(300);
+		relationList.setEnableDnd(true);
 		return relationList;
 	}
 
@@ -244,6 +240,14 @@ public class AddArticulationsView2 extends ContentPanel {
 	public void setTaxonB(Taxon taxon) {
 		taxonomyBCombo.setValue(taxon);
 		updateRelations();
+	}
+
+	public void addSelectionHandlerA(SelectionHandler<Taxon> handler) {
+		taxonomyACombo.addSelectionHandler(handler);
+	}
+
+	public void addSelectionHandlerB(SelectionHandler<Taxon> handler) {
+		taxonomyACombo.addSelectionHandler(handler);
 	}
 
 }

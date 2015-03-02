@@ -140,14 +140,17 @@ public class ArticulationsGridView extends ContentPanel {
 				return source;
 			}
 		});
+		final ColumnConfig<Articulation, String> createdCol = new ColumnConfig<Articulation, String>(
+				new ArticulationProperties.CreatedStringValueProvder(), 200, "Created");
+		createdCol.setCell(colorableCell);
 		final ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonAStringValueProvider(), 100, "Taxon A");
+				new ArticulationProperties.TaxonAStringValueProvider(), 150, "Taxon A");
 		taxonACol.setCell(colorableCell);
 		final ColumnConfig<Articulation, ArticulationType> relationCol = new ColumnConfig<Articulation, ArticulationType>(
-				articulationProperties.type(), 100, "Relation");
+				articulationProperties.type(), 50, "Relation");
 		relationCol.setCell(colorableCell);
 		final ColumnConfig<Articulation, String> taxonBCol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonBStringValueProvider(), 100, "Taxon B");
+				new ArticulationProperties.TaxonBStringValueProvider(), 150, "Taxon B");
 		taxonBCol.setCell(colorableCell);
 		
 		ValueProvider<Articulation, String> commentValueProvider = new ValueProvider<Articulation, String>() {
@@ -173,6 +176,7 @@ public class ArticulationsGridView extends ContentPanel {
 
 		List<ColumnConfig<Articulation, ?>> columns = new ArrayList<ColumnConfig<Articulation, ?>>();
 		columns.add(checkBoxSelectionModel.getColumn());
+		columns.add(createdCol);
 		columns.add(taxonACol);
 		columns.add(relationCol);
 		columns.add(taxonBCol);
@@ -193,6 +197,7 @@ public class ArticulationsGridView extends ContentPanel {
 		grid.getView().setStripeRows(true);
 		grid.getView().setColumnLines(true);
 
+		StringFilter<Articulation> createdFilter = new StringFilter<Articulation>(new ArticulationProperties.CreatedStringValueProvder());
 		StringFilter<Articulation> taxonAFilter = new StringFilter<Articulation>(new ArticulationProperties.TaxonAStringValueProvider());
 		StringFilter<Articulation> taxonBFilter = new StringFilter<Articulation>(new ArticulationProperties.TaxonBStringValueProvider());
 		StringFilter<Articulation> commentFilter = new StringFilter<Articulation>(commentValueProvider);
@@ -201,6 +206,7 @@ public class ArticulationsGridView extends ContentPanel {
 				articulationProperties.type(), this.allTypesStore);
 
 		GridFilters<Articulation> filters = new GridFilters<Articulation>();
+		filters.addFilter(createdFilter);
 		filters.addFilter(taxonAFilter);
 		filters.addFilter(taxonBFilter);
 		filters.addFilter(relationFilter);

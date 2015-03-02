@@ -29,7 +29,7 @@ public class SingleRunView extends BorderLayoutContainer {
 	private RunGridView runGridView;
 	private ArticulationsGridView articulationsGridView;
 	private RunConfigPanel runConfigPanel = new RunConfigPanel();
-	private TextButton viewResultButton = new TextButton("View Result");
+	private TextButton viewResultButton = new TextButton("View");
 	
 	private RunProperties runProperties = GWT.create(RunProperties.class);
 	
@@ -80,8 +80,6 @@ public class SingleRunView extends BorderLayoutContainer {
 		VerticalLayoutContainer verticalLayoutContainer = new VerticalLayoutContainer();
 		verticalLayoutContainer.add(runGridView,
 				new VerticalLayoutData(1, 1, new Margins(5)));
-		verticalLayoutContainer.add(viewResultButton, new VerticalLayoutData(1,
-				-1, new Margins(5)));
 		panel.add(verticalLayoutContainer);
 		setWestWidget(panel);
 
@@ -100,6 +98,11 @@ public class SingleRunView extends BorderLayoutContainer {
 				new VerticalLayoutData(1, 0.5, new Margins(5)));
 		verticalLayoutContainer.add(runConfigPanel, new VerticalLayoutData(1,
 				0.5, new Margins(5)));
+		ContentPanel viewResultPanel = new ContentPanel();
+		viewResultPanel.setHeadingText("Results");
+		viewResultPanel.add(viewResultButton);
+		verticalLayoutContainer.add(viewResultPanel, new VerticalLayoutData(1,
+				-1, new Margins(5)));
 		panel.add(verticalLayoutContainer);
 		panel.setHeadingText("Run Info");
 		setCenterWidget(panel);

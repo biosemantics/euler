@@ -2,6 +2,8 @@ package edu.arizona.biosemantics.euler.alignment.client.articulate;
 
 import java.util.List;
 
+import com.google.gwt.event.logical.shared.SelectionEvent;
+import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
@@ -69,6 +71,19 @@ public class ArticulateView extends SplitLayoutPanel {
 			public void onSelectionChanged(SelectionChangedEvent<Taxon> event) {
 				if(!event.getSelection().isEmpty())
 					addArticulationsView.setTaxonB(event.getSelection().get(0));
+			}
+		});
+		addArticulationsView.addSelectionHandlerA(new SelectionHandler<Taxon>() {
+			@Override
+			public void onSelection(SelectionEvent<Taxon> event) {
+				taxaViewA.setSelected(event.getSelectedItem());
+			}
+			
+		});
+		addArticulationsView.addSelectionHandlerB(new SelectionHandler<Taxon>() {
+			@Override
+			public void onSelection(SelectionEvent<Taxon> event) {
+				taxaViewB.setSelected(event.getSelectedItem());
 			}
 		});
 	}

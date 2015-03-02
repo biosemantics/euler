@@ -1,20 +1,24 @@
 package edu.arizona.biosemantics.euler.alignment.client.common;
 
+import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
 import com.sencha.gxt.widget.core.client.form.FieldLabel;
 
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunConfig;
 
-public class RunConfigPanel extends VerticalLayoutContainer  {
+public class RunConfigPanel extends ContentPanel  {
 
 	private CheckBox simplifyAggregateCheckBox = new CheckBox();
-	private FieldLabel simplifyAggregateFieldLabel = new FieldLabel(simplifyAggregateCheckBox, "Simplify Aggregate View: ");
+	private FieldLabel simplifyAggregateFieldLabel = new FieldLabel(simplifyAggregateCheckBox, "Simplify Aggregate View");
+	private VerticalLayoutContainer verticalLayoutContainer = new VerticalLayoutContainer();
 	
 	public RunConfigPanel() {
+		setHeadingText("Configuration");
 		//simplifyAggregateCheckBox.setBoxLabel("Simplify Aggregate View");
 		simplifyAggregateFieldLabel.setLabelWidth(200);
-		this.add(simplifyAggregateFieldLabel);
+		verticalLayoutContainer.add(simplifyAggregateFieldLabel);
+		this.add(verticalLayoutContainer);
 	}
 	
 	public void reset() {

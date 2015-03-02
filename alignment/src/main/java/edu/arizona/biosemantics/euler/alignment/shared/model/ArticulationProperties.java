@@ -1,6 +1,7 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
 import com.google.gwt.editor.client.Editor.Path;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -8,7 +9,9 @@ import com.sencha.gxt.data.shared.PropertyAccess;
 
 public interface ArticulationProperties extends PropertyAccess<Taxon> {
 
-	  @Path("id")
+
+
+	@Path("id")
 	  ModelKeyProvider<Articulation> key();
 	   
 	  @Path("text")
@@ -20,7 +23,26 @@ public interface ArticulationProperties extends PropertyAccess<Taxon> {
 	  
 	  ValueProvider<Articulation, Taxon> taxonB();
 	  
+		public static class CreatedStringValueProvder implements ValueProvider<Articulation, String> {
+			private DateTimeFormat format = DateTimeFormat
+					.getFormat("MM/dd/yyyy HH:mm:ss");
+			@Override
+			public String getValue(Articulation object) {
+				return format.format(object.getCreated());
+			}
 
+			@Override
+			public void setValue(Articulation object, String value) {
+				
+			}
+
+			@Override
+			public String getPath() {
+				return "created";
+			}
+	
+		}
+	
 	  public static class TypeStringValueProvider implements ValueProvider<Articulation, String> {
 
 		@Override

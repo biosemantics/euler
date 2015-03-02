@@ -19,6 +19,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorSettingsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ColorsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.CommentsDialog;
+import edu.arizona.biosemantics.euler.alignment.client.common.CommonDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ImportDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.RunDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewHistoryDialog;
@@ -198,13 +199,13 @@ public class MenuView extends MenuBar {
 		helpItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> arg0) {
-				final Dialog dialog = new Dialog();
+				final Dialog dialog = new CommonDialog();
 				dialog.setBodyBorder(false);
 				dialog.setHeadingText("Help");
 				dialog.setHideOnButtonClick(true);
 				dialog.setWidget(new HelpView());
-				dialog.setWidth(400);
-				dialog.setHeight(225);
+				dialog.setWidth(600);
+				dialog.setHeight(600);
 				dialog.setResizable(true);
 				dialog.setShadow(true);
 				dialog.show();
