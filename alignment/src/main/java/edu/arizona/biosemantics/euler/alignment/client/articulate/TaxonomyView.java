@@ -42,6 +42,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 import com.sencha.gxt.widget.core.client.tree.Tree;
+import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDescriptionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
@@ -176,7 +177,7 @@ public class TaxonomyView extends ContentPanel {
 	}
 
 	private Tree<Taxon, Taxon> createTree() {
-		final Tree<Taxon, Taxon> tree = new Tree<Taxon, Taxon>(store, new IdentityValueProvider<Taxon>());	
+		final Tree<Taxon, Taxon> tree = new Tree<Taxon, Taxon>(store, new IdentityValueProvider<Taxon>(), (TreeAppearance)GWT.create(TaxonTreeAppearance.class));	
 		tree.setContextMenu(createTreeContextMenu(tree));
 		tree.setCell(new AbstractCell<Taxon>() {
 			@Override

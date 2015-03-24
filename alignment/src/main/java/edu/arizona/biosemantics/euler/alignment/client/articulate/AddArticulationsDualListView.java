@@ -37,7 +37,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
 
-public class AddArticulationsView2 extends ContentPanel {
+public class AddArticulationsDualListView extends ContentPanel {
 
 	private EventBus eventBus;
 	private Model model;
@@ -56,7 +56,7 @@ public class AddArticulationsView2 extends ContentPanel {
 	
 	private ArticulateView articulateView;
 	
-	public AddArticulationsView2(EventBus eventBus, ArticulateView articulateView) {
+	public AddArticulationsDualListView(EventBus eventBus, ArticulateView articulateView) {
 		this.eventBus = eventBus;
 		this.articulateView = articulateView;
 		setHeadingText("Create Articulation");
@@ -247,7 +247,7 @@ public class AddArticulationsView2 extends ContentPanel {
 	}
 
 	public void addSelectionHandlerB(SelectionHandler<Taxon> handler) {
-		taxonomyACombo.addSelectionHandler(handler);
+		taxonomyBCombo.addSelectionHandler(handler);
 	}
 
 }

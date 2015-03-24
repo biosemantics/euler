@@ -33,7 +33,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
 
-public class AddArticulationsView extends ContentPanel {
+public class AddArticulationsDropdownView extends ContentPanel {
 
 	private EventBus eventBus;
 	private Model model;
@@ -50,7 +50,7 @@ public class AddArticulationsView extends ContentPanel {
 	private ArticulateView articulateView;
 	private ListView<ArticulationType, ArticulationType> relationList;
 	
-	public AddArticulationsView(EventBus eventBus, ArticulateView articulateView) {
+	public AddArticulationsDropdownView(EventBus eventBus, ArticulateView articulateView) {
 		this.eventBus = eventBus;
 		this.articulateView = articulateView;
 		setHeadingText("Create Articulation");
