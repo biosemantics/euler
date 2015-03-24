@@ -11,7 +11,7 @@ public interface TaxonProperties extends PropertyAccess<Taxon> {
 	  @Path("id")
 	  ModelKeyProvider<Taxon> key();
 	   
-	  @Path("fullName")
+	  @Path("biologicalName")
 	  LabelProvider<Taxon> nameLabel();
 	 
 	  ValueProvider<Taxon, String> description();

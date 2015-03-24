@@ -38,7 +38,7 @@ public class Articulation implements Serializable {
 	}
 	
 	public String getText() {
-		return taxonA.getFullName() + " " + type.getDisplayName() + " " + taxonB.getFullName();
+		return taxonA.getBiologicalName() + " " + type.getDisplayName() + " " + taxonB.getBiologicalName();
 	}
 	
 	public int getId() {

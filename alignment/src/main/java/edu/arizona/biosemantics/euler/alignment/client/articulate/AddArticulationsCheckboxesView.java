@@ -11,7 +11,11 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.safehtml.shared.SafeHtml;
+import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
+import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
@@ -126,17 +130,32 @@ public class AddArticulationsCheckboxesView extends ContentPanel {
 
 	private ComboBox<Taxon> createTaxonomyACombo() {
 		taxonomyAStore = new ListStore<Taxon>(taxonProperties.key());
-		ComboBox<Taxon> result = new ComboBox<Taxon>(taxonomyAStore, taxonProperties.nameLabel());
+		ComboBox<Taxon> result = new ComboBox<Taxon>(taxonomyAStore, taxonProperties.nameLabel(), new AbstractSafeHtmlRenderer<Taxon>() {
+			@Override
+			public SafeHtml render(Taxon object) {
+				SafeHtmlBuilder sb = new SafeHtmlBuilder();
+			    sb.appendHtmlConstant("<div qtip=\"" + object.getBiologicalName() + "\">" + taxonProperties.nameLabel().getLabel(object) + "</div>");
+			    return sb.toSafeHtml();
+			}
+		});
 		result.setForceSelection(false);
 		result.setTriggerAction(TriggerAction.ALL);
 		result.setTypeAhead(false);
 		result.setEditable(false);
+		
 		return result;
 	}
 	
 	private ComboBox<Taxon> createTaxonomyBCombo() {
 		taxonomyBStore = new ListStore<Taxon>(taxonProperties.key());
-		ComboBox<Taxon> result = new ComboBox<Taxon>(taxonomyBStore, taxonProperties.nameLabel());
+		ComboBox<Taxon> result = new ComboBox<Taxon>(taxonomyBStore, taxonProperties.nameLabel(), new AbstractSafeHtmlRenderer<Taxon>() {
+			@Override
+			public SafeHtml render(Taxon object) {
+				SafeHtmlBuilder sb = new SafeHtmlBuilder();
+				sb.appendHtmlConstant("<div qtip=\"" + object.getBiologicalName() + "\">" + taxonProperties.nameLabel().getLabel(object) + "</div>");
+			    return sb.toSafeHtml();
+			}
+		});
 		result.setForceSelection(false);
 		result.setTriggerAction(TriggerAction.ALL);
 		result.setTypeAhead(false);

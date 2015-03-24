@@ -259,7 +259,7 @@ public class CommentsDialog extends CommonDialog {
 		for(Taxonomy taxonomy : model.getTaxonomies()) {
 			for (Taxon taxon : taxonomy.getTaxaDFS()) {
 				if (model.hasComment(taxon))
-					comments.add(new Comment("taxon-" + taxon.getId(), taxon, taxon.getFullName(), model
+					comments.add(new Comment("taxon-" + taxon.getId(), taxon, taxon.getBiologicalName(), model
 							.getComment(taxon)));
 			}
 		}

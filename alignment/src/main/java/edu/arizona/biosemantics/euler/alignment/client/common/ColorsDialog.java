@@ -372,7 +372,7 @@ public class ColorsDialog extends CommonDialog {
 		for(Taxonomy taxonomy : model.getTaxonomies()) {
 			for (Taxon taxon : taxonomy.getTaxaDFS()) {
 				if (model.hasColor(taxon))
-					colorEntries.add(new ColorEntry("taxon-" + taxon.getId(), taxon, taxon.getFullName(), model
+					colorEntries.add(new ColorEntry("taxon-" + taxon.getId(), taxon, taxon.getBiologicalName(), model
 							.getColor(taxon)));
 			}
 		}

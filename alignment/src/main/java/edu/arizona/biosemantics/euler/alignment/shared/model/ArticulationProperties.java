@@ -64,7 +64,7 @@ public interface ArticulationProperties extends PropertyAccess<Taxon> {
 
 			@Override
 			public String getValue(Articulation object) {
-				return object.getTaxonA().getFullName();
+				return object.getTaxonA().getBiologicalName();
 			}
 
 			@Override
@@ -83,7 +83,7 @@ public interface ArticulationProperties extends PropertyAccess<Taxon> {
 
 			@Override
 			public String getValue(Articulation object) {
-				return object.getTaxonB().getFullName();
+				return object.getTaxonB().getBiologicalName();
 			}
 
 			@Override

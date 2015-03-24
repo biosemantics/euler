@@ -142,8 +142,16 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 	}
 	
 	public String getFullName() {
-		if(hasParent() && getParent().getRank() != null && Rank.equalOrBelowGenus(getParent().getRank())) {
+		if(hasParent()) {
 			return getParent().getFullName() + " " + getName();
+		} else {
+			return getName();
+		}
+	}
+	
+	public String getBiologicalName() {
+		if(hasParent() && getParent().getRank() != null && Rank.equalOrBelowGenus(getParent().getRank())) {
+			return getParent().getBiologicalName() + " " + getName();
 		} else {
 			return getName();
 		}

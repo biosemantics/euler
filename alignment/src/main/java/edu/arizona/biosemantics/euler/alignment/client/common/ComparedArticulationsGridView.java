@@ -157,7 +157,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 		final ColumnConfig<ComparedArticulation, String> taxonACol = new ColumnConfig<ComparedArticulation, String>(new ValueProvider<ComparedArticulation, String>() {
 			@Override
 			public String getValue(ComparedArticulation object) {
-				return object.getArticulation().getTaxonA().getFullName();
+				return object.getArticulation().getTaxonA().getBiologicalName();
 			}
 			@Override
 			public void setValue(ComparedArticulation object, String value) {	}
@@ -191,7 +191,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 				new ValueProvider<ComparedArticulation, String>() {
 					@Override
 					public String getValue(ComparedArticulation object) {
-						return object.getArticulation().getTaxonB().getFullName();
+						return object.getArticulation().getTaxonB().getBiologicalName();
 					}
 					@Override
 					public void setValue(ComparedArticulation object, String value) {	}
