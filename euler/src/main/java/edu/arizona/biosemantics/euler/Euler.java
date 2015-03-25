@@ -632,6 +632,7 @@ public class Euler {
 	}
 
 	private String runCommand(String command) throws EulerException {
+		log(LogLevel.DEBUG, "Run: " + command);
 		StringBuilder input = new StringBuilder();
 		StringBuilder error = new StringBuilder();
 		long time = System.currentTimeMillis();
