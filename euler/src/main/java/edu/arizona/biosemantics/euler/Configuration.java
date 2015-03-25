@@ -18,9 +18,9 @@ public class Configuration {
 		try {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			properties = new Properties(); 
-			properties.load(loader.getResourceAsStream("edu/arizona/biosemantics/etcsite/config.properties"));
+			properties.load(loader.getResourceAsStream("edu/arizona/biosemantics/euler/config.properties"));
 			
-			path = properties.getProperty("oto2Url");
+			path = properties.getProperty("path");
 		} catch(Exception e) {
 			logger.error("Couldn't read configuration", e);
 		}
