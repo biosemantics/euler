@@ -1,6 +1,7 @@
 package edu.arizona.biosemantics.euler;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
@@ -242,7 +243,7 @@ public class Euler {
 		if(this.mirStats != null)
 			commands.add("--mirStats " + mirStats);
 		
-		return runCommand("euler " + StringUtils.join(commands, " "));
+		return runCommand(Configuration.path + File.separator + "euler " + StringUtils.join(commands, " "));
 	}
 	
 	public boolean isVersion() {
