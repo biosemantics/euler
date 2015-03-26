@@ -664,6 +664,8 @@ public class Euler {
 			int exitStatus = p.waitFor();
 			if(exitStatus == 0)
 				return input.toString() + "\n" + error.toString();
+			else 
+				log(LogLevel.ERROR, "Euler exit status " + exitStatus);
 		} catch (IOException | InterruptedException e) {
 			log(LogLevel.ERROR, "Couldn't execute euler", e);
 			throw new EulerException("Euler exeuction failed: \n" + error.toString());
