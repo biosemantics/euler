@@ -71,7 +71,7 @@ public class ViewResultsDialog extends CommonDialog {
 		add(panel);
 		
 		setBodyBorder(false);
-		setHeadingText("MIR Results");
+		setHeadingText("Possible Worlds Result");
 		setWidth(200);
 		setHeight(400);
 		setHideOnButtonClick(true);
