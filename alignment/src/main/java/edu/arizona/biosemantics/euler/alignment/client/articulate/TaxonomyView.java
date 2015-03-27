@@ -12,6 +12,8 @@ import com.google.gwt.core.client.Scheduler.ScheduledCommand;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.Window;
@@ -21,6 +23,7 @@ import com.sencha.gxt.core.client.Style.SelectionMode;
 import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.client.util.Params;
+import com.sencha.gxt.data.shared.IconProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.box.MultiLinePromptMessageBox;
@@ -59,6 +62,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
 public class TaxonomyView extends ContentPanel {
 	
+	private static TaxonomyImages taxonomyImages = GWT.create(TaxonomyImages.class);
 	private TaxonProperties taxonProperties = GWT.create(TaxonProperties.class);
 	private HTML infoHtml = new HTML();
 	private Model model;
@@ -191,6 +195,23 @@ public class TaxonomyView extends ContentPanel {
 						style += " font-weight: bold;";
 					sb.append(SafeHtmlUtils.fromTrustedString("<div style='" + style + "'>" + 
 							taxon.getBiologicalName() + "</div>"));
+			}
+		});
+		tree.setIconProvider(new IconProvider<Taxon>() {
+			@Override
+			public ImageResource getIcon(Taxon model) {
+				return taxonomyImages.emptyDummy();
+				/*
+				switch(model.getRank()) {
+				case FAMILY:
+					return taxonomyImages.f();
+				case GENUS:
+					return taxonomyImages.g();
+				case SPECIES:
+					return taxonomyImages.s();
+				default:
+					return taxonomyImages.yellow();
+				}*/
 			}
 		});
 		return tree;

@@ -5,9 +5,11 @@ import java.io.Serializable;
 public class ArticulationEntry implements Serializable {
 		private Taxon taxonB;
 		private Taxon taxonA;
+		private ArticulationType type;
+		
 		public ArticulationEntry() { }
 		
-		public ArticulationEntry(Taxon taxonB, Taxon taxonA) {
+		public ArticulationEntry(Taxon taxonA, Taxon taxonB, ArticulationType type) {
 			super();
 			this.taxonB = taxonB;
 			this.taxonA = taxonA;

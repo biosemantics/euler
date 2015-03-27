@@ -12,3 +12,4 @@
 .project
 .settings/*
 gwt-unitCache/*
+/bin/

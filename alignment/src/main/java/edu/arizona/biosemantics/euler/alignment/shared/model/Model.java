@@ -82,10 +82,9 @@ public class Model implements Serializable {
 		this.articulations.add(articulation);
 		}
 	
-	public boolean containsArticulationEntry(ArticulationEntry entry) {
+	public boolean containsArticulationEntry(Articulation entry) {
 		for(Articulation articulation : articulations) {
-			ArticulationEntry articulationEntry = new ArticulationEntry(articulation);
-			if(articulationEntry.equals(entry))
+			if(articulation.equals(entry))
 				return true;
 		}
 		return false;
@@ -179,7 +178,6 @@ public class Model implements Serializable {
 				result.add(articulation);
 		}
 		return result;
-	}
-	
+	}	
 	
 }

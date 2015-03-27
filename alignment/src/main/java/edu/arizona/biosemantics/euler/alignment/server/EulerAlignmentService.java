@@ -51,7 +51,7 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 						+ "tincidunt diam nec urna. Curabitur velit.");
 		t1.addChild(t2);
 		t2.addChild(t3);
-		t2.addChild(t4);
+		t2.addChild(t4); 
 		List<Taxon> hierarchyTaxa1 = new LinkedList<Taxon>();
 		hierarchyTaxa1.add(t1);
 		

@@ -82,11 +82,11 @@ public class TaxonTreeAppearance extends TreeBaseAppearance {
 				jointElement.addClassName(style.joint());
 			}
 
-			/*sb.appendHtmlConstant(jointElement == null ? "<img src=\""
+			sb.appendHtmlConstant(jointElement == null ? "<img src=\""
 					+ GXT.getBlankImageUrl()
 					+ "\" style=\"width: 16px\" class=\"" + style.joint()
 					+ "\" />" : jointElement.getString());
-			*/
+			
 			
 			// checkable
 			if (checkable) {
@@ -110,7 +110,7 @@ public class TaxonTreeAppearance extends TreeBaseAppearance {
 						+ "'></span>");
 			}
 			
-			/*
+			
 			if (icon != null) {
 				Element e = getImage(icon);
 				e.addClassName(style.icon());
@@ -121,7 +121,7 @@ public class TaxonTreeAppearance extends TreeBaseAppearance {
 						+ "\"></span>");
 				sb.appendHtmlConstant("<span class=\"" + style.icon()
 						+ "\"></span>");
-			}*/
+			}
 			
 			sb.appendHtmlConstant("<span class=\"" + style.text() + "\">"
 					+ text.asString() + "</span>"); 

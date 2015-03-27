@@ -1,10 +1,14 @@
 package edu.arizona.biosemantics.euler.alignment.client.common;
 
+import java.util.List;
+
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.AlertMessageBox;
 import com.sencha.gxt.widget.core.client.box.AutoProgressMessageBox;
 import com.sencha.gxt.widget.core.client.box.ConfirmMessageBox;
 import com.sencha.gxt.widget.core.client.box.MessageBox;
+
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 
 public class Alerter {
 	
@@ -23,8 +27,11 @@ public class Alerter {
 		box = null;
 	}
 
-	public static MessageBox articulationAlreadyExists() {
-		return showAlert("Articulation exists", "Articulation for these taxon concepts already exists.");
+	public static MessageBox articulationAlreadyExists(List<Articulation> articulations) {
+		String result = "";
+		for(Articulation articulation : articulations)
+			result += articulation.getType().getDisplayName() + ", ";
+		return showAlert("Articulation exists", "Some of these articulations already existed: " + result.substring(0, result.length() - 2));
 	}
 	
 	public static MessageBox missingItemToCreateArticulation() {

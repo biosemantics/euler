@@ -3,6 +3,8 @@ package edu.arizona.biosemantics.euler.alignment.client.articulate;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -93,19 +95,23 @@ public class AddArticulationsCheckboxesView extends ContentPanel {
 					
 					Taxon taxonA = taxonomyACombo.getValue();
 					Taxon taxonB = taxonomyBCombo.getValue();
-					ArticulationEntry articulationEntry = new ArticulationEntry(taxonA, taxonB);
-					if(!model.containsArticulationEntry(articulationEntry)) {
-						for(ArticulationType type : selected) {
-							Articulation articulation = new Articulation(taxonA, taxonB, type);
-							eventBus.fireEvent(new AddArticulationsEvent(articulation));
-						} 
-						taxonomyACombo.clear();
-						taxonomyBCombo.clear();
-					} else {
-						taxonomyACombo.clear();
-						taxonomyBCombo.clear();
-						Alerter.articulationAlreadyExists();
+					
+					List<Articulation> containedArticulations = new LinkedList<Articulation>();
+					List<Articulation> toCreate = new LinkedList<Articulation>();
+					for(ArticulationType type : selected) {
+
+						Articulation articulation = new Articulation(taxonA, taxonB, type);
+						if(model.containsArticulationEntry(articulation)) 
+							containedArticulations.add(articulation);
+						else
+							toCreate.add(articulation);
 					}
+					
+					if(!containedArticulations.isEmpty())
+						Alerter.articulationAlreadyExists(containedArticulations);
+						
+					eventBus.fireEvent(new AddArticulationsEvent(toCreate));
+					
 					deselectArticulationTypes();
 				} else {
 					Alerter.missingItemToCreateArticulation();
