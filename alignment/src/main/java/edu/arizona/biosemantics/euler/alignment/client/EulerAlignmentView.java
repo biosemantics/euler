@@ -36,6 +36,7 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 	private ArticulateView alignmentView;
 	private DesktopView desktopView;
 	private int desktopHeight = 300;
+	private boolean showDialogs = true;
 	
 	public EulerAlignmentView() {	
 		eventBus = new SimpleEventBus();
@@ -109,17 +110,21 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 			public void onEnd(EndMIREvent event) {
 				switch(event.getOutput().getType()) {
 				case CONFLICT:
-					ViewDiagnosisDialog dialog = new ViewDiagnosisDialog(eventBus, model);
-					if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
-						dialog.setRun(model.getRunHistory().getLast());
-					dialog.show();
+					if(showDialogs) {
+						ViewDiagnosisDialog dialog = new ViewDiagnosisDialog(eventBus, model);
+						if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
+							dialog.setRun(model.getRunHistory().getLast());
+						dialog.show();
+					}
 					break;
 				case MULTIPLE:
 				case ONE:
-					ViewResultsDialog viewResultsDialog = new ViewResultsDialog(eventBus, model);
-					if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
-						viewResultsDialog.setRun(model.getRunHistory().getLast());
-					viewResultsDialog.show();
+					if(showDialogs) {
+						ViewResultsDialog viewResultsDialog = new ViewResultsDialog(eventBus, model);
+						if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
+							viewResultsDialog.setRun(model.getRunHistory().getLast());
+						viewResultsDialog.show();
+					}
 					break;
 				}
 			}
@@ -161,6 +166,11 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 		
 	public EventBus getEventBus() {
 		return eventBus;
+	}
+	
+	//TODO
+	public void setShowDialogs(boolean value) {
+		this.showDialogs = value;
 	}
 		
 }
