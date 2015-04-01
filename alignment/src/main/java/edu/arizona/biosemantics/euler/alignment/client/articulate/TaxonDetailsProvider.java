@@ -5,10 +5,13 @@ import java.util.List;
 
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ModelSwapper;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 
 public class TaxonDetailsProvider {
 
+	private ModelSwapper modelSwapper = new ModelSwapper();
+	
 	public String getTaxonDetails(Taxon taxon, Model model) {
 		List<Taxon> ancestors = new LinkedList<Taxon>();
 		Taxon parent = taxon.getParent();
@@ -43,8 +46,12 @@ public class TaxonDetailsProvider {
 		
 		String articulationsText = "";
 		List<Articulation> articulations = model.getArticulationsFor(taxon);
-		for(Articulation articulation : articulations) 
-			articulationsText += articulation.getText() + "</br>";
+		for(Articulation articulation : articulations) {
+			if(articulation.getTaxonA().equals(taxon))
+				articulationsText += articulation.getText() + "</br>";
+			else
+				articulationsText += modelSwapper.swap(articulation).getText() + "</br>";
+		}
 		if(!articulations.isEmpty()) 
 			infoText += "<p><b>Articulations:&nbsp;</b></br>" + articulationsText + "</p>";
 		return infoText;

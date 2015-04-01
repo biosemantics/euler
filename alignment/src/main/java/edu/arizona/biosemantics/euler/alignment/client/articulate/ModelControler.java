@@ -26,6 +26,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent.S
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.ModelSwapper;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunConfig;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
@@ -122,7 +123,8 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 
 	@Override
 	public void onShow(SwapTaxonomiesEvent event) {
-		eventBus.fireEvent(new LoadModelEvent(model.getSwaped()));
+		ModelSwapper swapper = new ModelSwapper();
+		eventBus.fireEvent(new LoadModelEvent(swapper.swap(model)));
 	}
 
 }
