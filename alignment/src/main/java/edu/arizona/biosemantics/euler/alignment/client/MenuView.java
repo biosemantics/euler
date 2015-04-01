@@ -60,6 +60,7 @@ public class MenuView extends MenuBar {
 		add(createTaxonomiesItem());
 		add(createRunItem());
 		add(createAnnotationsItem());
+		add(createViewItem());
 		add(createQuestionItem());
 	}
 
@@ -122,7 +123,7 @@ public class MenuView extends MenuBar {
 	protected Widget createTaxonomiesItem() {
 		Menu sub = new Menu();
 		
-		MenuBarItem taxonomiesItem = new MenuBarItem("Taxonomies", sub);
+		MenuBarItem taxonomiesItem = new MenuBarItem("Manage Input", sub);
 		MenuItem saveItem = new MenuItem("Save Progress");
 		saveItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
@@ -190,6 +191,20 @@ public class MenuView extends MenuBar {
 		});
 		sub.add(commentsItem);
 		return annotationsItem;
+	}
+	
+	private Widget createViewItem() {
+		Menu sub = new Menu();
+		MenuBarItem viewItem = new MenuBarItem("View", sub);
+		MenuItem swapItem = new MenuItem("Swap Taxonomies");
+		swapItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> arg0) {
+			
+			}
+		});
+		sub.add(swapItem);
+		return viewItem;
 	}
 
 	protected Widget createQuestionItem() {

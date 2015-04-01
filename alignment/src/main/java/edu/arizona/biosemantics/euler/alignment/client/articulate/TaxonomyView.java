@@ -84,12 +84,12 @@ public class TaxonomyView extends ContentPanel {
 		
 		FieldSet taxaFieldSet = new FieldSet();
 		//taxonFieldSet.setCollapsible(true);
-		taxaFieldSet.setHeadingText("Taxa");
+		taxaFieldSet.setHeadingText("Taxonomic Concepts");
 		taxaFieldSet.setWidget(tree);
 		
 		FieldSet infoFieldSet = new FieldSet();
 		//taxonFieldSet.setCollapsible(true);
-		infoFieldSet.setHeadingText("Taxon Details");
+		infoFieldSet.setHeadingText("Taxonomic Concept Details");
 		FlowLayoutContainer flowInfoHtml = new FlowLayoutContainer();
 		flowInfoHtml.add(infoHtml);
 		flowInfoHtml.getScrollSupport().setScrollMode(ScrollMode.AUTO);
@@ -340,9 +340,9 @@ public class TaxonomyView extends ContentPanel {
 		}
 		return colorMenu;
 	}
-
+	
 	public void loadModel(Taxonomy taxonomy) {
-		this.setHeadingText(taxonomy.getName());
+		this.setHeadingText(taxonomy.getFullName());
 		store.clear();
 		for(Taxon rootTaxon : taxonomy.getRootTaxa()) {
 			store.add(rootTaxon);

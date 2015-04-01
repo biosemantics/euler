@@ -18,6 +18,7 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 	private Rank rank;
 	private Taxon parent;
 	private List<Taxon> children = new LinkedList<Taxon>();
+	private Taxonomy taxonomy;
 	
 	/**
 	 * Taxon concept
@@ -45,6 +46,14 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 		this.description = description;
 	}
 	
+	public Taxonomy getTaxonomy() {
+		return taxonomy;
+	}
+
+	public void setTaxonomy(Taxonomy taxonomy) {
+		this.taxonomy = taxonomy;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}

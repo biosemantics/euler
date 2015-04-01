@@ -165,7 +165,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 			public String getPath() {
 				return "taxonA";
 			}
-		}, 100,	"Taxon A");
+		}, 100,	"Taxonomic Concept A");
 		taxonACol.setCell(colorableCell);
 		final ColumnConfig<ComparedArticulation, ArticulationType> relationCol = new ColumnConfig<ComparedArticulation, ArticulationType>(
 				new ValueProvider<ComparedArticulation, ArticulationType>() {
@@ -185,7 +185,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 						return "type";
 					}
 					
-				}, 100, "Relation");
+				}, 100, "Articulation");
 		relationCol.setCell(colorableCell);
 		final ColumnConfig<ComparedArticulation, String> taxonBCol = new ColumnConfig<ComparedArticulation, String>(
 				new ValueProvider<ComparedArticulation, String>() {
@@ -200,7 +200,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 						return "taxonB";
 					}
 				}, 100,
-				"Taxon B");
+				"Taxonomic Concept B");
 		taxonBCol.setCell(colorableCell);
 
 		ValueProvider<ComparedArticulation, String> commentValueProvider = new ValueProvider<ComparedArticulation, String>() {

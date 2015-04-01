@@ -114,11 +114,8 @@ public class TaxonTreeAppearance extends TreeBaseAppearance {
 			if (icon != null) {
 				Element e = getImage(icon);
 				e.addClassName(style.icon());
-				System.out.println("icon != null " + e.getString());
 				sb.appendHtmlConstant(e.getString());
 			} else {
-				System.out.println("icon == null " + "<span class=\"" + style.icon()
-						+ "\"></span>");
 				sb.appendHtmlConstant("<span class=\"" + style.icon()
 						+ "\"></span>");
 			}

@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public enum ArticulationType implements Serializable {
 	//CONGRUENT("is congruent with"), OVERLAP("overlaps with"), A_INCLUDES_B("includes"), B_INCLUDES_A("is included by"), DISJOINT("is disjoint with");
-	CONGRUENT("=", "is congruent with"), OVERLAP("><", "overlaps with"), A_INCLUDES_B("<", "includes"), B_INCLUDES_A(">", "is included by"), DISJOINT("!", "is disjoint with");
-
+	CONGRUENT("==", "is congruent with"), B_INCLUDES_A(">", "is included by"), A_INCLUDES_B("<", "includes"), OVERLAP("><", "overlaps with"), DISJOINT("!", "is disjoint with");
+	
 	private String displayName;
 	private String longDisplayName;
 

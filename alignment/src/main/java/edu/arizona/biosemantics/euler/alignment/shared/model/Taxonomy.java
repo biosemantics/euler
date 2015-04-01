@@ -65,6 +65,9 @@ public class Taxonomy implements Serializable, Cloneable {
 		this.year = year;
 		this.name = name;
 		this.rootTaxa = rootTaxa;
+		
+		for(Taxon taxon : this.getTaxaBFS())
+			taxon.setTaxonomy(this);
 	}
 	
 	public DFSTaxaList getTaxaDFS() {
@@ -85,6 +88,10 @@ public class Taxonomy implements Serializable, Cloneable {
 	
 	public String getYear() {
 		return year;
+	}
+	
+	public String getFullName() {
+		return " sec " + name + " " + year;
 	}
 	
 	@Override

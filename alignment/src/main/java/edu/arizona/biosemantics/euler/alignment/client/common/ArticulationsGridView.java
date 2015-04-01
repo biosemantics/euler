@@ -9,6 +9,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -72,6 +73,8 @@ public class ArticulationsGridView extends ContentPanel {
 	protected ListStore<ArticulationType> availableTypesStore;
 	private boolean relationEditEnabled;
 	private boolean removeEnabled;
+	private ColumnConfig<Articulation, String> taxonACol;
+	private ColumnConfig<Articulation, String> taxonBCol;
 	
 	public ArticulationsGridView(EventBus eventBus, Model model, boolean relationEditEnabled, boolean removeEnabled) {
 		this.eventBus = eventBus;
@@ -98,11 +101,21 @@ public class ArticulationsGridView extends ContentPanel {
 		add(createArticulationsGrid());
 	}
 
+	private void updateTaxonColumnHeaders() {
+		if(model != null) {
+			grid.getView().getHeader().getHead(1).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + model.getTaxonomies().get(0).getFullName()));
+			grid.getView().getHeader().getHead(3).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + model.getTaxonomies().get(1).getFullName()));
+			taxonACol.setHeader("Taxonomic Concept " + model.getTaxonomies().get(0).getFullName());
+			taxonBCol.setHeader("Taxonomic Concept " + model.getTaxonomies().get(1).getFullName());
+		}
+	}
+
 	protected void bindEvents() {
 		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
 			@Override
 			public void onLoad(LoadModelEvent event) {
 				model = event.getModel();
+				updateTaxonColumnHeaders();
 			}
 		});
 	}
@@ -143,14 +156,21 @@ public class ArticulationsGridView extends ContentPanel {
 		final ColumnConfig<Articulation, String> createdCol = new ColumnConfig<Articulation, String>(
 				new ArticulationProperties.CreatedStringValueProvder(), 200, "Created");
 		createdCol.setCell(colorableCell);
-		final ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonAStringValueProvider(), 150, "Taxon A");
+
+		String aHead = "Taxonomic Concept A";
+		String bHead = "Taxonomic Concept B";
+		if(model != null) {
+			 aHead = "Taxonomic Concept " + model.getTaxonomies().get(0).getFullName();
+			 bHead = "Taxonomic Concept " + model.getTaxonomies().get(1).getFullName();
+		}
+		taxonACol = new ColumnConfig<Articulation, String>(
+				new ArticulationProperties.TaxonAStringValueProvider(), 150, aHead);
 		taxonACol.setCell(colorableCell);
 		final ColumnConfig<Articulation, ArticulationType> relationCol = new ColumnConfig<Articulation, ArticulationType>(
-				articulationProperties.type(), 50, "Relation");
+				articulationProperties.type(), 50, "Articulation");
 		relationCol.setCell(colorableCell);
-		final ColumnConfig<Articulation, String> taxonBCol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonBStringValueProvider(), 150, "Taxon B");
+		taxonBCol = new ColumnConfig<Articulation, String>(
+				new ArticulationProperties.TaxonBStringValueProvider(), 150, bHead);
 		taxonBCol.setCell(colorableCell);
 		
 		ValueProvider<Articulation, String> commentValueProvider = new ValueProvider<Articulation, String>() {
@@ -176,11 +196,11 @@ public class ArticulationsGridView extends ContentPanel {
 
 		List<ColumnConfig<Articulation, ?>> columns = new ArrayList<ColumnConfig<Articulation, ?>>();
 		columns.add(checkBoxSelectionModel.getColumn());
-		columns.add(createdCol);
 		columns.add(taxonACol);
 		columns.add(relationCol);
 		columns.add(taxonBCol);
 		columns.add(commentCol);
+		columns.add(createdCol);
 		ColumnModel<Articulation> cm = new ColumnModel<Articulation>(columns);
 		
 		//final GroupingView<Articulation> groupingView = new GroupingView<Articulation>();
