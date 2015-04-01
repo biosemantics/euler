@@ -13,6 +13,8 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
+import edu.arizona.biosemantics.euler.alignment.client.event.TaxonSelectionAEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.TaxonSelectionBEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
@@ -37,7 +39,7 @@ public class ArticulateView extends SplitLayoutPanel {
 		horizontalLayoutContainer.add(taxaViewB, new HorizontalLayoutData(0.5, 1.0));	
 		
 		VerticalLayoutContainer verticalLayoutPanel = new VerticalLayoutContainer();
-		addArticulationsView = new AddArticulationsCheckboxesView(eventBus, this);
+		addArticulationsView = new AddArticulationsCheckboxesView(eventBus);
 		verticalLayoutPanel.add(addArticulationsView, new VerticalLayoutData(1.0, -1.0));
 		
 		articulationsGridView = new CurrentArticulationsGridView(eventBus);
@@ -63,27 +65,30 @@ public class ArticulateView extends SplitLayoutPanel {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<Taxon> event) {
 				if(!event.getSelection().isEmpty())
-					addArticulationsView.setTaxonA(event.getSelection().get(0));
+					eventBus.fireEvent(new TaxonSelectionAEvent(event.getSelection().get(0), ArticulateView.this));
 			}
 		});
 		taxaViewB.addSelectionChangeHandler(new SelectionChangedHandler<Taxon>() {
 			@Override
 			public void onSelectionChanged(SelectionChangedEvent<Taxon> event) {
 				if(!event.getSelection().isEmpty())
-					addArticulationsView.setTaxonB(event.getSelection().get(0));
+					eventBus.fireEvent(new TaxonSelectionBEvent(event.getSelection().get(0), ArticulateView.this));
 			}
 		});
-		addArticulationsView.addSelectionHandlerA(new SelectionHandler<Taxon>() {
+		eventBus.addHandler(TaxonSelectionAEvent.TYPE, new TaxonSelectionAEvent.TaxonSelectionEventHandler() {
 			@Override
-			public void onSelection(SelectionEvent<Taxon> event) {
-				taxaViewA.setSelected(event.getSelectedItem());
+			public void onSelect(TaxonSelectionAEvent event) {
+				if(!event.getSource().equals(ArticulateView.this)) {
+					taxaViewA.setSelected(event.getTaxon());
+				}
 			}
-			
 		});
-		addArticulationsView.addSelectionHandlerB(new SelectionHandler<Taxon>() {
+		eventBus.addHandler(TaxonSelectionBEvent.TYPE, new TaxonSelectionBEvent.TaxonSelectionEventHandler() {
 			@Override
-			public void onSelection(SelectionEvent<Taxon> event) {
-				taxaViewB.setSelected(event.getSelectedItem());
+			public void onSelect(TaxonSelectionBEvent event) {
+				if(!event.getSource().equals(ArticulateView.this)) {
+					taxaViewB.setSelected(event.getTaxon());
+				}
 			}
 		});
 	}

@@ -12,6 +12,8 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlBuilder;
@@ -38,8 +40,11 @@ import com.sencha.gxt.widget.core.client.toolbar.FillToolItem;
 import com.sencha.gxt.widget.core.client.toolbar.ToolBar;
 
 import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
+import edu.arizona.biosemantics.euler.alignment.client.event.TaxonSelectionAEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.TaxonSelectionBEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationEntry;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
@@ -59,13 +64,10 @@ public class AddArticulationsCheckboxesView extends ContentPanel {
 	private ComboBox<Taxon> taxonomyBCombo;
 	private ListStore<Taxon> taxonomyAStore;
 	private ListStore<Taxon> taxonomyBStore;
-	private TextButton addArticulationButton = new TextButton("Add");
-	private ArticulateView articulateView;
 	private Map<ArticulationType, CheckBox> articulationCheckBoxes = new HashMap<ArticulationType, CheckBox>();
 	
-	public AddArticulationsCheckboxesView(EventBus eventBus, ArticulateView articulateView) {
+	public AddArticulationsCheckboxesView(EventBus eventBus) {
 		this.eventBus = eventBus;
-		this.articulateView = articulateView;
 		setHeadingText("Create Articulation");
 		
 		add(createArticulationButtons());
@@ -81,40 +83,24 @@ public class AddArticulationsCheckboxesView extends ContentPanel {
 				taxonomyBStore.clear();
 				taxonomyAStore.addAll(model.getTaxonomies().get(0).getTaxaDFS());
 				taxonomyBStore.addAll(model.getTaxonomies().get(1).getTaxaDFS());
-				deselectArticulationTypes();
+				clearSelections();
 			}
 		});
-		addArticulationButton.addSelectHandler(new SelectHandler() {
+		eventBus.addHandler(TaxonSelectionAEvent.TYPE, new TaxonSelectionAEvent.TaxonSelectionEventHandler() {
 			@Override
-			public void onSelect(SelectEvent event) {
-				Set<ArticulationType> selected = getSelectedArticulationTypes();
-				if(taxonomyACombo.getValue() != null && 
-						taxonomyBCombo.getValue() != null && 
-						//relationCombo.getValue() != null) {
-						!selected.isEmpty()) {
-					
-					Taxon taxonA = taxonomyACombo.getValue();
-					Taxon taxonB = taxonomyBCombo.getValue();
-					
-					List<Articulation> containedArticulations = new LinkedList<Articulation>();
-					List<Articulation> toCreate = new LinkedList<Articulation>();
-					for(ArticulationType type : selected) {
-
-						Articulation articulation = new Articulation(taxonA, taxonB, type);
-						if(model.containsArticulationEntry(articulation)) 
-							containedArticulations.add(articulation);
-						else
-							toCreate.add(articulation);
-					}
-					
-					if(!containedArticulations.isEmpty())
-						Alerter.articulationAlreadyExists(containedArticulations);
-						
-					eventBus.fireEvent(new AddArticulationsEvent(toCreate));
-					
-					deselectArticulationTypes();
-				} else {
-					Alerter.missingItemToCreateArticulation();
+			public void onSelect(TaxonSelectionAEvent event) {
+				if(!event.getSource().equals(AddArticulationsCheckboxesView.this)) {
+					taxonomyACombo.setValue(event.getTaxon());
+					updateArticulationCheckBoxes();
+				}
+			}
+		});
+		eventBus.addHandler(TaxonSelectionBEvent.TYPE, new TaxonSelectionBEvent.TaxonSelectionEventHandler() {
+			@Override
+			public void onSelect(TaxonSelectionBEvent event) {
+				if(!event.getSource().equals(AddArticulationsCheckboxesView.this)) {
+					taxonomyBCombo.setValue(event.getTaxon());
+					updateArticulationCheckBoxes();
 				}
 			}
 		});
@@ -122,16 +108,42 @@ public class AddArticulationsCheckboxesView extends ContentPanel {
 			@Override
 			public void onSelection(SelectionEvent<Taxon> event) {
 				Taxon selected = event.getSelectedItem();
-				articulateView.setTaxonA(selected);
+				eventBus.fireEvent(new TaxonSelectionAEvent(selected, AddArticulationsCheckboxesView.this));
+				updateArticulationCheckBoxes();
 			}
 		});
 		taxonomyBCombo.addSelectionHandler(new SelectionHandler<Taxon>() {
 			@Override
 			public void onSelection(SelectionEvent<Taxon> event) {
 				Taxon selected = event.getSelectedItem();
-				articulateView.setTaxonB(selected);
+				eventBus.fireEvent(new TaxonSelectionBEvent(selected, AddArticulationsCheckboxesView.this));
+				updateArticulationCheckBoxes();
 			}
 		});
+	}
+
+	protected void clearSelections() {
+		taxonomyACombo.clear();
+		taxonomyBCombo.clear();
+		clearArticulationCheckBoxes();
+	}
+
+	private void clearArticulationCheckBoxes() {
+		for(ArticulationType type : articulationCheckBoxes.keySet())
+			articulationCheckBoxes.get(type).setValue(false);
+	}
+
+	protected void updateArticulationCheckBoxes() {
+		clearArticulationCheckBoxes();
+		Taxon taxonA = taxonomyACombo.getValue();
+		Taxon taxonB = taxonomyBCombo.getValue();
+		
+		if(taxonA != null && taxonB != null) {
+			List<Articulation> articulations = model.getArticulations(taxonA, taxonB);
+			for(Articulation articulation : articulations) {
+				articulationCheckBoxes.get(articulation.getType()).setValue(true);
+			}
+		}
 	}
 
 	private ComboBox<Taxon> createTaxonomyACombo() {
@@ -177,8 +189,24 @@ public class AddArticulationsCheckboxesView extends ContentPanel {
 		
 		ArticulationType[] types = ArticulationType.values();
 		for(int i=0; i<types.length; i++) {
-			ArticulationType type = types[i];
+			final ArticulationType type = types[i];
 			CheckBox articulationCheckBox = new CheckBox();
+			articulationCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+				@Override
+				public void onValueChange(ValueChangeEvent<Boolean> event) {
+					Taxon taxonA = taxonomyACombo.getValue();
+					Taxon taxonB = taxonomyBCombo.getValue();
+					
+					if(taxonA != null && taxonB != null) {
+						if(event.getValue()) {
+							eventBus.fireEvent(new AddArticulationsEvent(new Articulation(taxonA, taxonB, type)));
+						} else {
+							eventBus.fireEvent(new RemoveArticulationsEvent(new Articulation(taxonA, taxonB, type)));
+						}
+					}
+				}
+			});
+			
 			articulationCheckBoxes.put(type, articulationCheckBox);
 			articulationCheckBox.setBoxLabel(SafeHtmlUtils.fromString(type.displayName()).asString());
 			if(i<types.length - 1)
@@ -194,37 +222,7 @@ public class AddArticulationsCheckboxesView extends ContentPanel {
 		toolBar.add(checkBoxContainer);
 		toolBar.add(taxonomyBCombo);
 		toolBar.add(new FillToolItem());
-		toolBar.add(addArticulationButton);
 		return toolBar;
 	}
-
-	public void setTaxonA(Taxon taxon) {
-		taxonomyACombo.setValue(taxon);
-	}
-
-	public void setTaxonB(Taxon taxon) {
-		taxonomyBCombo.setValue(taxon);
-	}
-
-	public Set<ArticulationType> getSelectedArticulationTypes() {
-		Set<ArticulationType> types = new HashSet<ArticulationType>();
-		for(ArticulationType type : articulationCheckBoxes.keySet())
-			if(articulationCheckBoxes.get(type).getValue())
-				types.add(type);
-		return types;
-	}
-
-	public void addSelectionHandlerA(SelectionHandler<Taxon> handler) {
-		taxonomyACombo.addSelectionHandler(handler);
-	}
-
-	public void addSelectionHandlerB(SelectionHandler<Taxon> handler) {
-		taxonomyBCombo.addSelectionHandler(handler);
-	}
-	
-
-	private void deselectArticulationTypes() {
-		for(ArticulationType type : articulationCheckBoxes.keySet())
-			articulationCheckBoxes.get(type).setValue(false);
-	}
 }
+	
