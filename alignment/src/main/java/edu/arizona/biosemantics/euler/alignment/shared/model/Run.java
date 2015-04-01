@@ -27,10 +27,10 @@ public class Run implements Serializable {
 	public void setOutput(RunOutput output) {
 		this.output = output;
 	}
-	public List<Taxonomy> getTaxonomies() {
+	public Taxonomies getTaxonomies() {
 		return taxonomies;
 	}
-	public List<Articulation> getArticulations() {
+	public Articulations getArticulations() {
 		return articulations;
 	}
 	public RunConfig getRunConfig() {

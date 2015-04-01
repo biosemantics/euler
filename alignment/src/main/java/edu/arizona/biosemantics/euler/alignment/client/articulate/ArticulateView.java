@@ -32,8 +32,8 @@ public class ArticulateView extends SplitLayoutPanel {
 	public ArticulateView(final EventBus eventBus) {
 		this.eventBus = eventBus;
 		
-		taxaViewA = new TaxonomyView(eventBus, true);
-		taxaViewB = new TaxonomyView(eventBus, false);
+		taxaViewA = new TaxonomyView(eventBus);
+		taxaViewB = new TaxonomyView(eventBus);
 		HorizontalLayoutContainer horizontalLayoutContainer = new HorizontalLayoutContainer();
 		horizontalLayoutContainer.add(taxaViewA, new HorizontalLayoutData(0.5, 1.0));
 		horizontalLayoutContainer.add(taxaViewB, new HorizontalLayoutData(0.5, 1.0));	

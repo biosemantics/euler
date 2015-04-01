@@ -71,12 +71,11 @@ public class TaxonomyView extends ContentPanel {
 	private TreeStore<Taxon> store = new TreeStore<Taxon>(taxonProperties.key());
 	private Set<SelectionChangedHandler<Taxon>> selectionChangeHandlers = 
 			new HashSet<SelectionChangedHandler<Taxon>>();
-	private boolean taxonomyA;
 	private TaxonDetailsProvider taxonDetailsProvider = new TaxonDetailsProvider();
+	private Taxonomy taxonomy;
 	
-	public TaxonomyView(EventBus eventBus, boolean taxonomyA) {
+	public TaxonomyView(EventBus eventBus) {
 		this.eventBus = eventBus;
-		this.taxonomyA = taxonomyA;
 		tree = createTree();
 		
 		//this.setTitle("Right-clicks on taxa to bring up more taxa management functions");
@@ -135,9 +134,9 @@ public class TaxonomyView extends ContentPanel {
 			@Override
 			public void onAdd(AddArticulationsEvent event) {
 				for(Articulation articulation : event.getArticulations()) {
-					if(taxonomyA)
+					if(articulation.getTaxonA().getTaxonomy().equals(taxonomy)) 
 						updateStore(articulation.getTaxonA());
-					else
+					if(articulation.getTaxonB().getTaxonomy().equals(taxonomy)) 
 						updateStore(articulation.getTaxonB());
 				}
 			}
@@ -146,9 +145,9 @@ public class TaxonomyView extends ContentPanel {
 			@Override
 			public void onRemove(RemoveArticulationsEvent event) {
 				for(Articulation articulation : event.getArticulations()) {
-					if(taxonomyA)
+					if(articulation.getTaxonA().getTaxonomy().equals(taxonomy)) 
 						updateStore(articulation.getTaxonA());
-					else 
+					if(articulation.getTaxonB().getTaxonomy().equals(taxonomy)) 
 						updateStore(articulation.getTaxonB());
 				}
 			}
@@ -342,6 +341,7 @@ public class TaxonomyView extends ContentPanel {
 	}
 	
 	public void loadModel(Taxonomy taxonomy) {
+		this.taxonomy = taxonomy;
 		this.setHeadingText(taxonomy.getFullName());
 		store.clear();
 		for(Taxon rootTaxon : taxonomy.getRootTaxa()) {

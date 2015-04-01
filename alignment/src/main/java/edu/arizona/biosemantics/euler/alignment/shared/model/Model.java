@@ -178,6 +178,55 @@ public class Model implements Serializable {
 				result.add(articulation);
 		}
 		return result;
+	}
+
+	public Model getSwaped() {
+		Model model = new Model();
+		model.colors = colors;
+		model.comments = comments;
+		model.coloreds = coloreds;
+		model.runHistory = swap(runHistory);
+		model.articulations = swap(articulations);
+		model.taxonomies = swap(taxonomies);
+		return model;
+	}
+
+	private LinkedList<Run> swap(LinkedList<Run> runHistory) {
+		LinkedList<Run> result = new LinkedList<Run>();
+		for(Run run : runHistory) {
+			result.add(swap(run));
+		}
+		return result;
+	}
+
+	private Run swap(Run run) {
+		return new Run(swap(run.getTaxonomies()), swap(run.getArticulations()), run.getRunConfig());
+	}
+
+	private Taxonomies swap(Taxonomies taxonomies) {
+		Taxonomies result = new Taxonomies();
+		result.add(taxonomies.get(1));
+		result.add(taxonomies.get(0));
+		return result;
+	}
+
+	private Articulations swap(Articulations articulations) {
+		Articulations result = new Articulations();
+		for(Articulation articulation : articulations) {
+			result.add(new Articulation(articulation.getTaxonB(), articulation.getTaxonA(), swap(articulation.getType())));
+		}
+		return result;
+	}
+
+	private ArticulationType swap(ArticulationType type) {
+		switch(type) {
+		case A_INCLUDES_B:
+			return ArticulationType.B_INCLUDES_A;
+		case B_INCLUDES_A:
+			return ArticulationType.A_INCLUDES_B;
+		default:
+			return type;
+		}
 	}	
 	
 }

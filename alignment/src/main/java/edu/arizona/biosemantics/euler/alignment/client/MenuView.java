@@ -26,6 +26,7 @@ import edu.arizona.biosemantics.euler.alignment.client.common.ViewHistoryDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SaveEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.SwapTaxonomiesEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
@@ -200,7 +201,7 @@ public class MenuView extends MenuBar {
 		swapItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> arg0) {
-			
+				eventBus.fireEvent(new SwapTaxonomiesEvent());
 			}
 		});
 		sub.add(swapItem);

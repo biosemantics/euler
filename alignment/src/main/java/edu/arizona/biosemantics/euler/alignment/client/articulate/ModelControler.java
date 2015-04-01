@@ -2,6 +2,7 @@ package edu.arizona.biosemantics.euler.alignment.client.articulate;
 
 import com.google.gwt.event.shared.EventBus;
 
+import edu.arizona.biosemantics.euler.alignment.client.event.SwapTaxonomiesEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent.AddArticulationEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
@@ -31,7 +32,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 
 public class ModelControler implements LoadModelEventHandler, SetColorsEventHandler,  AddArticulationEventHandler, 
 	RemoveArticulationsEventHandler, ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler, EndMIREventHandler, 
-	SetColorEventHandler, SetCommentEventHandler {
+	SetColorEventHandler, SetCommentEventHandler, SwapTaxonomiesEvent.SwapTaxonomiesEventHandler {
 
 	protected EventBus eventBus;
 	protected Model model;
@@ -53,6 +54,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 		eventBus.addHandler(StartMIREvent.TYPE, this);
 		eventBus.addHandler(ImportArticulationsEvent.TYPE, this);
 		eventBus.addHandler(EndMIREvent.TYPE, this);
+		eventBus.addHandler(SwapTaxonomiesEvent.TYPE, this);
 	}
 
 	@Override
@@ -116,6 +118,11 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 	@Override
 	public void onSet(SetColorEvent event) {
 		model.setColor(event.getObject(), event.getColor());
+	}
+
+	@Override
+	public void onShow(SwapTaxonomiesEvent event) {
+		eventBus.fireEvent(new LoadModelEvent(model.getSwaped()));
 	}
 
 }
