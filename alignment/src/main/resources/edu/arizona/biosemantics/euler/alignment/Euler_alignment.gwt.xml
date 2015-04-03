@@ -25,12 +25,14 @@
   <inherits name='edu.arizona.biosemantics.common.taxonomy.Taxonomy'/>
   <inherits name='com.google.web.bindery.event.EventBinder'/>
   
+  <inherits name='org.vectomatic.libgwtsvg'/>
+  
   <!-- GXT stylesheet -->
   <stylesheet src="reset.css" />
 
   <!-- Specify the app entry point class.                         -->
   <!-- <entry-point class='edu.arizona.biosemantics.euler.alignment.client.EulerAlignment'/> -->
-  <entry-point class='edu.arizona.biosemantics.euler.alignment.client.EulerAlignment'/>
+  <!-- <entry-point class='edu.arizona.biosemantics.euler.alignment.client.EulerAlignment'/> -->
 
   <!-- Specify the paths for translatable code                    -->
   <source path='client'/>
