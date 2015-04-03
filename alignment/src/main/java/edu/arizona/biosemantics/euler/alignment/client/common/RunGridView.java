@@ -102,10 +102,10 @@ public class RunGridView implements IsWidget {
 					}
 				});
 		final ColumnConfig<Run, String> nameCol = new ColumnConfig<Run, String>(
-				new RunProperties.DisplayNameValueProvider(), 100, "Run");
+				new RunProperties.DisplayNameValueProvider(), 200, "Run");
 		nameCol.setCell(colorableCell);
 		final ColumnConfig<Run, String> resultCol = new ColumnConfig<Run, String>(
-				new RunProperties.ResultValueProvider(), 100, "Result");
+				new RunProperties.ResultValueProvider(), 70, "Result");
 		resultCol.setCell(colorableCell);
 
 		ValueProvider<Run, String> runCommentValueProvider = new ValueProvider<Run, String>() {

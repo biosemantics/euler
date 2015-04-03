@@ -27,8 +27,10 @@ import com.sencha.gxt.data.shared.IconProvider;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.box.MultiLinePromptMessageBox;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -81,28 +83,39 @@ public class TaxonomyView extends ContentPanel {
 		//this.setTitle("Right-clicks on taxa to bring up more taxa management functions");
 		//this.setHeadingText("Select Taxa for the Matrix");
 		
-		FieldSet taxaFieldSet = new FieldSet();
-		//taxonFieldSet.setCollapsible(true);
-		taxaFieldSet.setHeadingText("Taxonomic Concepts");
-		taxaFieldSet.setWidget(tree);
+		BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
+		borderLayoutContainer.setBorders(true);
 		
-		FieldSet infoFieldSet = new FieldSet();
+		ContentPanel center = new ContentPanel();
 		//taxonFieldSet.setCollapsible(true);
-		infoFieldSet.setHeadingText("Taxonomic Concept Details");
+		center.setHeadingText("Taxonomic Concepts");
+		center.setWidget(tree);
+		
+		//FieldSet infoFieldSet = new FieldSet();
+		
+		
+		BorderLayoutData eastData = new BorderLayoutData(0.5);
+		eastData.setCollapseMini(true);
+		eastData.setCollapsible(true);
+		eastData.setSplit(true);
+		ContentPanel east = new ContentPanel();
 		FlowLayoutContainer flowInfoHtml = new FlowLayoutContainer();
 		flowInfoHtml.add(infoHtml);
 		flowInfoHtml.getScrollSupport().setScrollMode(ScrollMode.AUTO);
-		infoFieldSet.setWidget(flowInfoHtml);
+		east.setWidget(flowInfoHtml);
+		east.setHeadingText("Taxonomic Concept Details");
 		
-		HorizontalLayoutContainer horizontalLayoutContainer = new HorizontalLayoutContainer();
-		horizontalLayoutContainer.add(taxaFieldSet, new HorizontalLayoutData(0.5, 1.0));
-		horizontalLayoutContainer.add(infoFieldSet, new HorizontalLayoutData(0.5, 1.0));
+		borderLayoutContainer.setEastWidget(east, eastData);
+		borderLayoutContainer.setCenterWidget(center);
+		//HorizontalLayoutContainer horizontalLayoutContainer = new HorizontalLayoutContainer();
+		//horizontalLayoutContainer.add(taxaFieldSet, new HorizontalLayoutData(0.5, 1.0));
+		//horizontalLayoutContainer.add(infoFieldSet, new HorizontalLayoutData(0.5, 1.0));
 
-		VerticalLayoutContainer vertical = new VerticalLayoutContainer();
-		vertical.add(horizontalLayoutContainer, new VerticalLayoutData(1.0, 1.0));
+		//VerticalLayoutContainer vertical = new VerticalLayoutContainer();
+		//vertical.add(horizontalLayoutContainer, new VerticalLayoutData(1.0, 1.0));
 		//vertical.add(createTaxaButtonBar(), new VerticalLayoutData());
 				
-		this.setWidget(vertical);
+		this.setWidget(borderLayoutContainer);
 		
 		bindEvents();
 	}

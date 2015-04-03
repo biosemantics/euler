@@ -94,7 +94,10 @@ public class SingleRunView extends BorderLayoutContainer {
 		panel.setLayoutData(centerData);
 		
 		verticalLayoutContainer = new VerticalLayoutContainer();
-		verticalLayoutContainer.add(articulationsGridView,
+		ContentPanel articulationsView = new ContentPanel();
+		articulationsView.setHeadingText("Articulations");
+		articulationsView.setWidget(articulationsGridView);
+		verticalLayoutContainer.add(articulationsView,
 				new VerticalLayoutData(1, 0.5, new Margins(5)));
 		verticalLayoutContainer.add(runConfigPanel, new VerticalLayoutData(1,
 				0.5, new Margins(5)));

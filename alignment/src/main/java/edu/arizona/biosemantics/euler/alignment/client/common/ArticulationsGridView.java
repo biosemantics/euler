@@ -22,6 +22,7 @@ import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.box.MultiLinePromptMessageBox;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
 import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
 import com.sencha.gxt.widget.core.client.event.BeforeStartEditEvent;
@@ -62,7 +63,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
-public class ArticulationsGridView extends ContentPanel {
+public class ArticulationsGridView extends SimpleContainer /* extends ContentPanel*/ {
 
 	protected EventBus eventBus;
 	protected Model model;
@@ -97,7 +98,7 @@ public class ArticulationsGridView extends ContentPanel {
 		});
 		allTypesStore.addAll(Arrays.asList(ArticulationType.values()));
 		
-		setHeadingText("Articulations");
+		//setHeadingText("Articulations");
 		add(createArticulationsGrid());
 	}
 
@@ -164,13 +165,13 @@ public class ArticulationsGridView extends ContentPanel {
 			 bHead = "Taxonomic Concept " + model.getTaxonomies().get(1).getFullName();
 		}
 		taxonACol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonAStringValueProvider(), 150, aHead);
+				new ArticulationProperties.TaxonAStringValueProvider(), 250, aHead);
 		taxonACol.setCell(colorableCell);
 		final ColumnConfig<Articulation, ArticulationType> relationCol = new ColumnConfig<Articulation, ArticulationType>(
-				articulationProperties.type(), 50, "Articulation");
+				articulationProperties.type(), 70, "Articulation");
 		relationCol.setCell(colorableCell);
 		taxonBCol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonBStringValueProvider(), 150, bHead);
+				new ArticulationProperties.TaxonBStringValueProvider(), 250, bHead);
 		taxonBCol.setCell(colorableCell);
 		
 		ValueProvider<Articulation, String> commentValueProvider = new ValueProvider<Articulation, String>() {

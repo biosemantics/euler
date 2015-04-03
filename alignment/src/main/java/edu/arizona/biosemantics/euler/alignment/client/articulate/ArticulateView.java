@@ -6,7 +6,12 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.user.client.ui.SplitLayoutPanel;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
@@ -19,7 +24,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEven
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 
-public class ArticulateView extends SplitLayoutPanel {
+public class ArticulateView extends BorderLayoutContainer {
 	
 	private EventBus eventBus;
 	private Model model;
@@ -44,9 +49,27 @@ public class ArticulateView extends SplitLayoutPanel {
 		
 		articulationsGridView = new CurrentArticulationsGridView(eventBus);
 		verticalLayoutPanel.add(articulationsGridView, new VerticalLayoutData(1.0, 1.0));
-		addSouth(verticalLayoutPanel, 0);
-		add(horizontalLayoutContainer);
-		this.setWidgetSize(verticalLayoutPanel, 400.0);
+		
+		setBorders(true);
+		//ContentPanel center = new ContentPanel();
+		//taxonFieldSet.setCollapsible(true);
+		//center.setHeadingText("Center");
+		//center.setWidget(horizontalLayoutContainer);
+		
+		BorderLayoutData southData = new BorderLayoutData(0.33);
+		southData.setCollapseMini(true);
+		southData.setCollapsible(true);
+		southData.setSplit(true);
+		ContentPanel south = new ContentPanel();
+		south.setWidget(verticalLayoutPanel);
+		south.setHeadingText("Articulations");
+		
+		setSouthWidget(south, southData);
+		setCenterWidget(horizontalLayoutContainer);
+		
+		//addSouth(verticalLayoutPanel, 0);
+		//add(horizontalLayoutContainer);
+		//this.setWidgetSize(verticalLayoutPanel, 400.0);
 		
 		bindEvents();
 	}

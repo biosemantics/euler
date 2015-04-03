@@ -32,6 +32,7 @@ import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
@@ -53,7 +54,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
 
-public class AddArticulationsCheckboxesView extends ContentPanel {
+public class AddArticulationsCheckboxesView extends SimpleContainer /*extends ContentPanel*/ {
 
 	private EventBus eventBus;
 	private Model model;
@@ -68,7 +69,7 @@ public class AddArticulationsCheckboxesView extends ContentPanel {
 	
 	public AddArticulationsCheckboxesView(EventBus eventBus) {
 		this.eventBus = eventBus;
-		setHeadingText("Create Articulation");
+		//setHeadingText("Create Articulation");
 		
 		add(createArticulationButtons());
 		bindEvents();
