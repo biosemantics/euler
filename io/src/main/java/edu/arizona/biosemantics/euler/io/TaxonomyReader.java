@@ -23,6 +23,8 @@ public class TaxonomyReader {
 			boolean firstLine = false;
 			String line;
 			while ((line = in.readLine()) != null) {
+				if(line.trim().startsWith("#"))
+					continue;
 				Taxonomy taxonomy = new Taxonomy();
 				if (!firstLine) {
 					String[] yearName = extractYearName(line, taxonomy);

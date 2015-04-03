@@ -26,6 +26,8 @@ public class ArticulationsReader {
 			boolean firstLine = false;
 			String line;
 			while ((line = in.readLine()) != null) {
+				if(line.trim().startsWith("#"))
+					continue;
 				if (!firstLine) {
 					String[] yearsNames = extractYearsNames(line);
 					yearsString = yearsNames[0];
