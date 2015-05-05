@@ -1,7 +1,13 @@
 package edu.arizona.biosemantics.euler.io;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.StringReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,8 +118,32 @@ public class ArticulationsReader {
 		return line.replaceFirst("articulation", "").trim().split(" ");
 	}
 	
+	static String readFile(String path, Charset encoding) 
+			  throws IOException 
+			{
+			  byte[] encoded = Files.readAllBytes(Paths.get(path));
+			  return new String(encoded, encoding);
+			}
+	
 	public static void main(String[] args) throws Exception {
+		/*File dir = new File("in");
+		
+		Taxonomies taxonomies = new Taxonomies();
+		for(File file : dir.listFiles()) {
+			TaxonomyFileReader reader = new TaxonomyFileReader(file.getAbsolutePath());
+			Taxonomy taxonomy;
+			try {
+				taxonomy = reader.read();
+			} catch (Exception e) {
+				throw e;
+			}
+			taxonomies.add(taxonomy);
+		}
+		Model model = new Model(taxonomies);
+		*/
 		ArticulationsReader reader = new ArticulationsReader();
+		
+		//reader.read(readFile("articulations", StandardCharsets.UTF_8), model);
 		
 		TaxonomyReader taxonomyReader = new TaxonomyReader();
 		Taxonomy a = taxonomyReader.read("taxonomy 1993 Groves_MSW2\n"

@@ -2,6 +2,7 @@ package edu.arizona.biosemantics.euler.io;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -74,7 +75,13 @@ public class TaxonomyReader {
 	}
 
 	private String[] extractYearName(String line, Taxonomy taxonomy) {
-		return line.trim().replaceFirst("taxonomy", "").trim().split(" ");
+		//System.out.println(toHex(line));
+		line = line.replaceAll("\\s+"," ");
+		line = line.trim();
+		line = line.replaceFirst("taxonomy", "");
+		line = line.trim();
+		return line.split(" ");
+		//return line.trim().replaceFirst("taxonomy", "").trim().split(" ");
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -89,4 +96,7 @@ public class TaxonomyReader {
 						+ "(Phanerinae Phaner)" + "	(Phaner Phaner_furcifer)");
 	}
 
+	private String toHex(String arg) {
+	    return String.format("%040x", new BigInteger(1, arg.getBytes(/*YOUR_CHARSET?*/)));
+	}
 }

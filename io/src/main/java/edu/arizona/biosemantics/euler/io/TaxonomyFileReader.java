@@ -1,8 +1,16 @@
 package edu.arizona.biosemantics.euler.io;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.input.BOMInputStream;
 
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
@@ -15,9 +23,14 @@ public class TaxonomyFileReader extends TaxonomyReader {
 	}
 	
 	public Taxonomy read() throws Exception {
-		byte[] encoded = Files.readAllBytes(Paths.get(file));
-		String content = new String(encoded, StandardCharsets.UTF_8);
-		return super.read(content);
+		try(InputStream inputStream = new FileInputStream(file)) {
+			try(BOMInputStream bOMInputStream = new BOMInputStream(inputStream)) {
+				ByteOrderMark bom = bOMInputStream.getBOM();
+			    String charsetName = bom == null ? StandardCharsets.UTF_8.name() : bom.getCharsetName();
+				String content = IOUtils.toString(bOMInputStream, charsetName);
+				return super.read(content);
+			}
+		}
 	}
 	
 	public static void main(String[] args) throws Exception {
