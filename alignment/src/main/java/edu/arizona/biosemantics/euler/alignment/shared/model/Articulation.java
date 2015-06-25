@@ -5,6 +5,8 @@ import java.util.Date;
 
 public class Articulation implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+	
 	public static int ID = 0;	
 	private int id = ID++;
 	private Date created = new Date();

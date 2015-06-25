@@ -8,6 +8,8 @@ import java.util.List;
 import edu.arizona.biosemantics.common.taxonomy.Rank;
 
 public class Taxon implements Serializable, Comparable<Taxon> {
+	
+	private static final long serialVersionUID = 1L;
 		
 	public static int ID = 0;	
 	private int id = ID++;

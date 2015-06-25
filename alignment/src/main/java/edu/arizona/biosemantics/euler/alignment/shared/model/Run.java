@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 public class Run implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 
 	public static int ID = 0;	
 	private int id = ID++;

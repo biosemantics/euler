@@ -12,6 +12,8 @@ import java.util.Set;
 
 public class Model implements Serializable {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private Taxonomies taxonomies = new Taxonomies();
 	private Articulations articulations = new Articulations();
 	private List<Color> colors = new ArrayList<Color>();

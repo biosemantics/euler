@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class RunOutput implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	//what form of output to consider all?
 	
 	private RunOutputType type;

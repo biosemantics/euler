@@ -5,5 +5,7 @@ import java.io.Serializable;
 public enum RunOutputType implements Serializable {
 	CONFLICT,
 	ONE,
-	MULTIPLE
+	MULTIPLE;
+	
+	private static final long serialVersionUID = 1L;
 }

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 
 public class Taxonomies extends LinkedList<Taxonomy> implements Serializable /*implements Cloneable*/ {
+	
+	private static final long serialVersionUID = 1L;
 
 	
 	/*@Override

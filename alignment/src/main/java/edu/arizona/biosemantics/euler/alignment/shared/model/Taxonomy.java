@@ -11,8 +11,12 @@ import java.util.List;
  * @author rodenhausen
  */
 public class Taxonomy implements Serializable, Cloneable {
+	
+	private static final long serialVersionUID = 1L;
 
 	public class DFSTaxaList extends ArrayList<Taxon> implements Serializable {
+		
+		private static final long serialVersionUID = 1L;
 
 		public DFSTaxaList() {
 			for (Taxon taxon : rootTaxa) {
@@ -28,6 +32,8 @@ public class Taxonomy implements Serializable, Cloneable {
 	}
 	
 	public class BFSTaxaList extends ArrayList<Taxon> implements Serializable {
+		
+		private static final long serialVersionUID = 1L;
 
 		public BFSTaxaList() {
 			LinkedList<Taxon> toInserts = new LinkedList<Taxon>();
