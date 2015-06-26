@@ -40,7 +40,7 @@ public class Alerter {
 	}
 	
 	public static MessageBox failedToImportArticulations(Throwable e) {
-		return showAlert("Import Failed", "Failed to import articulations", e);
+		return showAlert("Import Failed", "Failed to import articulations.</br>" + e.getMessage(), e);
 	}
 	
 	private static MessageBox showAlert(String title, String message, Throwable caught) {

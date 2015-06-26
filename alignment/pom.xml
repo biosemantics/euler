@@ -4,7 +4,7 @@
 	<groupId>edu.arizona.biosemantics.euler</groupId>
 	<artifactId>alignment</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.45-SNAPSHOT</version>
+	<version>0.0.46-SNAPSHOT</version>
 	
 	<properties>
 		<gwtVersion>2.6.1</gwtVersion>
@@ -76,7 +76,7 @@
 		<dependency>
 			<groupId>edu.arizona.biosemantics.euler</groupId>
 			<artifactId>io</artifactId>
-			<version>0.0.8-SNAPSHOT</version>
+			<version>0.0.11-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.vectomatic</groupId>
@@ -178,6 +178,41 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-war-plugin
+										</artifactId>
+										<versionRange>
+											[2.4,)
+										</versionRange>
+										<goals>
+											<goal>exploded</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<distributionManagement>
