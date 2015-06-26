@@ -64,46 +64,46 @@ public class ArticulationsReader {
 	}
 
 	private Articulation readArticulationLine(String line, Map<String, Taxonomy> yearTaxonomyMap) throws Exception {
+		String[] parts = null;
 		try {
-			String[] parts = line.trim().substring(1, line.length() - 1).split(" ");
-			if(parts.length != 3) 
-				throw new Exception("Articulation line format invalid. Separate taxon-A relation taxon-B by space. Example: 2015.Rubus equals 1982.Rubus. Line: " + line);
-			String taxonA = parts[0];
-			
-			String[] taxonAParts = taxonA.split("\\.");
-			if(taxonAParts.length != 2) 
-				throw new Exception("Articulation line format invalid. Separate year and taxon-A by a dot. Example: 2015.Rubus. Line: " + line);
-			String yearTaxonA = taxonAParts[0];
-			String nameTaxonA = taxonAParts[1];
-			String relation = parts[1];
-			String taxonB = parts[2];
-			String[] taxonBParts = taxonB.split("\\.");
-			if(taxonBParts.length != 2) 
-				throw new Exception("Articulation line format invalid. Separate year and taxon-A by a dot. Example: 2015.Rubus. Line: " + line);
-			String yearTaxonB = taxonBParts[0];
-			String nameTaxonB = taxonBParts[1];
-			
-			Taxonomy taxonomyA = yearTaxonomyMap.get(yearTaxonA);
-			Taxonomy taxonomyB = yearTaxonomyMap.get(yearTaxonB);
-			if(taxonomyA == null)
-				throw new Exception("Could not find taxonomy for the year: " + yearTaxonB + ". Line: " + line);
-			if(taxonomyB == null)
-				throw new Exception("Could not find taxonomy for the year: " + yearTaxonB + ". Line: " + line);
-			
-			Taxon a = getTaxon(taxonomyA, nameTaxonA);
-			if(a == null)
-				throw new Exception("Could not find taxon with name: " + nameTaxonA + ". Line: " + line);
-			Taxon b = getTaxon(taxonomyB, nameTaxonB);
-			if(b == null)
-				throw new Exception("Could not find taxon with name: " + nameTaxonB + ". Line: " + line);
-			ArticulationType articulationType = getArticulationTypeFromEuler(relation);
-			if(articulationType == null)
-				throw new Exception("Relation not recognized: " + relation + ". Line: " + line);
-			return new Articulation(a, b, articulationType);
-			
+			parts = line.trim().substring(1, line.length() - 1).split(" ");
 		} catch(Exception e) {
 			throw new Exception("Articulation line format invalid. Line: " + line);
 		}
+		if(parts.length != 3) 
+			throw new Exception("Articulation line format invalid. Separate taxon-A relation taxon-B by space. Example: 2015.Rubus equals 1982.Rubus. Line: " + line);
+		String taxonA = parts[0];
+		
+		String[] taxonAParts = taxonA.split("\\.");
+		if(taxonAParts.length != 2) 
+			throw new Exception("Articulation line format invalid. Separate year and taxon-A by a dot. Example: 2015.Rubus. Line: " + line);
+		String yearTaxonA = taxonAParts[0];
+		String nameTaxonA = taxonAParts[1];
+		String relation = parts[1];
+		String taxonB = parts[2];
+		String[] taxonBParts = taxonB.split("\\.");
+		if(taxonBParts.length != 2) 
+			throw new Exception("Articulation line format invalid. Separate year and taxon-A by a dot. Example: 2015.Rubus. Line: " + line);
+		String yearTaxonB = taxonBParts[0];
+		String nameTaxonB = taxonBParts[1];
+		
+		Taxonomy taxonomyA = yearTaxonomyMap.get(yearTaxonA);
+		Taxonomy taxonomyB = yearTaxonomyMap.get(yearTaxonB);
+		if(taxonomyA == null)
+			throw new Exception("Could not find taxonomy for the year: " + yearTaxonB + ". Line: " + line);
+		if(taxonomyB == null)
+			throw new Exception("Could not find taxonomy for the year: " + yearTaxonB + ". Line: " + line);
+		
+		Taxon a = getTaxon(taxonomyA, nameTaxonA);
+		if(a == null)
+			throw new Exception("Could not find taxon with name: " + nameTaxonA + ". Line: " + line);
+		Taxon b = getTaxon(taxonomyB, nameTaxonB);
+		if(b == null)
+			throw new Exception("Could not find taxon with name: " + nameTaxonB + ". Line: " + line);
+		ArticulationType articulationType = getArticulationTypeFromEuler(relation);
+		if(articulationType == null)
+			throw new Exception("Relation not recognized: " + relation + ". Line: " + line);
+		return new Articulation(a, b, articulationType);
 	}
 	
 	private Taxon getTaxon(Taxonomy taxonomy, String name) {
