@@ -11,46 +11,33 @@ import org.apache.commons.lang3.StringUtils;
 
 import edu.arizona.biosemantics.common.log.LogLevel;
 
-public class Euler2 {
+public class EulerCheck {
 
-	private boolean version;
-	private boolean help;
-
-	public Euler2() {
+	private String inputFile;
+	
+	public EulerCheck() {
 
 	}
 
-	public Euler2(boolean version, boolean help) {
-		super();
-		this.version = version;
-		this.help = help;
+	public EulerCheck(String inputFile) {
+		this.inputFile = inputFile;
 	}
 
 	public String run() throws IOException, EulerException {
 		List<String> commands = new LinkedList<String>();
-		if (version)
-			commands.add("--version");
-		if (help)
-			commands.add("--help");
+		if(inputFile != null)
+			commands.add(inputFile);
 
-		return runCommand(Configuration.path + File.separator + "euler2 "
+		return runCommand(Configuration.path + File.separator + "euler2 check "
 				+ StringUtils.join(commands, " "));
 	}
 
-	public boolean isVersion() {
-		return version;
+	public String getInputFile() {
+		return inputFile;
 	}
 
-	public void setVersion(boolean version) {
-		this.version = version;
-	}
-
-	public boolean isHelp() {
-		return help;
-	}
-
-	public void setHelp(boolean help) {
-		this.help = help;
+	public void setInputFile(String inputFile) {
+		this.inputFile = inputFile;
 	}
 
 	private String runCommand(String command) throws EulerException {

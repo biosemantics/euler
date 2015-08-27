@@ -11,46 +11,57 @@ import org.apache.commons.lang3.StringUtils;
 
 import edu.arizona.biosemantics.common.log.LogLevel;
 
-public class Euler2 {
+public class EulerShow {
 
-	private boolean version;
-	private boolean help;
-
-	public Euler2() {
+	private String name;
+	private String inputFile;
+	private String folder;
+	
+	public EulerShow() {
 
 	}
 
-	public Euler2(boolean version, boolean help) {
-		super();
-		this.version = version;
-		this.help = help;
+	public EulerShow(String name, String inputFile, String folder) {
+		this.name = name;
+		this.inputFile = inputFile;
+		this.folder = folder;
 	}
 
 	public String run() throws IOException, EulerException {
 		List<String> commands = new LinkedList<String>();
-		if (version)
-			commands.add("--version");
-		if (help)
-			commands.add("--help");
+		if (folder != null)
+			commands.add("--run=" + folder);
+		if(inputFile != null)
+			commands.add(inputFile);
+		if (name != null)
+			commands.add(name);
 
-		return runCommand(Configuration.path + File.separator + "euler2 "
+		return runCommand(Configuration.path + File.separator + "euler2 show "
 				+ StringUtils.join(commands, " "));
 	}
 
-	public boolean isVersion() {
-		return version;
+	public String getName(){
+		return name;
+	}
+	
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	public String getInputFile() {
+		return inputFile;
 	}
 
-	public void setVersion(boolean version) {
-		this.version = version;
+	public void setInputFile(String inputFile) {
+		this.inputFile = inputFile;
 	}
-
-	public boolean isHelp() {
-		return help;
+	
+	public String getFolder(){
+		return folder;
 	}
-
-	public void setHelp(boolean help) {
-		this.help = help;
+	
+	public void setFolder(String folder){
+		this.folder = folder;
 	}
 
 	private String runCommand(String command) throws EulerException {
