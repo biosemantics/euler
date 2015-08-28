@@ -6,8 +6,6 @@ import java.io.IOException;
 public class Test2 {
 	
 	public static void main(String[] args) throws IOException, EulerException {
-		System.out.println(System.getenv("PATH"));
-		
 		Euler2 euler = new Euler2();
 		euler.setVersion(true);
 		euler.setHelp(true);
