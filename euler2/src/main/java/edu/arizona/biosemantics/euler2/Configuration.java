@@ -18,7 +18,7 @@ public class Configuration {
 		try {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
 			properties = new Properties(); 
-			properties.load(loader.getResourceAsStream("edu/arizona/biosemantics/euler/config.properties"));
+			properties.load(loader.getResourceAsStream("edu/arizona/biosemantics/euler2/config.properties"));
 			
 			path = properties.getProperty("path");
 		} catch(Exception e) {
