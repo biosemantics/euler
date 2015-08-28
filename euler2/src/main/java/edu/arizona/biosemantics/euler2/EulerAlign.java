@@ -14,20 +14,6 @@ import edu.arizona.biosemantics.euler2.Reasoner;
 import edu.arizona.biosemantics.euler2.Encoding;
 
 public class EulerAlign {
-
-	/*	euler2 align <inputfile>... [-e METHOD] [-r TOOL] 
-boolean consistency,
-boolean hidemirdisjoint,
-boolean disablecov,
-boolean disablesib,
-String repairWay,
-boolean artRem,
-boolean fourinone,
-boolean xia,
-boolean ur,
-boolean ie,
-boolean ieo
-	 */
 	
 	private String inputFile;
 	private Encoding encoding;
@@ -67,10 +53,7 @@ boolean ieo
 		this.ie = ie;
 		this.ieo = ieo;
 	}
-/*euler2 align <inputfile>... [-e METHOD] [-r TOOL] [--consistency] [--hidemirdisjoint] 
- * [--disablecov] [--disablesib] [--repair=WAY] [--artRem] [--fourinone] [--xia] [--ur] 
- * [--ie] [--ieo]
-*/
+	
 	public String run() throws IOException, EulerException {
 		List<String> commands = new LinkedList<String>();
 		if(inputFile != null)
