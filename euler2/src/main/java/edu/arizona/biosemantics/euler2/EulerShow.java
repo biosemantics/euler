@@ -38,11 +38,6 @@ public class EulerShow {
 			commands.add(inputFile);
 		if (name != null)
 			commands.add(name);
-
-		Map<String, String> env = System.getenv();
-		for (String envName : env.keySet()) {
-		     System.err.format("%s=%s%n", envName, env.get(envName));
-		}
 		
 		return runCommand(Configuration.path + File.separator + "euler2 show "
 				+ StringUtils.join(commands, " "));
