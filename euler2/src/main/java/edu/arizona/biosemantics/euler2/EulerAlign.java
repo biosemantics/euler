@@ -16,6 +16,7 @@ import edu.arizona.biosemantics.euler2.Encoding;
 public class EulerAlign {
 	
 	private String inputFile;
+	private File workingDir;
 	private Encoding encoding;
 	private Reasoner reasoner;
 	private boolean consistency;
@@ -208,7 +209,7 @@ public class EulerAlign {
 		long time = System.currentTimeMillis();
 		Process p;
 		try {
-			p = Runtime.getRuntime().exec(command);
+			p = Runtime.getRuntime().exec(command, null, workingDir);
 
 			try (BufferedReader stdInput = new BufferedReader(
 					new InputStreamReader(p.getInputStream()))) {
@@ -244,5 +245,9 @@ public class EulerAlign {
 		}
 		throw new EulerException("Euler execution failed: \n"
 				+ error.toString());
+	}
+
+	public void setWorkingDir(String workingDir) {
+		this.workingDir = new File(workingDir);
 	}
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,6 +17,8 @@ public class EulerShow {
 	private String name;
 	private String inputFile;
 	private String folder;
+	
+	private File workingDir;
 	
 	public EulerShow() {
 
@@ -36,6 +39,11 @@ public class EulerShow {
 		if (name != null)
 			commands.add(name);
 
+		Map<String, String> env = System.getenv();
+		for (String envName : env.keySet()) {
+		     System.err.format("%s=%s%n", envName, env.get(envName));
+		}
+		
 		return runCommand(Configuration.path + File.separator + "euler2 show "
 				+ StringUtils.join(commands, " "));
 	}
@@ -63,6 +71,10 @@ public class EulerShow {
 	public void setFolder(String folder){
 		this.folder = folder;
 	}
+	
+	public void setWorkingDir(String workingDir){
+		this.workingDir = new File(workingDir);
+	}
 
 	private String runCommand(String command) throws EulerException {
 		log(LogLevel.DEBUG, "Run: " + command);
@@ -71,7 +83,7 @@ public class EulerShow {
 		long time = System.currentTimeMillis();
 		Process p;
 		try {
-			p = Runtime.getRuntime().exec(command);
+			p = Runtime.getRuntime().exec(command, null, workingDir);
 
 			try (BufferedReader stdInput = new BufferedReader(
 					new InputStreamReader(p.getInputStream()))) {
