@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -70,18 +71,55 @@ public class EulerShow {
 	public void setWorkingDir(String workingDir){
 		this.workingDir = new File(workingDir);
 	}
+	
+	private class TerminatePythonHook extends Thread {
+		final Process process;
+		
+		public TerminatePythonHook(Process process){
+			this.process = process;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				process.getInputStream().close();
+				process.getOutputStream().close();
+				process.getErrorStream().close();
+
+				Field field = process.getClass().getDeclaredField("pid");
+				field.setAccessible(true);
+				int pid = field.getInt(process);
+				Runtime.getRuntime().exec("kill -9 " + pid);
+
+			} catch (Throwable t) {
+				log(LogLevel.ERROR,
+						"Could not kill perl process. Running on non-Unix OS?",
+						t);
+			}
+			process.destroy();
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				log(LogLevel.ERROR, "Interrupted", e);
+			}
+		}
+	}
 
 	private String runCommand(String command) throws EulerException {
 		log(LogLevel.DEBUG, "Run: " + command);
 		StringBuilder input = new StringBuilder();
 		StringBuilder error = new StringBuilder();
 		long time = System.currentTimeMillis();
-		Process p;
+		Process process;
 		try {
-			p = Runtime.getRuntime().exec(command, null, workingDir);
-
+			process = Runtime.getRuntime().exec(command, null, workingDir);
+			
+			TerminatePythonHook terminatePythonHook = new TerminatePythonHook(process);
+			Runtime.getRuntime().addShutdownHook(terminatePythonHook);
+			
+			
 			try (BufferedReader stdInput = new BufferedReader(
-					new InputStreamReader(p.getInputStream()))) {
+					new InputStreamReader(process.getInputStream()))) {
 				String s = "";
 				while ((s = stdInput.readLine()) != null) {
 					log(LogLevel.DEBUG,
@@ -92,7 +130,7 @@ public class EulerShow {
 			}
 
 			try (BufferedReader errInput = new BufferedReader(
-					new InputStreamReader(p.getErrorStream()))) {
+					new InputStreamReader(process.getErrorStream()))) {
 				String e = "";
 				while ((e = errInput.readLine()) != null) {
 					log(LogLevel.DEBUG,
@@ -102,7 +140,11 @@ public class EulerShow {
 				}
 			}
 
-			int exitStatus = p.waitFor();
+			int exitStatus = process.waitFor();
+			
+			//remove shutdown hook
+			Runtime.getRuntime().removeShutdownHook(terminatePythonHook);
+
 			if (exitStatus == 0)
 				return input.toString() + "\n" + error.toString();
 			else
