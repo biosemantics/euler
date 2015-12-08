@@ -17,6 +17,7 @@ import edu.arizona.biosemantics.euler2.Encoding;
 public class EulerAlign {
 	
 	private String inputFile;
+	private String outputDirectory;
 	private File workingDir;
 	private Encoding encoding;
 	private Reasoner reasoner;
@@ -36,11 +37,12 @@ public class EulerAlign {
 
 	}
 
-	public EulerAlign(String inputFile, Encoding encoding, Reasoner reasoner,
+	public EulerAlign(String inputFile, String outputDirectory, Encoding encoding, Reasoner reasoner,
 			boolean consistency, boolean hidemirdisjoint, boolean disablecov,
 			boolean disablesib, String repairWay, boolean artRem,
 			boolean fourinone, boolean xia, boolean ur, boolean ie, boolean ieo) {
 		this.inputFile = inputFile;
+		this.outputDirectory = outputDirectory;
 		this.encoding = encoding;
 		this.reasoner = reasoner;
 		this.consistency = consistency;
@@ -86,6 +88,8 @@ public class EulerAlign {
 			commands.add("--ie");
 		if (ieo)
 			commands.add("--ieo");
+		if(outputDirectory != null)
+			commands.add("-o " + outputDirectory);
 
 		return runCommand(Configuration.path + File.separator + "euler2 align "
 				+ StringUtils.join(commands, " "));
@@ -202,7 +206,27 @@ public class EulerAlign {
 	public void setIeo(boolean ieo) {
 		this.ieo = ieo;
 	}
+		
+	public String getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	public void setOutputDirectory(String outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
+
+	public File getWorkingDir() {
+		return workingDir;
+	}
+
+	public void setWorkingDir(File workingDir) {
+		this.workingDir = workingDir;
+	}
 	
+	public void setWorkingDir(String workingDir) {
+		this.workingDir = new File(workingDir);
+	}
+
 	private class TerminatePythonHook extends Thread {
 		final Process process;
 		
@@ -288,7 +312,5 @@ public class EulerAlign {
 				+ error.toString());
 	}
 
-	public void setWorkingDir(String workingDir) {
-		this.workingDir = new File(workingDir);
-	}
+
 }

@@ -17,6 +17,7 @@ public class EulerShow {
 
 	private String name;
 	private String inputFile;
+	private String outputDirectory;
 	private String folder;
 	
 	private File workingDir;
@@ -25,9 +26,10 @@ public class EulerShow {
 
 	}
 
-	public EulerShow(String name, String inputFile, String folder) {
+	public EulerShow(String name, String inputFile, String outputDirectory, String folder) {
 		this.name = name;
 		this.inputFile = inputFile;
+		this.outputDirectory = outputDirectory;
 		this.folder = folder;
 	}
 
@@ -39,9 +41,27 @@ public class EulerShow {
 			commands.add(inputFile);
 		if (name != null)
 			commands.add(name);
+		if(outputDirectory != null)
+			commands.add("-o " + outputDirectory);
 		
 		return runCommand(Configuration.path + File.separator + "euler2 show "
 				+ StringUtils.join(commands, " "));
+	}
+	
+	public String getOutputDirectory() {
+		return outputDirectory;
+	}
+
+	public void setOutputDirectory(String outputDirectory) {
+		this.outputDirectory = outputDirectory;
+	}
+
+	public File getWorkingDir() {
+		return workingDir;
+	}
+
+	public void setWorkingDir(File workingDir) {
+		this.workingDir = workingDir;
 	}
 
 	public String getName(){
