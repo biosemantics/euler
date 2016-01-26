@@ -22,7 +22,7 @@ import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell.CommentColorizableObjectsProvider;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 
@@ -52,21 +52,21 @@ public class ComparedArticulationsGridView extends ContentPanel {
 
 	protected ListStore<ComparedArticulation> store;
 	protected Grid<ComparedArticulation> grid;
-	protected ListStore<ArticulationType> typesStore;
+	protected ListStore<Relation> typesStore;
 	protected ListStore<ComparisonResult> comparisonResultStore;
 	
 	public ComparedArticulationsGridView(EventBus eventBus, Model model) {
 		this.eventBus = eventBus;
 		this.model = model;
 
-		typesStore = new ListStore<ArticulationType>(
-				new ModelKeyProvider<ArticulationType>() {
+		typesStore = new ListStore<Relation>(
+				new ModelKeyProvider<Relation>() {
 					@Override
-					public String getKey(ArticulationType item) {
+					public String getKey(Relation item) {
 						return item.toString();
 					}
 				});
-		typesStore.addAll(Arrays.asList(ArticulationType.values()));
+		typesStore.addAll(Arrays.asList(Relation.values()));
 		comparisonResultStore = new ListStore<ComparisonResult>(new ModelKeyProvider<ComparisonResult>() {
 			@Override
 			public String getKey(ComparisonResult item) {
@@ -132,7 +132,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 		});
 		store.setAutoCommit(true);
 
-		ColorableCell colorableCell = new ColorableCell(eventBus, model);
+		ColorableCell colorableCell = new ColorableCell(eventBus, model, null);
 		colorableCell.setCommentColorizableObjectsStore(store, new CommentColorizableObjectsProvider() {
 			@Override
 			public Object provide(Object source) {
@@ -167,17 +167,17 @@ public class ComparedArticulationsGridView extends ContentPanel {
 			}
 		}, 100,	"Taxonomic Concept A");
 		taxonACol.setCell(colorableCell);
-		final ColumnConfig<ComparedArticulation, ArticulationType> relationCol = new ColumnConfig<ComparedArticulation, ArticulationType>(
-				new ValueProvider<ComparedArticulation, ArticulationType>() {
+		final ColumnConfig<ComparedArticulation, Relation> relationCol = new ColumnConfig<ComparedArticulation, Relation>(
+				new ValueProvider<ComparedArticulation, Relation>() {
 
 					@Override
-					public ArticulationType getValue(ComparedArticulation object) {
-						return object.getArticulation().getType();
+					public Relation getValue(ComparedArticulation object) {
+						return object.getArticulation().getRelation();
 					}
 
 					@Override
 					public void setValue(ComparedArticulation object,
-							ArticulationType value) {
+							Relation value) {
 					}
 
 					@Override

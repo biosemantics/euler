@@ -43,17 +43,18 @@ public class ModelSwapper {
 	}
 
 	public Articulation swap(Articulation articulation) {
-		return new Articulation(articulation.getTaxonB(), articulation.getTaxonA(), swap(articulation.getType()));
+		return new Articulation(articulation.getTaxonB(), articulation.getTaxonA(), swap(articulation.getRelation()), articulation.getType());
 	}
 
-	public ArticulationType swap(ArticulationType type) {
+	public Relation swap(Relation type) {
 		switch(type) {
 		case A_INCLUDES_B:
-			return ArticulationType.B_INCLUDES_A;
+			return Relation.B_INCLUDES_A;
 		case B_INCLUDES_A:
-			return ArticulationType.A_INCLUDES_B;
+			return Relation.A_INCLUDES_B;
 		default:
 			return type;
 		}
 	}	
+	
 }

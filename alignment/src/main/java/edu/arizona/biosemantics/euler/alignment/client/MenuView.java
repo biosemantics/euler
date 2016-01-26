@@ -24,10 +24,13 @@ import edu.arizona.biosemantics.euler.alignment.client.common.ImportDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.RunDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewHistoryDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
+import edu.arizona.biosemantics.euler.alignment.client.event.AddMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SaveEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SwapTaxonomiesEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveMachineArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveUserArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
@@ -58,16 +61,69 @@ public class MenuView extends MenuBar {
 	}
 
 	protected void addItems() {
-		add(createTaxonomiesItem());
+		add(createArticulationsItem());
 		add(createRunItem());
 		add(createAnnotationsItem());
 		add(createViewItem());
 		add(createQuestionItem());
 	}
 
+	private Widget createArticulationsItem() {
+		Menu sub = new Menu();
+		
+		MenuBarItem articulationsItem = new MenuBarItem("Articulations", sub);
+		MenuItem importItem = new MenuItem("Import Articulations");
+		importItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				ImportDialog importDialog = new ImportDialog(eventBus, model);
+				importDialog.show();
+			}
+		});
+		MenuItem addMachineGeneratedArticulations = new MenuItem("Add Machine-generated Articulations");
+		addMachineGeneratedArticulations.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				eventBus.fireEvent(new AddMachineArticulationsEvent());
+			}
+		});
+		
+		MenuItem removeMachineGeneratedArticulations = new MenuItem("Remove Machine-generated Articulations");
+		removeMachineGeneratedArticulations.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				eventBus.fireEvent(new RemoveMachineArticulationsEvent());
+			}
+		});
+		
+		MenuItem removeUserCreatedArticulations = new MenuItem("Remove User-created Articulations");
+		removeUserCreatedArticulations.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				eventBus.fireEvent(new RemoveUserArticulationsEvent());
+			}
+		});		
+		MenuItem downloadItem = new MenuItem("Download Articulations");
+		downloadItem.setTitle("please set your browser to allow popup windows to use this function");
+		downloadItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				eventBus.fireEvent(new DownloadEvent(model));
+			}
+		});
+
+		// sub.add(subMatrixItem);
+		sub.add(importItem);
+		sub.add(addMachineGeneratedArticulations);
+		sub.add(removeMachineGeneratedArticulations);
+		sub.add(removeUserCreatedArticulations);
+		sub.add(downloadItem);
+		return articulationsItem;
+	}
+
 	protected Widget createRunItem() {
 		final Menu sub = new Menu();
-		MenuBarItem runItem = new MenuBarItem("Run", sub);
+		MenuBarItem runItem = new MenuBarItem("Runs", sub);
 		MenuItem showInputVisualizationItem = new MenuItem("Input Visualization");
 		showInputVisualizationItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
@@ -114,18 +170,7 @@ public class MenuView extends MenuBar {
 				dialog.show();
 			}
 		});
-		
-		sub.add(showInputVisualizationItem);
-		sub.add(runEulerItem);
-		sub.add(showEulerRunHistory);
-		return runItem;
-	}
-
-	protected Widget createTaxonomiesItem() {
-		Menu sub = new Menu();
-		
-		MenuBarItem taxonomiesItem = new MenuBarItem("Manage Input", sub);
-		MenuItem saveItem = new MenuItem("Save Progress");
+		MenuItem saveItem = new MenuItem("Save Run Euler History");
 		saveItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
@@ -133,29 +178,11 @@ public class MenuView extends MenuBar {
 			}
 		});
 		
-		MenuItem importItem = new MenuItem("Import Articulations");
-		importItem.addSelectionHandler(new SelectionHandler<Item>() {
-			@Override
-			public void onSelection(SelectionEvent<Item> event) {
-				ImportDialog importDialog = new ImportDialog(eventBus, model);
-				importDialog.show();
-			}
-		});
-		
-		MenuItem downloadItem = new MenuItem("Download Articulations");
-		downloadItem.setTitle("please set your browser to allow popup windows to use this function");
-		downloadItem.addSelectionHandler(new SelectionHandler<Item>() {
-			@Override
-			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new DownloadEvent(model));
-			}
-		});
-
-		// sub.add(subMatrixItem);
+		sub.add(showInputVisualizationItem);
+		sub.add(runEulerItem);
+		sub.add(showEulerRunHistory);
 		sub.add(saveItem);
-		sub.add(importItem);
-		sub.add(downloadItem);
-		return taxonomiesItem;
+		return runItem;
 	}
 
 	protected Widget createAnnotationsItem() {

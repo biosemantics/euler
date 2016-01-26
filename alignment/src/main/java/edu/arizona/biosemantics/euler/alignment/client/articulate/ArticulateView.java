@@ -45,7 +45,7 @@ public class ArticulateView extends BorderLayoutContainer {
 		
 		VerticalLayoutContainer verticalLayoutPanel = new VerticalLayoutContainer();
 		addArticulationsView = new AddArticulationsCheckboxesView(eventBus);
-		verticalLayoutPanel.add(addArticulationsView, new VerticalLayoutData(1.0, -1.0));
+		verticalLayoutPanel.add(addArticulationsView, new VerticalLayoutData(1.0, 30));
 		
 		articulationsGridView = new CurrentArticulationsGridView(eventBus);
 		verticalLayoutPanel.add(articulationsGridView, new VerticalLayoutData(1.0, 1.0));

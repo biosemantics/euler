@@ -73,72 +73,37 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
-public class ArticulationsGridView extends SimpleContainer /* extends ContentPanel*/ {
+public class MinimalArticulationsGridView extends SimpleContainer /* extends ContentPanel*/ {
 
 	protected EventBus eventBus;
 	protected Model model;
 	
 	protected ListStore<Articulation> articulationsStore;
 	protected Grid<Articulation> grid;
-	protected ListStore<Relation> allRelationsStore;
-	protected ListStore<Type> allTypesStore;
-	protected ListStore<Relation> availableRelationsStore;
-	private boolean relationEditEnabled;
-	private boolean removeEnabled;
-	private ColumnConfig<Articulation, String> taxonACol;
-	private ColumnConfig<Articulation, String> taxonBCol;
+	protected ListStore<Relation> allTypesStore;
+	protected ListStore<Relation> availableTypesStore;
 	
-	public ArticulationsGridView(EventBus eventBus, Model model, boolean relationEditEnabled, boolean removeEnabled) {
+	public MinimalArticulationsGridView(EventBus eventBus, Model model) {
 		this.eventBus = eventBus;
 		this.model = model;
-		
-		this.relationEditEnabled = relationEditEnabled;
-		this.removeEnabled = removeEnabled;
-
-		allTypesStore = new ListStore<Type>(new ModelKeyProvider<Type>() {
-			@Override
-			public String getKey(Type item) {
-				return item.toString();
-			}
-		});
-		allTypesStore.addAll(Arrays.asList(Type.values()));
-		availableRelationsStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
+		availableTypesStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
 			@Override
 			public String getKey(Relation item) {
 				return item.toString();
 			}
 		});
-		allRelationsStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
+		allTypesStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
 			@Override
 			public String getKey(Relation item) {
 				return item.toString();
 			}
 		});
-		allRelationsStore.addAll(Arrays.asList(Relation.values()));
+		allTypesStore.addAll(Arrays.asList(Relation.values()));
 		
 		//setHeadingText("Articulations");
 		add(createArticulationsGrid());
 	}
-
-	private void updateTaxonColumnHeaders() {
-		if(model != null) {
-			grid.getView().getHeader().getHead(1).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + model.getTaxonomies().get(0).getFullName()));
-			grid.getView().getHeader().getHead(3).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + model.getTaxonomies().get(1).getFullName()));
-			taxonACol.setHeader("Taxonomic Concept " + model.getTaxonomies().get(0).getFullName());
-			taxonBCol.setHeader("Taxonomic Concept " + model.getTaxonomies().get(1).getFullName());
-		}
-	}
-
-	protected void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
-			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
-				updateTaxonColumnHeaders();
-			}
-		});
-	}
-
+	
 	public void setArticulations(List<Articulation> articulations) {
 		articulationsStore.clear();
 		articulationsStore.addAll(articulations);
@@ -154,17 +119,11 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 	}
 
 	private Widget createArticulationsGrid() {		
-		ArticulationProperties articulationProperties = GWT
-				.create(ArticulationProperties.class);
+		ArticulationProperties articulationProperties = GWT.create(ArticulationProperties.class);
 		articulationsStore = new ListStore<Articulation>(articulationProperties.key());
 		articulationsStore.setAutoCommit(true);
 
 		IdentityValueProvider<Articulation> identity = new IdentityValueProvider<Articulation>();
-		final CheckBoxSelectionModel<Articulation> checkBoxSelectionModel = new CheckBoxSelectionModel<Articulation>(
-				identity);
-
-		checkBoxSelectionModel.setSelectionMode(SelectionMode.MULTI);
-
 		ColorableCell colorableCell = new ColorableCell(eventBus, model, null);
 		colorableCell.setCommentColorizableObjectsStore(articulationsStore, new CommentColorizableObjectsProvider() {
 			@Override
@@ -172,9 +131,6 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 				return source;
 			}
 		});
-		final ColumnConfig<Articulation, String> createdCol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.CreatedStringValueProvder(), 200, "Created");
-		createdCol.setCell(colorableCell);
 
 		String aHead = "Taxonomic Concept A";
 		String bHead = "Taxonomic Concept B";
@@ -182,53 +138,15 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 			 aHead = "Taxonomic Concept " + model.getTaxonomies().get(0).getFullName();
 			 bHead = "Taxonomic Concept " + model.getTaxonomies().get(1).getFullName();
 		}
-		taxonACol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonAStringValueProvider(), 250, aHead);
-		taxonACol.setCell(colorableCell);
+		//ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
+		//		new ArticulationProperties.TaxonAStringValueProvider(), 250, aHead);
+		//taxonACol.setCell(colorableCell);
 		final ColumnConfig<Articulation, Relation> relationCol = new ColumnConfig<Articulation, Relation>(
 				articulationProperties.relation(), 70, "Articulation");
 		relationCol.setCell(colorableCell);
-		taxonBCol = new ColumnConfig<Articulation, String>(
-				new ArticulationProperties.TaxonBStringValueProvider(), 250, bHead);
-		taxonBCol.setCell(colorableCell);
-		
-		SafeStyles btnPaddingStyle = SafeStylesUtils.fromTrustedString("padding: 1px 3px 0;");
-		ColumnConfig<Articulation, String> evidenceCol = new ColumnConfig<Articulation, String>(new ValueProvider<Articulation, String>() {
-			@Override
-			public String getValue(Articulation object) {
-				return "View";
-			}
-
-			@Override
-			public void setValue(Articulation object, String value) {
-			}
-			@Override
-			public String getPath() {
-				return "View";
-			}
-			
-		}, 100, "Evidence");
-		// IMPORTANT we want the text element (cell parent) to only be as wide
-		// as
-		// the cell and not fill the cell
-		evidenceCol.setColumnTextClassName(CommonStyles.get().inlineBlock());
-		evidenceCol.setColumnTextStyle(btnPaddingStyle);
-
-		TextButtonCell button = new TextButtonCell();
-		button.addSelectHandler(new SelectHandler() {
-			@Override
-			public void onSelect(SelectEvent event) {
-				Context c = event.getContext();
-				int row = c.getIndex();
-				Articulation articulation = articulationsStore.get(row);
-				EvidenceDialog evidenceDialog = new EvidenceDialog(eventBus, model, articulation);
-				evidenceDialog.setHideOnButtonClick(true);
-				evidenceDialog.show();
-			}
-		});
-		evidenceCol.setCell(button);
-		
-		ColumnConfig<Articulation, Type> sourceCol = new ColumnConfig<Articulation, Type>(articulationProperties.type(), 100, "Source");
+		//ColumnConfig<Articulation, String> taxonBCol = new ColumnConfig<Articulation, String>(
+		//		new ArticulationProperties.TaxonBStringValueProvider(), 250, bHead);
+		//taxonBCol.setCell(colorableCell);
 		
 		ValueProvider<Articulation, String> commentValueProvider = new ValueProvider<Articulation, String>() {
 			@Override
@@ -246,80 +164,37 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 				return "comment";
 			}
 		};
-		
 		final ColumnConfig<Articulation, String> commentCol = new ColumnConfig<Articulation, String>(
-				commentValueProvider, 400, "Comment");
+				commentValueProvider, 300, "Comment");
 		commentCol.setCell(colorableCell);
 
 		List<ColumnConfig<Articulation, ?>> columns = new ArrayList<ColumnConfig<Articulation, ?>>();
-		columns.add(checkBoxSelectionModel.getColumn());
-		columns.add(taxonACol);
+		//columns.add(taxonACol);
 		columns.add(relationCol);
-		columns.add(taxonBCol);
-		columns.add(evidenceCol);
-		columns.add(sourceCol);
+		//columns.add(taxonBCol);
 		columns.add(commentCol);
-		columns.add(createdCol);
 		ColumnModel<Articulation> cm = new ColumnModel<Articulation>(columns);
 		
-		//final GroupingView<Articulation> groupingView = new GroupingView<Articulation>();
-		//groupingView.setShowGroupedColumn(false);
-		//groupingView.setForceFit(true);
-		//groupingView.groupBy(relationCol);
-
 		grid = new Grid<Articulation>(articulationsStore, cm);
-		//grid.setView(groupingView);
-		grid.setContextMenu(createArticulationsContextMenu());
-		grid.setSelectionModel(checkBoxSelectionModel);
-		//grid.getView().setAutoExpandColumn(taxonBCol);
 		grid.setBorders(false);
 		grid.getView().setStripeRows(true);
 		grid.getView().setColumnLines(true);
-
-		StringFilter<Articulation> createdFilter = new StringFilter<Articulation>(new ArticulationProperties.CreatedStringValueProvder());
-		StringFilter<Articulation> taxonAFilter = new StringFilter<Articulation>(new ArticulationProperties.TaxonAStringValueProvider());
-		StringFilter<Articulation> taxonBFilter = new StringFilter<Articulation>(new ArticulationProperties.TaxonBStringValueProvider());
-		StringFilter<Articulation> commentFilter = new StringFilter<Articulation>(commentValueProvider);
-		ListFilter<Articulation, Type> sourceFilter = new ListFilter<Articulation, Type>(
-				articulationProperties.type(), this.allTypesStore);
-		ListFilter<Articulation, Relation> relationFilter = new ListFilter<Articulation, Relation>(
-				articulationProperties.relation(), this.allRelationsStore);
-
-		GridFilters<Articulation> filters = new GridFilters<Articulation>();
-		filters.addFilter(createdFilter);
-		filters.addFilter(taxonAFilter);
-		filters.addFilter(taxonBFilter);
-		filters.addFilter(sourceFilter);
-		filters.addFilter(relationFilter);
-		filters.addFilter(commentFilter);
-		filters.setLocal(true);
-		filters.initPlugin(grid);
 
 		GridInlineEditing<Articulation> editing = new GridInlineEditing<Articulation>(grid);
 		
 		ComboBox<Relation> relationCombo = createRelationCombo();
 		
-		if(this.relationEditEnabled)
-			editing.addEditor(relationCol, relationCombo);
+		editing.addEditor(relationCol, relationCombo);
 		editing.addEditor(commentCol, new TextField());
 		editing.addStartEditHandler(new StartEditHandler<Articulation>() {
 			@Override
 			public void onStartEdit(StartEditEvent<Articulation> event) {
 				Articulation articulation = grid.getStore().get(event.getEditCell().getRow());
 				List<Relation> availableTypes = getAvailableTypes(articulation);
-				availableRelationsStore.clear();
-				availableRelationsStore.addAll(availableTypes);
+				availableTypesStore.clear();
+				availableTypesStore.addAll(availableTypes);
 			}
 		});
-		/*editing.addBeforeStartEditHandler(new BeforeStartEditHandler<Articulation>() {
-
-			@Override
-			public void onBeforeStartEdit(
-					BeforeStartEditEvent<Articulation> event) {
-				event.get
-			}
-			
-		}); */
 		editing.addCompleteEditHandler(new CompleteEditHandler<Articulation>() {
 			@Override
 			public void onCompleteEdit(CompleteEditEvent<Articulation> event) {			
@@ -340,7 +215,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 	}
 
 	protected List<Relation> getAvailableTypes(Articulation fromArticulation) {
-		List<Relation> types = new ArrayList<Relation>(allRelationsStore.getAll());
+		List<Relation> types = new ArrayList<Relation>(allTypesStore.getAll());
 		for(Articulation articulation : model.getArticulations()) {
 			if(articulation.getTaxonA().equals(fromArticulation.getTaxonA()) && 
 					articulation.getTaxonB().equals(fromArticulation.getTaxonB())) {
@@ -351,7 +226,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 	}
 
 	private ComboBox<Relation> createRelationCombo() {
-		ComboBox<Relation> relationCombo = new ComboBox<Relation>(availableRelationsStore, new LabelProvider<Relation>() {
+		ComboBox<Relation> relationCombo = new ComboBox<Relation>(availableTypesStore, new LabelProvider<Relation>() {
 			@Override
 			public String getLabel(Relation item) {
 				return item.toString();
@@ -367,99 +242,6 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 	protected void updateStore(Articulation articulation) {
 		if(articulationsStore.findModel(articulation) != null)
 			articulationsStore.update(articulation);
-	}
-
-	protected Menu createArticulationsContextMenu() {
-		final Menu menu = new Menu();
-		menu.add(new HeaderMenuItem("Annotation"));
-		
-		if(this.removeEnabled) {
-			MenuItem deleteItem = new MenuItem("Remove");
-			menu.add(deleteItem);
-			deleteItem.addSelectionHandler(new SelectionHandler<Item>() {
-				@Override
-				public void onSelection(SelectionEvent<Item> event) {
-					eventBus.fireEvent(new RemoveArticulationsEvent(grid.getSelectionModel().getSelectedItems()));
-				}
-			});
-		}
-		final MenuItem commentItem = new MenuItem("Comment");
-		commentItem.addSelectionHandler(new SelectionHandler<Item>() {
-			@Override
-			public void onSelection(SelectionEvent<Item> event) {
-				final List<Articulation> articulations = getSelectedArticulations();
-				final MultiLinePromptMessageBox box = new MultiLinePromptMessageBox("Comment", "");
-
-				if(articulations.size() == 1)
-					box.getTextArea().setValue(model.hasComment(articulations.get(0)) ? model.getComment(articulations.get(0)) : "");
-				else 
-					box.getTextArea().setValue("");
-				
-				box.addHideHandler(new HideHandler() {
-
-					@Override
-					public void onHide(HideEvent event) {
-						for(Articulation articulation : articulations) { 
-							eventBus.fireEvent(new SetCommentEvent(articulation, box.getValue()));
-							updateStore(articulation);
-						}
-						String comment = Format.ellipse(box.getValue(), 80);
-						String message = Format.substitute("'{0}' saved", new Params(comment));
-						Info.display("Comment", message);
-					}
-				});
-				box.show();
-			}
-		});
-		menu.add(commentItem);
-		
-		final MenuItem colorizeItem = new MenuItem("Colorize");
-		menu.addBeforeShowHandler(new BeforeShowHandler() {
-			@Override
-			public void onBeforeShow(BeforeShowEvent event) {
-				if(!model.getColors().isEmpty()) {
-					menu.insert(colorizeItem, menu.getWidgetIndex(commentItem));
-					//colors can change, refresh
-					colorizeItem.setSubMenu(createColorizeMenu());
-				} else {
-					menu.remove(colorizeItem);	
-				}
-			}
-		});
-		
-		return menu;
-	}
-	
-	protected Menu createColorizeMenu() {
-		Menu colorMenu = new Menu();
-		MenuItem offItem = new MenuItem("None");
-		offItem.addSelectionHandler(new SelectionHandler<Item>() {
-			@Override
-			public void onSelection(SelectionEvent<Item> event) {
-				final List<Articulation> articulations = getSelectedArticulations();
-				for(Articulation articulation : articulations) {
-					eventBus.fireEvent(new SetColorEvent(articulation, null));
-					updateStore(articulation);
-				}
-			}
-		});
-		colorMenu.add(offItem);
-		for(final Color color : model.getColors()) {
-			MenuItem colorItem = new MenuItem(color.getUse());
-			colorItem.getElement().getStyle().setProperty("backgroundColor", "#" + color.getHex());
-			colorItem.addSelectionHandler(new SelectionHandler<Item>() {
-				@Override
-				public void onSelection(SelectionEvent<Item> event) {
-					final List<Articulation> articulations = getSelectedArticulations();
-					for(Articulation articulation : articulations) {
-						eventBus.fireEvent(new SetColorEvent(articulation, color));
-						updateStore(articulation);
-					}
-				}
-			});
-			colorMenu.add(colorItem);
-		}
-		return colorMenu;
 	}
 
 	protected List<Articulation> getSelectedArticulations() {

@@ -31,8 +31,8 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEven
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationTypeProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.RelationProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
@@ -44,14 +44,14 @@ public class AddArticulationsDualListView extends ContentPanel {
 	
 	private TaxonProperties taxonProperties = GWT.create(TaxonProperties.class);
 	private ArticulationProperties articulationProperties = GWT.create(ArticulationProperties.class);
-	private ArticulationTypeProperties articulationTypeProperties = GWT.create(ArticulationTypeProperties.class);
+	private RelationProperties articulationTypeProperties = GWT.create(RelationProperties.class);
 	private ComboBox<Taxon> taxonomyACombo;
 	private ComboBox<Taxon> taxonomyBCombo;
 	private ListStore<Taxon> taxonomyAStore;
 	private ListStore<Taxon> taxonomyBStore;
 	
-	private ListStore<ArticulationType> fromRelationsStore;
-	private ListStore<ArticulationType> pickedRelationsStore;
+	private ListStore<Relation> fromRelationsStore;
+	private ListStore<Relation> pickedRelationsStore;
 	private MyDualListField  relationList;
 	
 	private ArticulateView articulateView;
@@ -111,8 +111,8 @@ public class AddArticulationsDualListView extends ContentPanel {
 		Taxon taxonA = this.taxonomyACombo.getValue();
 		Taxon taxonB = this.taxonomyBCombo.getValue();
 		this.fromRelationsStore.clear();
-		Set<ArticulationType> existing = model.getArticulationTypes(taxonA, taxonB);
-		for(ArticulationType articulationType : ArticulationType.values()) {
+		Set<Relation> existing = model.getArticulationTypes(taxonA, taxonB);
+		for(Relation articulationType : Relation.values()) {
 			if(!existing.contains(articulationType))
 				this.fromRelationsStore.add(articulationType);
 		}
@@ -122,15 +122,15 @@ public class AddArticulationsDualListView extends ContentPanel {
 	}
 
 	private MyDualListField createRelationWidget() {
-		fromRelationsStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
+		fromRelationsStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
 			@Override
-			public String getKey(ArticulationType item) {
+			public String getKey(Relation item) {
 				return item.toString();
 			}
 		});
-		pickedRelationsStore = new ListStore<ArticulationType>(new ModelKeyProvider<ArticulationType>() {
+		pickedRelationsStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
 			@Override
-			public String getKey(ArticulationType item) {
+			public String getKey(Relation item) {
 				return item.toString();
 			}
 		});

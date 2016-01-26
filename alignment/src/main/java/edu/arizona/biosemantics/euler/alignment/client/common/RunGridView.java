@@ -53,7 +53,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticul
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
@@ -93,7 +93,7 @@ public class RunGridView implements IsWidget {
 				identity);
 		checkBoxSelectionModel.setSelectionMode(SelectionMode.MULTI);
 
-		ColorableCell colorableCell = new ColorableCell(eventBus, model);
+		ColorableCell colorableCell = new ColorableCell(eventBus, model, null);
 		colorableCell.setCommentColorizableObjectsStore(runStore,
 				new CommentColorizableObjectsProvider() {
 					@Override

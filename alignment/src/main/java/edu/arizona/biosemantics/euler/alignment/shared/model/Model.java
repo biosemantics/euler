@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
+
 public class Model implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
@@ -20,12 +22,15 @@ public class Model implements Serializable {
 	private Map<Object, Color> coloreds = new HashMap<Object, Color>();
 	private Map<Object, String> comments = new HashMap<Object, String>();
 	
+	private Map<Taxon, Map<Taxon, List<Evidence>>> evidenceMap = new HashMap<Taxon, Map<Taxon, List<Evidence>>>();
+	
 	private LinkedList<Run> runHistory = new LinkedList<Run>();
 	
 	public Model() { }
 	
-	public Model(Taxonomies taxonomies) {
+	public Model(Taxonomies taxonomies, Map<Taxon, Map<Taxon, List<Evidence>>> evidenceMap) {
 		this.taxonomies = taxonomies;
+		this.evidenceMap = evidenceMap;
 	}
 	
 	public List<Color> getColors() {
@@ -123,8 +128,8 @@ public class Model implements Serializable {
 		return false;
 	}
 
-	public void changeArticulationType(Articulation articulation, ArticulationType newType) {
-		articulation.setType(newType);
+	public void changeArticulationRelation(Articulation articulation, Relation newRelation) {
+		articulation.setRelation(newRelation);
 	}
 	
 	public void addRun(Run run) {
@@ -153,21 +158,21 @@ public class Model implements Serializable {
 		return result;
 	}
 	
-	public Set<ArticulationType> getArticulationTypes(
+	public Set<Relation> getArticulationTypes(
 			Taxon taxonA, Taxon taxonB) {
-		Set<ArticulationType> articulationTypes = new HashSet<ArticulationType>();
+		Set<Relation> articulationTypes = new HashSet<Relation>();
 		for(Articulation articulation : articulations) {
 			if(articulation.getTaxonA().equals(taxonA) && articulation.getTaxonB().equals(taxonB)) {
-				articulationTypes.add(articulation.getType());
+				articulationTypes.add(articulation.getRelation());
 			}
 		}
 		return articulationTypes;
 	}
 
 	public Articulation getArticulation(Taxon taxonA, Taxon taxonB,
-			ArticulationType type) {
+			Relation type) {
 		for(Articulation articulation : articulations) {
-			if(articulation.getTaxonA().equals(taxonA) && articulation.getTaxonB().equals(taxonB) && articulation.getType().equals(type)) 
+			if(articulation.getTaxonA().equals(taxonA) && articulation.getTaxonB().equals(taxonB) && articulation.getRelation().equals(type)) 
 				return articulation;
 		}
 		return null;
@@ -206,6 +211,29 @@ public class Model implements Serializable {
 		this.taxonomies = taxonomies;
 	}
 
+	public List<Articulation> getArticulations(Type type) {
+		List<Articulation> result = new LinkedList<Articulation>();
+		for(Articulation articulation : this.articulations) {
+			if(articulation.getType().equals(type))
+				result.add(articulation);
+		}
+		return result;
+	}
 
-	
+	public List<Articulation> getArticulations(Taxon taxonA, Taxon taxonB, Type type) {
+		List<Articulation> result = new LinkedList<Articulation>();
+		for(Articulation articulation : this.articulations) 
+			if(articulation.getTaxonA().equals(taxonA) || articulation.getTaxonB().equals(taxonB) && articulation.getType().equals(type)) 
+				result.add(articulation);
+		return result;
+	}
+
+	public Map<Taxon, Map<Taxon, List<Evidence>>> getEvidenceMap() {
+		return evidenceMap;
+	}
+
+	public void setEvidenceMap(Map<Taxon, Map<Taxon, List<Evidence>>> evidenceMap) {
+		this.evidenceMap = evidenceMap;
+	}
+
 }

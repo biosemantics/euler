@@ -7,7 +7,9 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 
-public interface ArticulationProperties extends PropertyAccess<Taxon> {
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
+
+public interface ArticulationProperties extends PropertyAccess<Articulation> {
 
 
 
@@ -17,9 +19,11 @@ public interface ArticulationProperties extends PropertyAccess<Taxon> {
 	  @Path("text")
 	  LabelProvider<Articulation> nameLabel();
 	 
-	  ValueProvider<Articulation, ArticulationType> type();
+	  ValueProvider<Articulation, Relation> relation();
 	
 	  ValueProvider<Articulation, Taxon> taxonA();
+	  
+	  ValueProvider<Articulation, Type> type();
 	  
 	  ValueProvider<Articulation, Taxon> taxonB();
 	  
@@ -47,7 +51,7 @@ public interface ArticulationProperties extends PropertyAccess<Taxon> {
 
 		@Override
 		public String getValue(Articulation object) {
-			return object.getType().displayName();
+			return object.getRelation().displayName();
 		}
 
 		@Override

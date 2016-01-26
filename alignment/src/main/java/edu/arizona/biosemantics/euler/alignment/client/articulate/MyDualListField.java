@@ -36,9 +36,10 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulati
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 
 /**
  * Combines two list view fields and allows selections to be moved between
@@ -47,7 +48,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
  * @param <M> the model type
  * @param <T> the type displayed in the list view
  */
-public class MyDualListField extends AdapterField<List<ArticulationType>> {
+public class MyDualListField extends AdapterField<List<Relation>> {
 
 	protected class DualListFieldDefaultMessages implements DualListFieldMessages {
 
@@ -84,16 +85,16 @@ public class MyDualListField extends AdapterField<List<ArticulationType>> {
 	  }
   
   protected Mode mode = Mode.APPEND;
-  protected ListViewDragSource<ArticulationType> sourceFromField;
-  protected ListViewDragSource<ArticulationType> sourceToField;
+  protected ListViewDragSource<Relation> sourceFromField;
+  protected ListViewDragSource<Relation> sourceToField;
 
-  protected ListViewDropTarget<ArticulationType> targetFromField;
-  protected ListViewDropTarget<ArticulationType> targetToField;
+  protected ListViewDropTarget<Relation> targetFromField;
+  protected ListViewDropTarget<Relation> targetToField;
 
   private DualListFieldMessages messages;
   private VerticalPanel buttonBar;
-  private ListView<ArticulationType, String> fromView, toView;
-  private ListStore<ArticulationType> fromStore, toStore;
+  private ListView<Relation, String> fromView, toView;
+  private ListStore<Relation> fromStore, toStore;
   private IconButton up, allRight, right, left, allLeft, down;
   private final DualListFieldAppearance appearance;
   private String dndGroup;
@@ -114,7 +115,7 @@ public class MyDualListField extends AdapterField<List<ArticulationType>> {
    * @param cell displays the data in the list view (e.g. {@link TextCell})
    */
   @UiConstructor
-  public MyDualListField(ListStore<ArticulationType> fromStore, ListStore<ArticulationType> toStore, ValueProvider<? super ArticulationType, String> valueProvider,
+  public MyDualListField(ListStore<Relation> fromStore, ListStore<Relation> toStore, ValueProvider<? super Relation, String> valueProvider,
       Cell<String> cell, EventBus eventBus, Model model, ComboBox<Taxon> taxonomyACombo, ComboBox<Taxon> taxonomyBCombo) {
     this(fromStore, toStore, valueProvider, cell, eventBus, model, taxonomyACombo, taxonomyBCombo, GWT.<DualListFieldAppearance>create(DualListFieldAppearance.class));
   }
@@ -129,7 +130,7 @@ public class MyDualListField extends AdapterField<List<ArticulationType>> {
    * @param cell displays the data in the list view (e.g. {@link TextCell})
    * @param appearance the appearance instance to use when rendering this widget
    */
-  public MyDualListField(ListStore<ArticulationType> fromStore, ListStore<ArticulationType> toStore, ValueProvider<? super ArticulationType, String> valueProvider,
+  public MyDualListField(ListStore<Relation> fromStore, ListStore<Relation> toStore, ValueProvider<? super Relation, String> valueProvider,
                        Cell<String> cell, EventBus eventBus, Model model, ComboBox<Taxon> taxonomyACombo, ComboBox<Taxon> taxonomyBCombo, DualListFieldAppearance appearance) {
     super(new HorizontalPanel());
     this.eventBus = eventBus;
@@ -144,11 +145,11 @@ public class MyDualListField extends AdapterField<List<ArticulationType>> {
     HorizontalPanel panel = (HorizontalPanel) getWidget();
     this.buttonBar = new VerticalPanel();
 
-    fromView = new ListView<ArticulationType, String>(this.fromStore, valueProvider);
+    fromView = new ListView<Relation, String>(this.fromStore, valueProvider);
     fromView.setCell(cell);
     fromView.setWidth(125);
 
-    toView = new ListView<ArticulationType, String>(this.toStore, valueProvider);
+    toView = new ListView<Relation, String>(this.toStore, valueProvider);
     toView.setCell(cell);
     toView.setWidth(125);
 
@@ -257,7 +258,7 @@ public DualListFieldAppearance getAppearance() {
    * 
    * @return the drag source
    */
-  public ListViewDragSource<ArticulationType> getDragSourceFromField() {
+  public ListViewDragSource<Relation> getDragSourceFromField() {
     return sourceFromField;
   }
 
@@ -266,7 +267,7 @@ public DualListFieldAppearance getAppearance() {
    * 
    * @return the drag source
    */
-  public ListViewDragSource<ArticulationType> getDragSourceToField() {
+  public ListViewDragSource<Relation> getDragSourceToField() {
     return sourceToField;
   }
 
@@ -275,7 +276,7 @@ public DualListFieldAppearance getAppearance() {
    * 
    * @return the drag source
    */
-  public ListViewDropTarget<ArticulationType> getDropTargetFromField() {
+  public ListViewDropTarget<Relation> getDropTargetFromField() {
     return targetFromField;
   }
 
@@ -284,7 +285,7 @@ public DualListFieldAppearance getAppearance() {
    * 
    * @return the drag source
    */
-  public ListViewDropTarget<ArticulationType> getDropTargetToField() {
+  public ListViewDropTarget<Relation> getDropTargetToField() {
     return targetToField;
   }
 
@@ -293,7 +294,7 @@ public DualListFieldAppearance getAppearance() {
    * 
    * @return the list view that provides the source of selectable items
    */
-  public ListView<ArticulationType, String> getFromView() {
+  public ListView<Relation, String> getFromView() {
     return fromView;
   }
 
@@ -301,7 +302,7 @@ public DualListFieldAppearance getAppearance() {
    * Returns the ListStore that manages the source of selectable items.
    * @return the list store that manages the source of selectable items
    */
-  public ListStore<ArticulationType> getFromStore() {
+  public ListStore<Relation> getFromStore() {
     return fromStore;
   }
 
@@ -331,7 +332,7 @@ public DualListFieldAppearance getAppearance() {
    * 
    * @return the list view that provides the destination for selectable items
    */
-  public ListView<ArticulationType, String> getToView() {
+  public ListView<Relation, String> getToView() {
     return toView;
   }
 
@@ -340,12 +341,12 @@ public DualListFieldAppearance getAppearance() {
    *
    * @return the ListStore that manages the destination for selectable items
    */
-  public ListStore<ArticulationType> getToStore() {
+  public ListStore<Relation> getToStore() {
     return toStore;
   }
 
   @Override
-  public List<ArticulationType> getValue() {
+  public List<Relation> getValue() {
     return toStore.getAll();
   }
 
@@ -392,17 +393,17 @@ public DualListFieldAppearance getAppearance() {
   public void setEnableDnd(boolean enableDnd) {
     if (enableDnd) {
       if (sourceFromField == null) {
-        sourceFromField = new ListViewDragSource<ArticulationType>(fromView);
-        sourceToField = new ListViewDragSource<ArticulationType>(toView);
+        sourceFromField = new ListViewDragSource<Relation>(fromView);
+        sourceToField = new ListViewDragSource<Relation>(toView);
 
-        targetFromField = new ListViewDropTarget<ArticulationType>(fromView) {
+        targetFromField = new ListViewDropTarget<Relation>(fromView) {
           @Override
        	  protected void onDragDrop(DndDropEvent event) {
          	    Object data = event.getData();
-       	    List<ArticulationType> models = (List) prepareDropData(data, true);
+       	    List<Relation> models = (List) prepareDropData(data, true);
        	    
        		List<Articulation> articulations = new LinkedList<Articulation>();
-       		for (ArticulationType m : models) {
+       		for (Relation m : models) {
        			articulations.add(model.getArticulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m));
        		}
        		eventBus.fireEvent(new RemoveArticulationsEvent(articulations));
@@ -411,15 +412,15 @@ public DualListFieldAppearance getAppearance() {
        	  }
         };
         targetFromField.setAutoSelect(true);
-        targetToField = new ListViewDropTarget<ArticulationType>(toView) {
+        targetToField = new ListViewDropTarget<Relation>(toView) {
         	  @Override
         	  protected void onDragDrop(DndDropEvent event) {
           	    Object data = event.getData();
-        	    List<ArticulationType> models = (List) prepareDropData(data, true);
+        	    List<Relation> models = (List) prepareDropData(data, true);
         	    
         		List<Articulation> articulations = new LinkedList<Articulation>();
-        		for (ArticulationType m : models) {
-        			articulations.add(new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m));
+        		for (Relation m : models) {
+        			articulations.add(new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m, Type.USER));
         		}
         		eventBus.fireEvent(new AddArticulationsEvent(articulations));
         	    
@@ -490,17 +491,17 @@ public DualListFieldAppearance getAppearance() {
   }
 
   @Override
-  public void setValue(List<ArticulationType> value) {
+  public void setValue(List<Relation> value) {
     if (value == null || value.isEmpty()) {
       onAllLeft();
       return;
     }
     //copy value list so we can modify it
-    value = new ArrayList<ArticulationType>(value);
+    value = new ArrayList<Relation>(value);
 
     //first we collect all items used in either list
     //at this point, 'nonSelectedItems' is actually all items
-    List<ArticulationType> nonSelectedItems = new ArrayList<ArticulationType>(toStore.getAll());
+    List<Relation> nonSelectedItems = new ArrayList<Relation>(toStore.getAll());
     nonSelectedItems.addAll(fromStore.getAll());
 
     //then remove any item *not* in either from the set of items to select
@@ -562,13 +563,13 @@ public DualListFieldAppearance getAppearance() {
  
 	public void onAllRight() {
 		List<Articulation> articulations = new LinkedList<Articulation>();
-		for(ArticulationType type : getFromStore().getAll()) {
-			Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), type);
+		for(Relation relation : getFromStore().getAll()) {
+			Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), relation, Type.USER);
 			articulations.add(articulation);
 		}
 		eventBus.fireEvent(new AddArticulationsEvent(articulations));
 		
-		List<ArticulationType> sel = fromStore.getAll();
+		List<Relation> sel = fromStore.getAll();
 	    toStore.addAll(sel);
 	    fromStore.clear();
 	}
@@ -577,7 +578,7 @@ public DualListFieldAppearance getAppearance() {
 		Collection<Articulation> articulations = model.getArticulations(taxonomyACombo.getValue(), taxonomyBCombo.getValue());
 		eventBus.fireEvent(new RemoveArticulationsEvent(articulations));
 
-		List<ArticulationType> sel = toStore.getAll();
+		List<Relation> sel = toStore.getAll();
 	    fromStore.addAll(sel);
 	    toStore.clear();
 	}
@@ -585,9 +586,9 @@ public DualListFieldAppearance getAppearance() {
 	public void onLeft() {
 		List<Articulation> articulations = new LinkedList<Articulation>();
 
-		List<ArticulationType> sel = getToView().getSelectionModel()
+		List<Relation> sel = getToView().getSelectionModel()
 				.getSelectedItems();
-		for (ArticulationType m : sel) {
+		for (Relation m : sel) {
 			getToStore().remove(m);
 			articulations.add(model.getArticulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m));
 		}
@@ -600,10 +601,10 @@ public DualListFieldAppearance getAppearance() {
 	public void onRight() {
 		List<Articulation> articulations = new LinkedList<Articulation>();
 		
-		List<ArticulationType> sel = this.getFromView().getSelectionModel().getSelectedItems();
-		for (ArticulationType m : sel) {
+		List<Relation> sel = this.getFromView().getSelectionModel().getSelectedItems();
+		for (Relation m : sel) {
 			this.getFromStore().remove(m);
-			articulations.add(new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m));
+			articulations.add(new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m, Type.USER));
 			
 		}
 		getToStore().addAll(sel);

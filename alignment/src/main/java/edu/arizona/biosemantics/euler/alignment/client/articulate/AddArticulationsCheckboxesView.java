@@ -21,17 +21,22 @@ import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.text.shared.AbstractSafeHtmlRenderer;
 import com.google.gwt.text.shared.SafeHtmlRenderer;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
 import com.sencha.gxt.core.client.Style.SelectionMode;
+import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.ListView;
+import com.sencha.gxt.widget.core.client.button.IconButton;
 import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
@@ -47,12 +52,12 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulati
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationEntry;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 
 public class AddArticulationsCheckboxesView extends SimpleContainer /*extends ContentPanel*/ {
 
@@ -65,7 +70,7 @@ public class AddArticulationsCheckboxesView extends SimpleContainer /*extends Co
 	private ComboBox<Taxon> taxonomyBCombo;
 	private ListStore<Taxon> taxonomyAStore;
 	private ListStore<Taxon> taxonomyBStore;
-	private Map<ArticulationType, CheckBox> articulationCheckBoxes = new HashMap<ArticulationType, CheckBox>();
+	private Map<Relation, CheckBox> articulationCheckBoxes = new HashMap<Relation, CheckBox>();
 	
 	public AddArticulationsCheckboxesView(EventBus eventBus) {
 		this.eventBus = eventBus;
@@ -130,7 +135,7 @@ public class AddArticulationsCheckboxesView extends SimpleContainer /*extends Co
 	}
 
 	private void clearArticulationCheckBoxes() {
-		for(ArticulationType type : articulationCheckBoxes.keySet())
+		for(Relation type : articulationCheckBoxes.keySet())
 			articulationCheckBoxes.get(type).setValue(false);
 	}
 
@@ -142,7 +147,7 @@ public class AddArticulationsCheckboxesView extends SimpleContainer /*extends Co
 		if(taxonA != null && taxonB != null) {
 			List<Articulation> articulations = model.getArticulations(taxonA, taxonB);
 			for(Articulation articulation : articulations) {
-				articulationCheckBoxes.get(articulation.getType()).setValue(true);
+				articulationCheckBoxes.get(articulation.getRelation()).setValue(true);
 			}
 		}
 	}
@@ -186,12 +191,23 @@ public class AddArticulationsCheckboxesView extends SimpleContainer /*extends Co
 		taxonomyACombo = createTaxonomyACombo();
 		taxonomyBCombo = createTaxonomyBCombo();
 
-		HorizontalPanel checkBoxContainer = new HorizontalPanel();
+		HorizontalLayoutContainer checkBoxContainer = new HorizontalLayoutContainer();
+		checkBoxContainer.add(new Label(), new HorizontalLayoutContainer.HorizontalLayoutData(0.5, -1));
+		checkBoxContainer.add(taxonomyACombo, new HorizontalLayoutContainer.HorizontalLayoutData(-1, -1, new Margins(5, 80, 5, 0)));
 		
-		ArticulationType[] types = ArticulationType.values();
-		for(int i=0; i<types.length; i++) {
-			final ArticulationType type = types[i];
+		Relation[] relations = Relation.values();
+		for(int i=0; i<relations.length; i++) {
+			final Relation relation = relations[i];
 			CheckBox articulationCheckBox = new CheckBox();
+			ToolButton evidenceButton = new ToolButton(ToolButton.SEARCH);
+			evidenceButton.addSelectHandler(new SelectHandler() {
+				@Override
+				public void onSelect(SelectEvent event) {
+					Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), relation, Type.USER);
+					EvidenceDialog evidenceDialog = new EvidenceDialog(eventBus, model, articulation);
+					evidenceDialog.show();
+				}
+			});
 			articulationCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
 				@Override
 				public void onValueChange(ValueChangeEvent<Boolean> event) {
@@ -200,30 +216,27 @@ public class AddArticulationsCheckboxesView extends SimpleContainer /*extends Co
 					
 					if(taxonA != null && taxonB != null) {
 						if(event.getValue()) {
-							eventBus.fireEvent(new AddArticulationsEvent(new Articulation(taxonA, taxonB, type)));
+							eventBus.fireEvent(new AddArticulationsEvent(new Articulation(taxonA, taxonB, relation, Type.USER)));
 						} else {
-							eventBus.fireEvent(new RemoveArticulationsEvent(new Articulation(taxonA, taxonB, type)));
+							eventBus.fireEvent(new RemoveArticulationsEvent(new Articulation(taxonA, taxonB, relation, Type.USER)));
 						}
 					}
 				}
 			});
 			
-			articulationCheckBoxes.put(type, articulationCheckBox);
-			articulationCheckBox.setBoxLabel(SafeHtmlUtils.fromString(type.displayName()).asString());
-			if(i<types.length - 1)
-				articulationCheckBox.getElement().getStyle().setPaddingRight(50, Unit.PX);
-			checkBoxContainer.add(articulationCheckBox);
+			articulationCheckBoxes.put(relation, articulationCheckBox);
+			articulationCheckBox.setBoxLabel(SafeHtmlUtils.fromString(relation.displayName()).asString());
+			//if(i<relations.length - 1) 
+			//	evidenceButton.getElement().getStyle().setPaddingRight(50, Unit.PX);
+			//System.out.println(articulationCheckBox.getElement().toString());
+			//articulationCheckBox.getElement().getStyle().setPaddingRight(0, Unit.PX);
+			checkBoxContainer.add(articulationCheckBox, new HorizontalLayoutData(-1, -1, new Margins(5, 0, 5, 0)));
+			checkBoxContainer.add(evidenceButton, new HorizontalLayoutData(-1, -1, new Margins(5, 80, 5, 0)));
 		}
 				
-		ToolBar toolBar = new ToolBar();
-		// toolBar.setSpacing(2);
-		toolBar.setBorders(true);
-		toolBar.add(new FillToolItem());
-		toolBar.add(taxonomyACombo);
-		toolBar.add(checkBoxContainer);
-		toolBar.add(taxonomyBCombo);
-		toolBar.add(new FillToolItem());
-		return toolBar;
+		checkBoxContainer.add(taxonomyBCombo, new HorizontalLayoutContainer.HorizontalLayoutData(-1, -1, new Margins(5, 0, 5, 0)));
+		checkBoxContainer.add(new Label(), new HorizontalLayoutContainer.HorizontalLayoutData(0.5, -1));
+		return checkBoxContainer;
 	}
 }
 	

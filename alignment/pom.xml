@@ -77,12 +77,24 @@
 			<groupId>edu.arizona.biosemantics.euler</groupId>
 			<artifactId>io</artifactId>
 			<version>0.0.11-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>alignment</artifactId>
+					<groupId>edu.arizona.biosemantics.euler</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.vectomatic</groupId>
 			<artifactId>lib-gwt-svg</artifactId>
 			<version>0.5.10</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.8.3</version>
+		</dependency>
+		
 	</dependencies>
 
 	

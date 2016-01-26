@@ -76,7 +76,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 
 	@Override
 	public void onModify(ModifyArticulationEvent event) {
-		model.changeArticulationType(event.getArticulation(), event.getNewType());
+		model.changeArticulationRelation(event.getArticulation(), event.getNewType());
 	}
 
 	@Override

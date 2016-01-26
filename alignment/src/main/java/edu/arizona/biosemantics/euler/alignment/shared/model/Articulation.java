@@ -5,6 +5,20 @@ import java.util.Date;
 
 public class Articulation implements Serializable {
 	
+	public static enum Type {
+		USER("User"), MACHINE("Machine");
+		
+		private String displayName;
+
+		private Type(String displayName) {
+			this.displayName = displayName;
+		}
+		
+		public String getDisplayName() {
+			return displayName;
+		}
+	}
+	
 	private static final long serialVersionUID = 1L;
 	
 	public static int ID = 0;	
@@ -13,14 +27,20 @@ public class Articulation implements Serializable {
 	
 	private Taxon taxonA;
 	private Taxon taxonB;
-	private ArticulationType type;
+	private Relation relation;
+	private Type type;
 
 	public Articulation() {}
 	
-	public Articulation(Taxon taxonA, Taxon taxonB, ArticulationType type) {
+	public Articulation(Taxon taxonA, Taxon taxonB, Relation relation, Type type) {
 		this.taxonA = taxonA;
 		this.taxonB = taxonB;
+		this.relation = relation;
 		this.type = type;
+	}
+
+	public Type getType() {
+		return type;
 	}
 
 	public Taxon getTaxonA() {
@@ -31,16 +51,16 @@ public class Articulation implements Serializable {
 		return taxonB;
 	}
 
-	public ArticulationType getType() {
-		return type;
+	public Relation getRelation() {
+		return relation;
 	}
 
-	public void setType(ArticulationType type) {
-		this.type = type;
+	public void setRelation(Relation relation) {
+		this.relation = relation;
 	}
 	
 	public String getText() {
-		return taxonA.getBiologicalName() + " " + type.getDisplayName() + " " + taxonB.getBiologicalName();
+		return taxonA.getBiologicalName() + " " + relation.getDisplayName() + " " + taxonB.getBiologicalName();
 	}
 	
 	public int getId() {
@@ -52,7 +72,7 @@ public class Articulation implements Serializable {
 	}
 
 	public Articulation getClone() {
-		Articulation clone = new Articulation(taxonA, taxonB, type); // not necessary to clone taxa, since they 
+		Articulation clone = new Articulation(taxonA, taxonB, relation, type); // not necessary to clone taxa, since they 
 		//are assumed to be unmodifiable
 		clone.created = (Date)created.clone();
 		return clone;
@@ -77,7 +97,7 @@ public class Articulation implements Serializable {
 				return false;
 		} else if (!taxonB.equals(other.taxonB))
 			return false;
-		if (type != other.type)
+		if (relation != other.relation)
 			return false;
 		return true;
 	}

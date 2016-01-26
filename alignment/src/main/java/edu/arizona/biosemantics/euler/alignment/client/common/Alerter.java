@@ -30,7 +30,7 @@ public class Alerter {
 	public static MessageBox articulationAlreadyExists(List<Articulation> articulations) {
 		String result = "";
 		for(Articulation articulation : articulations)
-			result += articulation.getType().getDisplayName() + ", ";
+			result += articulation.getRelation().getDisplayName() + ", ";
 		return showAlert("Articulation exists", "Some of these articulations already existed: " + result.substring(0, result.length() - 2));
 	}
 	
@@ -67,6 +67,11 @@ public class Alerter {
         box.setIcon(MessageBox.ICONS.question());
         box.show();
         return box;
+	}
+
+	public static void failedToHighlight() {
+		// TODO Auto-generated method stub
+		
 	}
 
 

@@ -6,7 +6,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.PrintableEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent.ModifyArticulationEventHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 
 public class ModifyArticulationEvent extends GwtEvent<ModifyArticulationEventHandler> implements PrintableEvent {
 
@@ -16,9 +16,9 @@ public class ModifyArticulationEvent extends GwtEvent<ModifyArticulationEventHan
 	
 	public static Type<ModifyArticulationEventHandler> TYPE = new Type<ModifyArticulationEventHandler>();
 	private Articulation articulation;
-	private ArticulationType newType;
+	private Relation newType;
 	
-	public ModifyArticulationEvent(Articulation articulation, ArticulationType newType) {
+	public ModifyArticulationEvent(Articulation articulation, Relation newType) {
 		this.articulation = articulation;
 		this.newType = newType;
 	}
@@ -41,7 +41,7 @@ public class ModifyArticulationEvent extends GwtEvent<ModifyArticulationEventHan
 		return articulation;
 	}
 	
-	public ArticulationType getNewType() {
+	public Relation getNewType() {
 		return newType;
 	}
 

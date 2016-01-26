@@ -52,16 +52,19 @@ public class ColorableCell<T> extends AbstractCell<T> {
 	private Model model;
 	private ListStore commentColorizableObjectsStore;
 	private CommentColorizableObjectsProvider commentColorizableObjectsProvider;
+	private QuickTipProvider<T> quickTipProvider;
 	
-	public ColorableCell(EventBus eventBus, Model model) {
-		this(GWT.<ColumnHeaderAppearance> create(ColumnHeaderAppearance.class), GWT.<GridAppearance> create(GridAppearance.class), eventBus, model);
+	public ColorableCell(EventBus eventBus, Model model, QuickTipProvider<T> quickTipProvider) {
+		this(GWT.<ColumnHeaderAppearance> create(ColumnHeaderAppearance.class), GWT.<GridAppearance> create(GridAppearance.class), eventBus, model, quickTipProvider);
 	}
 	
-	public ColorableCell(ColumnHeaderAppearance columnHeaderAppearance, GridAppearance gridAppearance, EventBus eventBus, Model model) {
+	public ColorableCell(ColumnHeaderAppearance columnHeaderAppearance, GridAppearance gridAppearance, EventBus eventBus, Model model, 
+			QuickTipProvider<T> quickTipProvider) {
 		super(BrowserEvents.MOUSEOVER, BrowserEvents.MOUSEOUT, BrowserEvents.CLICK);
 		
 		this.eventBus = eventBus;
 		this.model = model;
+		this.quickTipProvider = quickTipProvider;
 		this.columnHeaderAppearance = columnHeaderAppearance;
 		this.gridAppearance = gridAppearance;
 		columnHeaderStyles = columnHeaderAppearance.styles();
@@ -103,7 +106,10 @@ public class ColorableCell<T> extends AbstractCell<T> {
 		
 		if (value == null)
 			return;
+		
 		String quickTipText = "";
+		if(quickTipProvider != null) 
+			quickTipText = quickTipProvider.getQuickTip(value);
 		String comment = null;
 		if(commentColorizableObject != null) {
 			comment = model.getComment(commentColorizableObject);
