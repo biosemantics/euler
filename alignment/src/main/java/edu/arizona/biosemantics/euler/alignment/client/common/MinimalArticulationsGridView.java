@@ -61,6 +61,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.EvidenceDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell.CommentColorizableObjectsProvider;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
@@ -82,10 +83,14 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 	protected Grid<Articulation> grid;
 	protected ListStore<Relation> allTypesStore;
 	protected ListStore<Relation> availableTypesStore;
+	private Type type;
+	private Articulation articulation;
 	
-	public MinimalArticulationsGridView(EventBus eventBus, Model model) {
+	public MinimalArticulationsGridView(EventBus eventBus, Model model, Articulation articulation, Type type) {
 		this.eventBus = eventBus;
 		this.model = model;
+		this.articulation = articulation;
+		this.type = type;
 		availableTypesStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
 			@Override
 			public String getKey(Relation item) {
@@ -102,8 +107,38 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 		
 		//setHeadingText("Articulations");
 		add(createArticulationsGrid());
+		setArticulations(model.getArticulations(articulation.getTaxonA(), articulation.getTaxonB(), type));
+		
+		bindEvents();
 	}
 	
+	private void bindEvents() {
+		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+			@Override
+			public void onLoad(LoadModelEvent event) {
+				model = event.getModel();
+			}
+		});
+		eventBus.addHandler(RemoveArticulationsEvent.TYPE, new RemoveArticulationsEvent.RemoveArticulationsEventHandler() {
+			@Override
+			public void onRemove(RemoveArticulationsEvent event) {
+				for(Articulation articulation : event.getArticulations())
+					if(articulation.getType().equals(type))
+						articulationsStore.remove(articulation);
+			}
+		});
+		eventBus.addHandler(AddArticulationsEvent.TYPE, new AddArticulationsEvent.AddArticulationEventHandler() {
+			@Override
+			public void onAdd(AddArticulationsEvent event) {
+				for(Articulation articulation : event.getArticulations()) {
+					if(articulation.getType().equals(type)) {
+						articulationsStore.add(articulation);
+					}
+				}
+			}
+		});
+	}
+
 	public void setArticulations(List<Articulation> articulations) {
 		articulationsStore.clear();
 		articulationsStore.addAll(articulations);
@@ -190,7 +225,7 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 			@Override
 			public void onStartEdit(StartEditEvent<Articulation> event) {
 				Articulation articulation = grid.getStore().get(event.getEditCell().getRow());
-				List<Relation> availableTypes = getAvailableTypes(articulation);
+				Collection<Relation> availableTypes = model.getAvailableRelations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER);
 				availableTypesStore.clear();
 				availableTypesStore.addAll(availableTypes);
 			}
@@ -213,18 +248,7 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 		});
 		return grid;
 	}
-
-	protected List<Relation> getAvailableTypes(Articulation fromArticulation) {
-		List<Relation> types = new ArrayList<Relation>(allTypesStore.getAll());
-		for(Articulation articulation : model.getArticulations()) {
-			if(articulation.getTaxonA().equals(fromArticulation.getTaxonA()) && 
-					articulation.getTaxonB().equals(fromArticulation.getTaxonB())) {
-				types.remove(articulation.getRelation());
-			}
-		}
-		return types;
-	}
-
+	
 	private ComboBox<Relation> createRelationCombo() {
 		ComboBox<Relation> relationCombo = new ComboBox<Relation>(availableTypesStore, new LabelProvider<Relation>() {
 			@Override
@@ -244,8 +268,7 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 			articulationsStore.update(articulation);
 	}
 
-	protected List<Articulation> getSelectedArticulations() {
+	public List<Articulation> getSelectedArticulations() {
 		return grid.getSelectionModel().getSelectedItems();
 	}
-	
 }

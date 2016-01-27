@@ -2,6 +2,7 @@ package edu.arizona.biosemantics.euler.alignment.shared.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -223,7 +224,7 @@ public class Model implements Serializable {
 	public List<Articulation> getArticulations(Taxon taxonA, Taxon taxonB, Type type) {
 		List<Articulation> result = new LinkedList<Articulation>();
 		for(Articulation articulation : this.articulations) 
-			if(articulation.getTaxonA().equals(taxonA) || articulation.getTaxonB().equals(taxonB) && articulation.getType().equals(type)) 
+			if(articulation.getTaxonA().equals(taxonA) && articulation.getTaxonB().equals(taxonB) && articulation.getType().equals(type)) 
 				result.add(articulation);
 		return result;
 	}
@@ -234,6 +235,16 @@ public class Model implements Serializable {
 
 	public void setEvidenceMap(Map<Taxon, Map<Taxon, List<Evidence>>> evidenceMap) {
 		this.evidenceMap = evidenceMap;
+	}
+
+	public Collection<Relation> getAvailableRelations(Taxon taxonA, Taxon taxonB, Type type) {	
+		Set<Relation> all = new HashSet<Relation>(Arrays.asList(Relation.values()));
+		for(Articulation articulation : this.getArticulations(type)) {
+			if(articulation.getTaxonA().equals(taxonA) && articulation.getTaxonB().equals(taxonB)) {
+				all.remove(articulation.getRelation());
+			}
+		}
+		return all;
 	}
 
 }

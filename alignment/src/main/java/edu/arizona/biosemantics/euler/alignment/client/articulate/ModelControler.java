@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.EventBus;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.SwapTaxonomiesEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticScopeEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent.AddArticulationEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent.ImportArticulationsEventHandler;
@@ -11,6 +12,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEven
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent.LoadModelEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent.ModifyArticulationEventHandler;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent.RemoveArticulationsEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
@@ -19,6 +21,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorsEven
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorsEvent.SetColorsEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent.SetCommentEventHandler;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent.ModifyDiagnosticValueEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.EndMIREvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.EndMIREvent.EndMIREventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
@@ -33,7 +36,9 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 
 public class ModelControler implements LoadModelEventHandler, SetColorsEventHandler,  AddArticulationEventHandler, 
 	RemoveArticulationsEventHandler, ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler, EndMIREventHandler, 
-	SetColorEventHandler, SetCommentEventHandler, SwapTaxonomiesEvent.SwapTaxonomiesEventHandler {
+	SetColorEventHandler, SetCommentEventHandler, SwapTaxonomiesEvent.SwapTaxonomiesEventHandler, 
+	ModifyDiagnosticScopeEvent.ModifyDiagnosticScopeEventHandler, 
+	edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent.ModifyDiagnosticValueEventHandler {
 
 	protected EventBus eventBus;
 	protected Model model;
@@ -56,6 +61,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 		eventBus.addHandler(ImportArticulationsEvent.TYPE, this);
 		eventBus.addHandler(EndMIREvent.TYPE, this);
 		eventBus.addHandler(SwapTaxonomiesEvent.TYPE, this);
+		eventBus.addHandler(ModifyDiagnosticScopeEvent.TYPE, this);
 	}
 
 	@Override
@@ -125,6 +131,16 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 	public void onShow(SwapTaxonomiesEvent event) {
 		ModelSwapper swapper = new ModelSwapper();
 		eventBus.fireEvent(new LoadModelEvent(swapper.swap(model)));
+	}
+
+	@Override
+	public void onModify(ModifyDiagnosticScopeEvent event) {
+		event.getEvidence().setDiagnosticScope(event.getNewDiagnosticScope());
+	}
+
+	@Override
+	public void onModify(ModifyDiagnosticValueEvent event) {
+		event.getEvidence().setDiagnosticValue(event.getNewDiagnosticValue());
 	}
 
 }

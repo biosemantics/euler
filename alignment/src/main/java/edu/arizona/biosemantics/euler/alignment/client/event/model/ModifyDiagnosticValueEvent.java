@@ -4,17 +4,17 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.PrintableEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent.ModifyEvidenceEventHandler;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent.ModifyDiagnosticValueEventHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.DiagnosticValue;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
 
-public class ModifyDiagnosticValueEvent extends GwtEvent<ModifyEvidenceEventHandler> implements PrintableEvent {
+public class ModifyDiagnosticValueEvent extends GwtEvent<ModifyDiagnosticValueEventHandler> implements PrintableEvent {
 
-	public interface ModifyEvidenceEventHandler extends EventHandler {
+	public interface ModifyDiagnosticValueEventHandler extends EventHandler {
 		void onModify(ModifyDiagnosticValueEvent event);
 	}
 	
-	public static Type<ModifyEvidenceEventHandler> TYPE = new Type<ModifyEvidenceEventHandler>();
+	public static Type<ModifyDiagnosticValueEventHandler> TYPE = new Type<ModifyDiagnosticValueEventHandler>();
 	private Evidence evidence;
 	private DiagnosticValue newDiagnosticValue;
 	
@@ -24,16 +24,16 @@ public class ModifyDiagnosticValueEvent extends GwtEvent<ModifyEvidenceEventHand
 	}
 
 	@Override
-	public GwtEvent.Type<ModifyEvidenceEventHandler> getAssociatedType() {
+	public GwtEvent.Type<ModifyDiagnosticValueEventHandler> getAssociatedType() {
 		return TYPE;
 	}
 
 	@Override
-	protected void dispatch(ModifyEvidenceEventHandler handler) {
+	protected void dispatch(ModifyDiagnosticValueEventHandler handler) {
 		handler.onModify(this);
 	}
 
-	public static Type<ModifyEvidenceEventHandler> getTYPE() {
+	public static Type<ModifyDiagnosticValueEventHandler> getTYPE() {
 		return TYPE;
 	}
 

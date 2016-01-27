@@ -59,7 +59,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 
-public class AddArticulationsCheckboxesView extends SimpleContainer /*extends ContentPanel*/ {
+public class AddArticulationsCheckboxesView extends SimpleContainer {
 
 	private EventBus eventBus;
 	private Model model;
@@ -145,7 +145,7 @@ public class AddArticulationsCheckboxesView extends SimpleContainer /*extends Co
 		Taxon taxonB = taxonomyBCombo.getValue();
 		
 		if(taxonA != null && taxonB != null) {
-			List<Articulation> articulations = model.getArticulations(taxonA, taxonB);
+			List<Articulation> articulations = model.getArticulations(taxonA, taxonB, Type.USER);
 			for(Articulation articulation : articulations) {
 				articulationCheckBoxes.get(articulation.getRelation()).setValue(true);
 			}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import com.google.gwt.cell.client.Cell.Context;
 import com.google.gwt.core.client.GWT;
@@ -306,7 +307,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 			@Override
 			public void onStartEdit(StartEditEvent<Articulation> event) {
 				Articulation articulation = grid.getStore().get(event.getEditCell().getRow());
-				List<Relation> availableTypes = getAvailableTypes(articulation);
+				Collection<Relation> availableTypes = model.getAvailableRelations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER);
 				availableRelationsStore.clear();
 				availableRelationsStore.addAll(availableTypes);
 			}
@@ -337,17 +338,6 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 			}
 		});
 		return grid;
-	}
-
-	protected List<Relation> getAvailableTypes(Articulation fromArticulation) {
-		List<Relation> types = new ArrayList<Relation>(allRelationsStore.getAll());
-		for(Articulation articulation : model.getArticulations()) {
-			if(articulation.getTaxonA().equals(fromArticulation.getTaxonA()) && 
-					articulation.getTaxonB().equals(fromArticulation.getTaxonB())) {
-				types.remove(articulation.getRelation());
-			}
-		}
-		return types;
 	}
 
 	private ComboBox<Relation> createRelationCombo() {
