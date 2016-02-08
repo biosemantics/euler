@@ -1,5 +1,11 @@
 package edu.arizona.biosemantics.euler.alignment.server;
 
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,12 +25,16 @@ import org.jsoup.parser.Tag;
 import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.inject.Inject;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
+import edu.arizona.biosemantics.euler.alignment.server.db.CollectionDAO;
+import edu.arizona.biosemantics.euler.alignment.server.db.Query.QueryException;
 import edu.arizona.biosemantics.euler.alignment.shared.Highlight;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.DiagnosticValue;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -34,11 +44,31 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 import edu.arizona.biosemantics.euler.io.ArticulationsReader;
-import edu.arizona.biosemantics.euler.io.TaxonomyFileReader;
 
-@SuppressWarnings("serial")
 public class EulerAlignmentService extends RemoteServiceServlet implements IEulerAlignmentService {
 
+	private CollectionDAO collectionDAO;
+
+	@Inject
+	public EulerAlignmentService(CollectionDAO collectionDAO) throws Exception {
+		this.collectionDAO = collectionDAO;
+		
+		Collection collection = new Collection();
+		collection.setSecret("test");
+		
+		edu.arizona.biosemantics.matrixreview.shared.model.Model model = unserializeMatrix("C:\\gitEtc3\\euler2\\alignment\\TaxonMatrix.ser");
+		collection.setModel(model);
+		this.createCollection(collection);
+	}
+	
+	private edu.arizona.biosemantics.matrixreview.shared.model.Model unserializeMatrix(String file) throws FileNotFoundException, IOException, ClassNotFoundException {
+		try(ObjectInput input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
+			Object object = input.readObject();
+			edu.arizona.biosemantics.matrixreview.shared.model.Model model = (edu.arizona.biosemantics.matrixreview.shared.model.Model)input.readObject();
+			return model;
+		}
+	}
+	
 	@Override
 	public Model getModel() {
 		return createSampleModel();
@@ -130,8 +160,8 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 		evidenceMap.get(t4).get(t24).add(new Evidence("", "pubescence = www", -1, 1, DiagnosticValue.MEDIUM, Rank.SPECIES));
 		
 		Articulations machineArticulations = new Articulations();
-		machineArticulations.add(new Articulation(t4, t24, Relation.CONGRUENT, Type.MACHINE));
-		machineArticulations.add(new Articulation(t4, t24, Relation.A_INCLUDES_B, Type.MACHINE));
+		machineArticulations.add(new Articulation(t4, t24, Relation.CONGRUENT, 1.0, Type.MACHINE));
+		machineArticulations.add(new Articulation(t4, t24, Relation.A_INCLUDES_B, 1.0, Type.MACHINE));
 		Model model = new Model(taxonomies, evidenceMap);
 		model.addArticulations(machineArticulations);
 		return model;
@@ -263,5 +293,11 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 		result.add(fontElement);
 		result.addAll(createHighlightedNodes(new TextNode(afterReplaceText, ""), regex, colorHex));
 		return result;
+	}
+
+	@Override
+	public Collection createCollection(Collection collection) throws QueryException, IOException {
+		collection = collectionDAO.insert(collection);
+		return collection;
 	}
 }

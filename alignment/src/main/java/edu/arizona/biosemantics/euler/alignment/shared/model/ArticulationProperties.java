@@ -11,9 +11,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 
 public interface ArticulationProperties extends PropertyAccess<Articulation> {
 
-
-
-	@Path("id")
+	  @Path("id")
 	  ModelKeyProvider<Articulation> key();
 	   
 	  @Path("text")
@@ -24,6 +22,23 @@ public interface ArticulationProperties extends PropertyAccess<Articulation> {
 	  ValueProvider<Articulation, Taxon> taxonA();
 	  
 	  ValueProvider<Articulation, Type> type();
+	  
+	  ValueProvider<Articulation, Double> confidence();
+	  
+	  public static class ConfidenceStringValueProvider implements ValueProvider<Articulation, String> {
+		@Override
+		public String getValue(Articulation object) {
+			return String.valueOf(object.getConfidence());
+		}
+		@Override
+		public void setValue(Articulation object, String value) {
+			object.setConfidence(Double.valueOf(value));
+		}
+		@Override
+		public String getPath() {
+			return "confidence";
+		}
+	  }
 	  
 	  ValueProvider<Articulation, Taxon> taxonB();
 	  

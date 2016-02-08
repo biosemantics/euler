@@ -43,7 +43,7 @@ public class ModelSwapper {
 	}
 
 	public Articulation swap(Articulation articulation) {
-		return new Articulation(articulation.getTaxonB(), articulation.getTaxonA(), swap(articulation.getRelation()), articulation.getType());
+		return new Articulation(articulation.getTaxonB(), articulation.getTaxonA(), swap(articulation.getRelation()), articulation.getConfidence(), articulation.getType());
 	}
 
 	public Relation swap(Relation type) {

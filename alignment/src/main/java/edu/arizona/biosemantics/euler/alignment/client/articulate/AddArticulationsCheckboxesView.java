@@ -203,7 +203,7 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 			evidenceButton.addSelectHandler(new SelectHandler() {
 				@Override
 				public void onSelect(SelectEvent event) {
-					Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), relation, Type.USER);
+					Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), relation, 1.0, Type.USER);
 					EvidenceDialog evidenceDialog = new EvidenceDialog(eventBus, model, articulation);
 					evidenceDialog.show();
 				}
@@ -216,9 +216,9 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 					
 					if(taxonA != null && taxonB != null) {
 						if(event.getValue()) {
-							eventBus.fireEvent(new AddArticulationsEvent(new Articulation(taxonA, taxonB, relation, Type.USER)));
+							eventBus.fireEvent(new AddArticulationsEvent(new Articulation(taxonA, taxonB, relation, 1.0, Type.USER)));
 						} else {
-							eventBus.fireEvent(new RemoveArticulationsEvent(new Articulation(taxonA, taxonB, relation, Type.USER)));
+							eventBus.fireEvent(new RemoveArticulationsEvent(new Articulation(taxonA, taxonB, relation, 1.0, Type.USER)));
 						}
 					}
 				}
@@ -235,6 +235,15 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 		}
 				
 		checkBoxContainer.add(taxonomyBCombo, new HorizontalLayoutContainer.HorizontalLayoutData(-1, -1, new Margins(5, 0, 5, 0)));
+		TextButton createButton = new TextButton("Create Evidence-Based");
+		createButton.addSelectHandler(new SelectHandler() {
+			@Override
+			public void onSelect(SelectEvent event) {
+				EvidenceBasedCreateDialog dialog = new EvidenceBasedCreateDialog(taxonomyACombo.getValue(), taxonomyBCombo.getValue());
+				dialog.show();
+			}
+		});
+		checkBoxContainer.add(createButton);
 		checkBoxContainer.add(new Label(), new HorizontalLayoutContainer.HorizontalLayoutData(0.5, -1));
 		return checkBoxContainer;
 	}

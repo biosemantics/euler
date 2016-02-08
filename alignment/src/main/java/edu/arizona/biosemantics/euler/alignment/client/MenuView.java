@@ -24,15 +24,16 @@ import edu.arizona.biosemantics.euler.alignment.client.common.ImportDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.RunDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewHistoryDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
-import edu.arizona.biosemantics.euler.alignment.client.event.AddMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SaveEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SwapTaxonomiesEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveUserArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
+import edu.arizona.biosemantics.euler.alignment.client.settings.MachineArticulationSettingsDialog;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsync;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -72,6 +73,15 @@ public class MenuView extends MenuBar {
 		Menu sub = new Menu();
 		
 		MenuBarItem articulationsItem = new MenuBarItem("Articulations", sub);
+		MenuItem settingsItem = new MenuItem("Machine Articulation Settings");
+		settingsItem.addSelectionHandler(new SelectionHandler<Item>() {
+			@Override
+			public void onSelection(SelectionEvent<Item> event) {
+				MachineArticulationSettingsDialog dialog = new MachineArticulationSettingsDialog();
+				dialog.show();
+				//dialog.setWidget(new EqualSizeCircleOverlap(200, 200, 400, 200, 100, "green", "red"));
+			}
+		});
 		MenuItem importItem = new MenuItem("Import Articulations");
 		importItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
@@ -84,7 +94,7 @@ public class MenuView extends MenuBar {
 		addMachineGeneratedArticulations.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new AddMachineArticulationsEvent());
+				eventBus.fireEvent(new LoadMachineArticulationsEvent());
 			}
 		});
 		
@@ -113,6 +123,7 @@ public class MenuView extends MenuBar {
 		});
 
 		// sub.add(subMatrixItem);
+		sub.add(settingsItem);
 		sub.add(importItem);
 		sub.add(addMachineGeneratedArticulations);
 		sub.add(removeMachineGeneratedArticulations);

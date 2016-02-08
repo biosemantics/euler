@@ -238,7 +238,7 @@ public class EvidenceDialog extends CommonDialog {
 			@Override
 			public void onSelection(SelectionEvent<Relation> event) {
 				List<Articulation> articulations = new LinkedList<Articulation>();
-				articulations.add(new Articulation(articulation.getTaxonA(), articulation.getTaxonB(), event.getSelectedItem(), Type.USER));
+				articulations.add(new Articulation(articulation.getTaxonA(), articulation.getTaxonB(), event.getSelectedItem(), 1.0, Type.USER));
 				eventBus.fireEvent(new AddArticulationsEvent(articulations));
 			}
 		});

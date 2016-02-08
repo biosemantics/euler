@@ -23,6 +23,7 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.core.client.resources.CommonStyles;
 import com.sencha.gxt.core.client.util.Format;
 import com.sencha.gxt.core.client.util.Params;
+import com.sencha.gxt.data.shared.Converter;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
@@ -43,6 +44,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.event.StartEditEvent;
 import com.sencha.gxt.widget.core.client.event.StartEditEvent.StartEditHandler;
 import com.sencha.gxt.widget.core.client.form.ComboBox;
+import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.form.TextField;
 import com.sencha.gxt.widget.core.client.grid.CheckBoxSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
@@ -52,6 +54,7 @@ import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.ListFilter;
+import com.sencha.gxt.widget.core.client.grid.filters.NumericFilter;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 import com.sencha.gxt.widget.core.client.info.Info;
 import com.sencha.gxt.widget.core.client.menu.HeaderMenuItem;
@@ -248,6 +251,8 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 			}
 		};
 		
+		ColumnConfig<Articulation, Double> confidenceCol = new ColumnConfig<Articulation, Double>(articulationProperties.confidence(), 100, "Confidence");
+		
 		final ColumnConfig<Articulation, String> commentCol = new ColumnConfig<Articulation, String>(
 				commentValueProvider, 400, "Comment");
 		commentCol.setCell(colorableCell);
@@ -259,6 +264,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		columns.add(taxonBCol);
 		columns.add(evidenceCol);
 		columns.add(sourceCol);
+		columns.add(confidenceCol);
 		columns.add(commentCol);
 		columns.add(createdCol);
 		ColumnModel<Articulation> cm = new ColumnModel<Articulation>(columns);
@@ -280,6 +286,8 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		StringFilter<Articulation> createdFilter = new StringFilter<Articulation>(new ArticulationProperties.CreatedStringValueProvder());
 		StringFilter<Articulation> taxonAFilter = new StringFilter<Articulation>(new ArticulationProperties.TaxonAStringValueProvider());
 		StringFilter<Articulation> taxonBFilter = new StringFilter<Articulation>(new ArticulationProperties.TaxonBStringValueProvider());
+		NumericFilter<Articulation, Double> confidenceFilter = new NumericFilter<Articulation, Double>(articulationProperties.confidence(), 
+				new NumberPropertyEditor.DoublePropertyEditor());
 		StringFilter<Articulation> commentFilter = new StringFilter<Articulation>(commentValueProvider);
 		ListFilter<Articulation, Type> sourceFilter = new ListFilter<Articulation, Type>(
 				articulationProperties.type(), this.allTypesStore);
@@ -291,6 +299,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		filters.addFilter(taxonAFilter);
 		filters.addFilter(taxonBFilter);
 		filters.addFilter(sourceFilter);
+		filters.addFilter(confidenceFilter);
 		filters.addFilter(relationFilter);
 		filters.addFilter(commentFilter);
 		filters.setLocal(true);
@@ -300,8 +309,19 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		
 		ComboBox<Relation> relationCombo = createRelationCombo();
 		
-		if(this.relationEditEnabled)
+		if(this.relationEditEnabled) {
 			editing.addEditor(relationCol, relationCombo);
+			editing.addEditor(confidenceCol, new Converter<Double, String>() {
+				@Override
+				public Double convertFieldValue(String object) {
+					return Double.valueOf(object);
+				}
+				@Override
+				public String convertModelValue(Double object) {
+					return object.toString();
+				}
+			}, new TextField());
+		}
 		editing.addEditor(commentCol, new TextField());
 		editing.addStartEditHandler(new StartEditHandler<Articulation>() {
 			@Override

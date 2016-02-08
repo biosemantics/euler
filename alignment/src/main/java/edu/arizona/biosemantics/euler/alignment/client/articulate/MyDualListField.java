@@ -420,7 +420,7 @@ public DualListFieldAppearance getAppearance() {
         	    
         		List<Articulation> articulations = new LinkedList<Articulation>();
         		for (Relation m : models) {
-        			articulations.add(new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m, Type.USER));
+        			articulations.add(new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m, 1.0, Type.USER));
         		}
         		eventBus.fireEvent(new AddArticulationsEvent(articulations));
         	    
@@ -564,7 +564,7 @@ public DualListFieldAppearance getAppearance() {
 	public void onAllRight() {
 		List<Articulation> articulations = new LinkedList<Articulation>();
 		for(Relation relation : getFromStore().getAll()) {
-			Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), relation, Type.USER);
+			Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), relation, 1.0, Type.USER);
 			articulations.add(articulation);
 		}
 		eventBus.fireEvent(new AddArticulationsEvent(articulations));
@@ -604,7 +604,7 @@ public DualListFieldAppearance getAppearance() {
 		List<Relation> sel = this.getFromView().getSelectionModel().getSelectedItems();
 		for (Relation m : sel) {
 			this.getFromStore().remove(m);
-			articulations.add(new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m, Type.USER));
+			articulations.add(new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m, 1.0, Type.USER));
 			
 		}
 		getToStore().addAll(sel);

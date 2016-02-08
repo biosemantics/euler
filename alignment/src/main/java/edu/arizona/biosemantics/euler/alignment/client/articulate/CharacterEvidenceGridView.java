@@ -225,7 +225,7 @@ public class CharacterEvidenceGridView extends SimpleContainer {
 	}
 
 	public void setArticulation(Articulation articulation) {
-		this.articulation = articulation;
+		this.articulation = articulation;		
 		evidenceStore.addAll(model.getEvidenceMap().get(articulation.getTaxonA()).get(articulation.getTaxonB()));
 	}
 	

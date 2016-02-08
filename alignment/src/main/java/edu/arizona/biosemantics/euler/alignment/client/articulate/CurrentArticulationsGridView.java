@@ -1,5 +1,6 @@
 package edu.arizona.biosemantics.euler.alignment.client.articulate;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -21,8 +22,8 @@ import com.sencha.gxt.widget.core.client.menu.MenuBarItem;
 import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 import edu.arizona.biosemantics.euler.alignment.client.common.ArticulationsGridView;
-import edu.arizona.biosemantics.euler.alignment.client.event.AddMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
@@ -30,6 +31,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveMachine
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveUserArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 
 public class CurrentArticulationsGridView extends ArticulationsGridView {
 
@@ -48,7 +50,7 @@ public class CurrentArticulationsGridView extends ArticulationsGridView {
 				.addSelectionHandler(new SelectionHandler<Item>() {
 					@Override
 					public void onSelection(SelectionEvent<Item> event) {
-						eventBus.fireEvent(new AddMachineArticulationsEvent());
+						eventBus.fireEvent(new LoadMachineArticulationsEvent());
 					}
 				});
 
@@ -99,6 +101,18 @@ public class CurrentArticulationsGridView extends ArticulationsGridView {
 				removeArticulations(event.getArticulations());
 			}
 		});
+		eventBus.addHandler(RemoveMachineArticulationsEvent.TYPE, new RemoveMachineArticulationsEvent.RemoveMachineArticulationsHandler() {
+			@Override
+			public void onRemove(RemoveMachineArticulationsEvent event) {
+				removeArticulations(Type.MACHINE);
+			}
+		});
+		eventBus.addHandler(RemoveUserArticulationsEvent.TYPE, new RemoveUserArticulationsEvent.RemoveUserArticulationsHandler() {
+			@Override
+			public void onRemove(RemoveUserArticulationsEvent event) {
+				removeArticulations(Type.USER);
+			}
+		});
 		eventBus.addHandler(ImportArticulationsEvent.TYPE, new ImportArticulationsEvent.ImportArticulationsEventHandler() {
 			@Override
 			public void onImport(ImportArticulationsEvent event) {
@@ -106,15 +120,11 @@ public class CurrentArticulationsGridView extends ArticulationsGridView {
 				Info.display("Imoprt successful", event.getArticulations().size() + " articulations successfully imported");
 			}
 		});
-		eventBus.addHandler(AddMachineArticulationsEvent.TYPE, new AddMachineArticulationsEvent.AddMachineArticulationsHandler() {
-			@Override
-			public void onAdd(AddMachineArticulationsEvent event) {
-				final PromptMessageBox mb = new PromptMessageBox(
-						"Confidence Threshold",
-						"Please enter a minimum confidence threshold for articulations to add");
-				mb.setWidth(300);
-				mb.show();
-			}
-		});
+	}
+
+	protected void removeArticulations(Type type) {
+		for(Articulation articulation : new LinkedList<Articulation>(articulationsStore.getAll()))
+			if(articulation.getType().equals(type))
+				articulationsStore.remove(articulation);
 	}
 }

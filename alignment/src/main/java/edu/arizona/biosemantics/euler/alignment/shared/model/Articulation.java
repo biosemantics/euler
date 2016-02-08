@@ -29,14 +29,16 @@ public class Articulation implements Serializable {
 	private Taxon taxonB;
 	private Relation relation;
 	private Type type;
+	private double confidence = 1.0;
 
 	public Articulation() {}
 	
-	public Articulation(Taxon taxonA, Taxon taxonB, Relation relation, Type type) {
+	public Articulation(Taxon taxonA, Taxon taxonB, Relation relation, double confidence, Type type) {
 		this.taxonA = taxonA;
 		this.taxonB = taxonB;
 		this.relation = relation;
 		this.type = type;
+		this.confidence = confidence;
 	}
 
 	public Type getType() {
@@ -70,9 +72,17 @@ public class Articulation implements Serializable {
 	public Date getCreated() {
 		return created;
 	}
+	
+	public double getConfidence() {
+		return confidence;
+	}
+
+	public void setConfidence(double confidence) {
+		this.confidence = confidence;
+	}
 
 	public Articulation getClone() {
-		Articulation clone = new Articulation(taxonA, taxonB, relation, type); // not necessary to clone taxa, since they 
+		Articulation clone = new Articulation(taxonA, taxonB, relation, confidence, type); // not necessary to clone taxa, since they 
 		//are assumed to be unmodifiable
 		clone.created = (Date)created.clone();
 		return clone;

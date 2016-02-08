@@ -1,11 +1,15 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
+import edu.arizona.biosemantics.common.taxonomy.TaxonIdentification;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterState;
 
 public class Taxon implements Serializable, Comparable<Taxon> {
 	
@@ -29,12 +33,28 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 	private String author = "";
 	private String year = "";
 	
+	private Collection<CharacterState> characterStates = new HashSet<CharacterState>();
+	
+	private TaxonIdentification taxonIdentification;
+	
 	/**
 	 * Description
 	 */
 	private String description = "";
 	
 	public Taxon() { }
+	
+	public Taxon(TaxonIdentification taxonIdentification) {
+		this.taxonIdentification = taxonIdentification;
+		this.name = taxonIdentification.getRankData().getLast().getName();
+		this.author = taxonIdentification.getAuthor();
+		this.year = taxonIdentification.getDate();
+	}
+	
+	public Taxon(TaxonIdentification taxonIdentification, String description) {
+		this(taxonIdentification);
+		this.description = description;
+	}
 	
 	public Taxon(Rank rank, String name, String author, String year) {
 		this.rank = rank;
@@ -191,6 +211,22 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 		return result;
 	}
 	
+	public TaxonIdentification getTaxonIdentification() {
+		return taxonIdentification;
+	}
+		
+	public void setTaxonIdentification(TaxonIdentification taxonIdentification) {
+		this.taxonIdentification = taxonIdentification;
+	}
+	
+	public Collection<CharacterState> getCharacterStates() {
+		return this.characterStates;
+	}
+	
+	public void setCharacterStates(Collection<CharacterState> characterStates) {
+		this.characterStates = characterStates;
+	}
+
 	@Override
 	public int compareTo(Taxon o) {
 		return this.getName().compareTo(o.getName());
