@@ -14,7 +14,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
 				-> Common pitfalls: for url-pattern help */
 			@Override
 			protected void configureServlets() {
-				serve("/alignment/alignment").with(EulerAlignmentService.class);
+				serve("/euler_alignment/alignment").with(EulerAlignmentService.class);
 
 			}
 			

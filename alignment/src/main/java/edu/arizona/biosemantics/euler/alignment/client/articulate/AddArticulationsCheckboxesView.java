@@ -49,10 +49,11 @@ import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.event.TaxonSelectionAEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.TaxonSelectionBEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
@@ -62,7 +63,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 public class AddArticulationsCheckboxesView extends SimpleContainer {
 
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	
 	private TaxonProperties taxonProperties = GWT.create(TaxonProperties.class);
 	private ArticulationProperties articulationProperties = GWT.create(ArticulationProperties.class);
@@ -81,14 +82,14 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 	}
 
 	private void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
 				taxonomyAStore.clear();
 				taxonomyBStore.clear();
-				taxonomyAStore.addAll(model.getTaxonomies().get(0).getTaxaDFS());
-				taxonomyBStore.addAll(model.getTaxonomies().get(1).getTaxaDFS());
+				taxonomyAStore.addAll(collection.getModel().getTaxonomies().get(0).getTaxaDFS());
+				taxonomyBStore.addAll(collection.getModel().getTaxonomies().get(1).getTaxaDFS());
 				clearSelections();
 			}
 		});
@@ -145,7 +146,7 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 		Taxon taxonB = taxonomyBCombo.getValue();
 		
 		if(taxonA != null && taxonB != null) {
-			List<Articulation> articulations = model.getArticulations(taxonA, taxonB, Type.USER);
+			List<Articulation> articulations = collection.getModel().getArticulations(taxonA, taxonB, Type.USER);
 			for(Articulation articulation : articulations) {
 				articulationCheckBoxes.get(articulation.getRelation()).setValue(true);
 			}
@@ -203,9 +204,12 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 			evidenceButton.addSelectHandler(new SelectHandler() {
 				@Override
 				public void onSelect(SelectEvent event) {
+					EvidenceBasedCreateDialog dialog = new EvidenceBasedCreateDialog(eventBus, collection, taxonomyACombo.getValue(), taxonomyBCombo.getValue());
+					dialog.show();
+					/*
 					Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), relation, 1.0, Type.USER);
-					EvidenceDialog evidenceDialog = new EvidenceDialog(eventBus, model, articulation);
-					evidenceDialog.show();
+					EvidenceDialog evidenceDialog = new EvidenceDialog(eventBus, collection, articulation);
+					evidenceDialog.show();*/
 				}
 			});
 			articulationCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
@@ -235,15 +239,15 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 		}
 				
 		checkBoxContainer.add(taxonomyBCombo, new HorizontalLayoutContainer.HorizontalLayoutData(-1, -1, new Margins(5, 0, 5, 0)));
-		TextButton createButton = new TextButton("Create Evidence-Based");
+		/*TextButton createButton = new TextButton("Create Evidence-Based");
 		createButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				EvidenceBasedCreateDialog dialog = new EvidenceBasedCreateDialog(taxonomyACombo.getValue(), taxonomyBCombo.getValue());
+				EvidenceBasedCreateDialog dialog = new EvidenceBasedCreateDialog(eventBus, collection, taxonomyACombo.getValue(), taxonomyBCombo.getValue());
 				dialog.show();
 			}
 		});
-		checkBoxContainer.add(createButton);
+		checkBoxContainer.add(createButton);*/
 		checkBoxContainer.add(new Label(), new HorizontalLayoutContainer.HorizontalLayoutData(0.5, -1));
 		return checkBoxContainer;
 	}

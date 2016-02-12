@@ -49,6 +49,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.Highlight;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsync;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
@@ -58,7 +59,7 @@ public class EvidenceDialog extends CommonDialog {
 
 	private IEulerAlignmentServiceAsync alignmentService = GWT.create(IEulerAlignmentService.class);
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private BorderLayoutContainer borderLayoutContainer;
 	private MinimalArticulationsGridView machineArticulationsGridView;
 	private MinimalArticulationsGridView userArticulationsGridView;
@@ -72,9 +73,9 @@ public class EvidenceDialog extends CommonDialog {
 	private ComboBox<Relation> relationCombo;
 	
 
-	public EvidenceDialog(EventBus eventBus, Model model, Articulation articulation) {
+	public EvidenceDialog(EventBus eventBus, Collection collection, Articulation articulation) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		this.articulation = articulation;
 		
 		this.setWidth(800);
@@ -100,7 +101,7 @@ public class EvidenceDialog extends CommonDialog {
 				return item.toString();
 			}
 		});
-		availableRelationsStore.addAll(model.getAvailableRelations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER));
+		availableRelationsStore.addAll(collection.getModel().getAvailableRelations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER));
 		relationCombo = createRelationCombo();
 		
 		bindEvents();
@@ -164,7 +165,7 @@ public class EvidenceDialog extends CommonDialog {
 	}
 
 	private Widget createDescriptionPanel() {
-		descriptionsView = new DescriptionsView(eventBus, model);
+		descriptionsView = new DescriptionsView(eventBus, collection);
 		descriptionsView.setTaxonADescription(SafeHtmlUtils.fromTrustedString(articulation.getTaxonA().getDescription()));
 		descriptionsView.setTaxonBDescription(SafeHtmlUtils.fromTrustedString(articulation.getTaxonB().getDescription()));
 		return descriptionsView;
@@ -177,7 +178,7 @@ public class EvidenceDialog extends CommonDialog {
 	}
 
 	private IsWidget createCharaterComparisonPanel() {
-		characterEvidenceGridView = new CharacterEvidenceGridView(eventBus, model, articulation);
+		characterEvidenceGridView = new CharacterEvidenceGridView(eventBus, collection, articulation);
 		characterEvidenceGridView.setArticulation(articulation);
 		characterEvidenceGridView.getSelectionModel().addSelectionHandler(new SelectionHandler<Evidence>() {
 			@Override
@@ -211,7 +212,7 @@ public class EvidenceDialog extends CommonDialog {
 	}
 
 	private Widget createMachineArticulationsGrid() {
-		machineArticulationsGridView = 	new MinimalArticulationsGridView(eventBus, model, articulation, Type.MACHINE);
+		machineArticulationsGridView = 	new MinimalArticulationsGridView(eventBus, collection, articulation, Type.MACHINE);
 		ContentPanel panel = new ContentPanel();
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		ToolBar toolBar = new ToolBar();
@@ -246,7 +247,7 @@ public class EvidenceDialog extends CommonDialog {
 	}
 
 	private Widget createUserArticulationsGrid() {
-		userArticulationsGridView = new MinimalArticulationsGridView(eventBus, model, articulation, Type.USER);
+		userArticulationsGridView = new MinimalArticulationsGridView(eventBus, collection, articulation, Type.USER);
 		
 		ContentPanel panel = new ContentPanel();
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
@@ -300,9 +301,9 @@ public class EvidenceDialog extends CommonDialog {
 	}
 
 	private void refreshAgreement() {
-		List<Articulation> users = model.getArticulations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER);
+		List<Articulation> users = collection.getModel().getArticulations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER);
 		int initialUserSize = users.size();
-		List<Articulation> machines = model.getArticulations(articulation.getTaxonA(), articulation.getTaxonB(), Type.MACHINE);
+		List<Articulation> machines = collection.getModel().getArticulations(articulation.getTaxonA(), articulation.getTaxonB(), Type.MACHINE);
 		int initialMachineSize = machines.size();
 		
 		users.retainAll(machines);

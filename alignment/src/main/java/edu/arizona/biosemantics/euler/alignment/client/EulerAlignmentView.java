@@ -19,14 +19,15 @@ import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.desktop.DesktopView;
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDesktopEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.ToggleDesktopEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.EndInputVisualizationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.EndMIREvent;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class EulerAlignmentView extends SplitLayoutPanel {
 	
-	private Model model;
+	private Collection collection;
 	private SimpleEventBus eventBus;
 	private ModelControler modelControler;
 	
@@ -111,18 +112,18 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 				switch(event.getOutput().getType()) {
 				case CONFLICT:
 					if(showDialogs) {
-						ViewDiagnosisDialog dialog = new ViewDiagnosisDialog(eventBus, model);
-						if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
-							dialog.setRun(model.getRunHistory().getLast());
+						ViewDiagnosisDialog dialog = new ViewDiagnosisDialog(eventBus, collection);
+						if(!collection.getModel().getRunHistory().isEmpty() && collection.getModel().getRunHistory().getLast().hasOutput()) 
+							dialog.setRun(collection.getModel().getRunHistory().getLast());
 						dialog.show();
 					}
 					break;
 				case MULTIPLE:
 				case ONE:
 					if(showDialogs) {
-						ViewResultsDialog viewResultsDialog = new ViewResultsDialog(eventBus, model);
-						if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
-							viewResultsDialog.setRun(model.getRunHistory().getLast());
+						ViewResultsDialog viewResultsDialog = new ViewResultsDialog(eventBus, collection);
+						if(!collection.getModel().getRunHistory().isEmpty() && collection.getModel().getRunHistory().getLast().hasOutput()) 
+							viewResultsDialog.setRun(collection.getModel().getRunHistory().getLast());
 						viewResultsDialog.show();
 					}
 					break;
@@ -135,10 +136,10 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 				Window.open(event.getResultURL(), "_blank", "");
 			}
 		});
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
 			}
 		});
 	}
@@ -159,9 +160,9 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 		animate(500);
 	}
 
-	public void setModel(Model model) {
-		this.model = model;
-		eventBus.fireEvent(new LoadModelEvent(model));
+	public void setCollection(Collection collection) {
+		this.collection = collection;
+		eventBus.fireEvent(new LoadCollectionEvent(collection));
 	}
 		
 	public EventBus getEventBus() {

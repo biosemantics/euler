@@ -39,14 +39,15 @@ import com.sencha.gxt.widget.core.client.form.Validator;
 import com.sencha.gxt.widget.core.client.form.error.DefaultEditorError;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorsEvent;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class ColorSettingsDialog extends CommonDialog {
 
-	public ColorSettingsDialog(final EventBus eventBus, final Model model) {
+	public ColorSettingsDialog(final EventBus eventBus, final Collection collection) {
 		final CellTable<Color> colorsTable = new CellTable<Color>();
-		final LinkedList<Color> colorsCopy = new LinkedList<Color>(model.getColors());
+		final LinkedList<Color> colorsCopy = new LinkedList<Color>(collection.getModel().getColors());
 
 		this.setBodyBorder(false);
 		this.setHeadingText("Configure Color Usages");

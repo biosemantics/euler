@@ -7,17 +7,18 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class RunDialog extends CommonDialog {
 	
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private RunConfigPanel runConfigPanel = new RunConfigPanel();
 	
-	public RunDialog(final EventBus eventBus, final Model model) {
+	public RunDialog(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		
 		add(runConfigPanel);
 		
@@ -31,7 +32,8 @@ public class RunDialog extends CommonDialog {
 			@Override
 			public void onSelect(SelectEvent event) {
 				
-				eventBus.fireEvent(new StartMIREvent(model.getTaxonomies(), model.getArticulations(), runConfigPanel.getRunConfig()));
+				eventBus.fireEvent(new StartMIREvent(collection.getModel().getTaxonomies(), collection.getModel().getArticulations(), 
+						runConfigPanel.getRunConfig()));
 			}
 		});
 		

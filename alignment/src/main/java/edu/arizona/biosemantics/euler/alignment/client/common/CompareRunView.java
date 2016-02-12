@@ -28,6 +28,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
@@ -35,7 +36,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
 public class CompareRunView  extends BorderLayoutContainer {
 
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	//private ListStore<Run> runStore;
 	//private ListView<Run, String> runList;
 	//private ArticulationsGridView articulationsGridView;
@@ -49,13 +50,13 @@ public class CompareRunView  extends BorderLayoutContainer {
 	private ComparedArticulationsGridView comparedArticulationsGridView;
 	private RunGridView runGridView;
 	
-	public CompareRunView(final EventBus eventBus, final Model model) {
+	public CompareRunView(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		
-		comparedArticulationsGridView = new ComparedArticulationsGridView(eventBus, model);
+		comparedArticulationsGridView = new ComparedArticulationsGridView(eventBus, collection);
 		
-		runGridView = new RunGridView(eventBus, model);
+		runGridView = new RunGridView(eventBus, collection);
 		/*runStore = new ListStore<Run>(runProperties.key());
 		runStore.addAll(model.getRunHistory());
 		runList = new ListView<Run, String>(runStore,

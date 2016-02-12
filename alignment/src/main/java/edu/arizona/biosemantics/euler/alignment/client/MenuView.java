@@ -28,7 +28,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SaveEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.SwapTaxonomiesEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadMachineArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveUserArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent;
@@ -36,11 +36,12 @@ import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
 import edu.arizona.biosemantics.euler.alignment.client.settings.MachineArticulationSettingsDialog;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsync;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class MenuView extends MenuBar {
 
-	protected Model model;
+	protected Collection collection;
 	protected EventBus eventBus;
 	private IEulerAlignmentServiceAsync eulerAlignmentService = GWT.create(IEulerAlignmentService.class);
 
@@ -53,10 +54,10 @@ public class MenuView extends MenuBar {
 	}
 
 	private void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
 			}
 		});
 	}
@@ -86,7 +87,7 @@ public class MenuView extends MenuBar {
 		importItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				ImportDialog importDialog = new ImportDialog(eventBus, model);
+				ImportDialog importDialog = new ImportDialog(eventBus, collection);
 				importDialog.show();
 			}
 		});
@@ -118,7 +119,7 @@ public class MenuView extends MenuBar {
 		downloadItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new DownloadEvent(model));
+				eventBus.fireEvent(new DownloadEvent(collection));
 			}
 		});
 
@@ -139,7 +140,7 @@ public class MenuView extends MenuBar {
 		showInputVisualizationItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new StartInputVisualizationEvent(model));
+				eventBus.fireEvent(new StartInputVisualizationEvent(collection));
 			}
 		});
 		
@@ -147,7 +148,7 @@ public class MenuView extends MenuBar {
 		runEulerItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				RunDialog runDialog = new RunDialog(eventBus, model);
+				RunDialog runDialog = new RunDialog(eventBus, collection);
 				runDialog.show();
 			}
 		});
@@ -155,16 +156,16 @@ public class MenuView extends MenuBar {
 		showEulerResult.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
-				if(!model.getRunHistory().isEmpty() && model.getRunHistory().getLast().hasOutput()) 
-					dialog.setRun(model.getRunHistory().getLast());
+				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, collection);
+				if(!collection.getModel().getRunHistory().isEmpty() && collection.getModel().getRunHistory().getLast().hasOutput()) 
+					dialog.setRun(collection.getModel().getRunHistory().getLast());
 				dialog.show();
 			}
 		});
 		sub.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
-				if(model.getRunHistory().isEmpty() || !model.getRunHistory().getLast().hasOutput()) {
+				if(collection.getModel().getRunHistory().isEmpty() || !collection.getModel().getRunHistory().getLast().hasOutput()) {
 					sub.remove(showEulerResult);
 					showEulerResult.removeFromParent();
 				} else {
@@ -177,7 +178,7 @@ public class MenuView extends MenuBar {
 		showEulerRunHistory.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				ViewHistoryDialog dialog = new ViewHistoryDialog(eventBus, model);
+				ViewHistoryDialog dialog = new ViewHistoryDialog(eventBus, collection);
 				dialog.show();
 			}
 		});
@@ -185,7 +186,7 @@ public class MenuView extends MenuBar {
 		saveItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
-				eventBus.fireEvent(new SaveEvent(model));
+				eventBus.fireEvent(new SaveEvent(collection));
 			}
 		});
 		
@@ -204,8 +205,7 @@ public class MenuView extends MenuBar {
 		colorSettingsItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> arg0) {
-				ColorSettingsDialog dialog = new ColorSettingsDialog(
-						eventBus, model);
+				ColorSettingsDialog dialog = new ColorSettingsDialog(eventBus, collection);
 				dialog.show();
 			}
 		});
@@ -215,7 +215,7 @@ public class MenuView extends MenuBar {
 		colorsItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> arg0) {
-				ColorsDialog dialog = new ColorsDialog(eventBus, model);
+				ColorsDialog dialog = new ColorsDialog(eventBus, collection);
 				dialog.show();
 			}
 		});
@@ -224,7 +224,7 @@ public class MenuView extends MenuBar {
 		commentsItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> arg0) {
-				CommentsDialog dialog = new CommentsDialog(eventBus, model);
+				CommentsDialog dialog = new CommentsDialog(eventBus, collection);
 				dialog.show();
 			}
 		});

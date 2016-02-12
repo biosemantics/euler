@@ -10,7 +10,8 @@ import com.sencha.gxt.widget.core.client.container.MarginData;
 
 import edu.arizona.biosemantics.euler.alignment.client.desktop.widget.ConsoleManager;
 import edu.arizona.biosemantics.euler.alignment.client.desktop.widget.ConsoleManager.Console;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class DesktopView extends FlowLayoutContainer { //CssFloatLayoutContainer
@@ -18,7 +19,7 @@ public class DesktopView extends FlowLayoutContainer { //CssFloatLayoutContainer
 	public class DesktopController {
 				
 		private Console console;
-		private Model model;
+		private Collection collection;
 		
 		public DesktopController() {
 			// TODO let is show all interesting events - also for debugging
@@ -31,10 +32,10 @@ public class DesktopView extends FlowLayoutContainer { //CssFloatLayoutContainer
 		}
 
 		private void addEventHandlers() {
-			eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+			eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 				@Override
-				public void onLoad(LoadModelEvent event) {
-					model = event.getModel();
+				public void onLoad(LoadCollectionEvent event) {
+					collection = event.getCollection();
 				}
 			});
 		}		

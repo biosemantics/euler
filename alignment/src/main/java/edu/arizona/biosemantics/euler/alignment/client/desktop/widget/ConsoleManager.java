@@ -13,14 +13,14 @@ import edu.arizona.biosemantics.euler.alignment.client.desktop.Window;
 import edu.arizona.biosemantics.euler.alignment.client.event.PrintableEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDesktopEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.ToggleDesktopEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 
 public class ConsoleManager extends AbstractWindowManager {
 
-	private class ConsoleEventsHandler implements LoadModelEvent.LoadModelEventHandler, SetColorsEvent.SetColorsEventHandler,
+	private class ConsoleEventsHandler implements LoadCollectionEvent.LoadCollectionEventHandler, SetColorsEvent.SetColorsEventHandler,
 		SetColorEvent.SetColorEventHandler, SetCommentEvent.SetCommentEventHandler, 
 		ShowDesktopEvent.ShowDesktopEventHandler, ToggleDesktopEvent.ToggleDesktopEventHandler {
 		
@@ -30,7 +30,7 @@ public class ConsoleManager extends AbstractWindowManager {
 	
 		private void addEventHandlers() {
 			eventBus.addHandler(SetColorsEvent.TYPE, this);
-			eventBus.addHandler(LoadModelEvent.TYPE, this);
+			eventBus.addHandler(LoadCollectionEvent.TYPE, this);
 			eventBus.addHandler(SetColorsEvent.TYPE, this);
 			eventBus.addHandler(SetColorEvent.TYPE, this);
 			eventBus.addHandler(SetCommentEvent.TYPE, this);
@@ -61,7 +61,7 @@ public class ConsoleManager extends AbstractWindowManager {
 		}
 		
 		@Override
-		public void onLoad(LoadModelEvent event) {
+		public void onLoad(LoadCollectionEvent event) {
 			printToConsole(event);
 		}
 	

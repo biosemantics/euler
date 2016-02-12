@@ -47,12 +47,13 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell.CommentColorizableObjectsProvider;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -64,19 +65,19 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties.Displ
 public class RunGridView implements IsWidget {
 
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private ListStore<Run> runStore;
 	private ListStore<RunOutputType> runOutputTypesStore;
 	private Grid<Run> runGrid;
 
 	private RunProperties runProperties = GWT.create(RunProperties.class);
 
-	public RunGridView(final EventBus eventBus, final Model model) {
+	public RunGridView(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 
 		runStore = new ListStore<Run>(runProperties.key());
-		runStore.addAll(model.getRunHistory());
+		runStore.addAll(collection.getModel().getRunHistory());
 		runStore.setAutoCommit(true);
 
 		runOutputTypesStore = new ListStore<RunOutputType>(
@@ -93,7 +94,7 @@ public class RunGridView implements IsWidget {
 				identity);
 		checkBoxSelectionModel.setSelectionMode(SelectionMode.MULTI);
 
-		ColorableCell colorableCell = new ColorableCell(eventBus, model, null);
+		ColorableCell colorableCell = new ColorableCell(eventBus, collection, null);
 		colorableCell.setCommentColorizableObjectsStore(runStore,
 				new CommentColorizableObjectsProvider() {
 					@Override
@@ -111,14 +112,14 @@ public class RunGridView implements IsWidget {
 		ValueProvider<Run, String> runCommentValueProvider = new ValueProvider<Run, String>() {
 			@Override
 			public String getValue(Run object) {
-				if (model.hasComment(object))
-					return model.getComment(object);
+				if (collection.getModel().hasComment(object))
+					return collection.getModel().getComment(object);
 				return "";
 			}
 
 			@Override
 			public void setValue(Run object, String value) {
-				model.setComment(object, value);
+				collection.getModel().setComment(object, value);
 			}
 
 			@Override
@@ -198,11 +199,11 @@ public class RunGridView implements IsWidget {
 	}
 
 	private void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE,
-				new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE,
+				new LoadCollectionEvent.LoadCollectionEventHandler() {
 					@Override
-					public void onLoad(LoadModelEvent event) {
-						model = event.getModel();
+					public void onLoad(LoadCollectionEvent event) {
+						collection = event.getCollection();
 					}
 				});
 		eventBus.addHandler(SetCommentEvent.TYPE,
@@ -250,7 +251,7 @@ public class RunGridView implements IsWidget {
 
 				if (runs.size() == 1)
 					box.getTextArea().setValue(
-							model.hasComment(runs.get(0)) ? model
+							collection.getModel().hasComment(runs.get(0)) ? collection.getModel()
 									.getComment(runs.get(0)) : "");
 				else
 					box.getTextArea().setValue("");
@@ -281,7 +282,7 @@ public class RunGridView implements IsWidget {
 		menu.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
-				if (!model.getColors().isEmpty()) {
+				if (!collection.getModel().getColors().isEmpty()) {
 					menu.insert(colorizeItem, menu.getWidgetIndex(commentItem));
 					// colors can change, refresh
 					colorizeItem.setSubMenu(createColorizeMenu());
@@ -308,7 +309,7 @@ public class RunGridView implements IsWidget {
 			}
 		});
 		colorMenu.add(offItem);
-		for (final Color color : model.getColors()) {
+		for (final Color color : collection.getModel().getColors()) {
 			MenuItem colorItem = new MenuItem(color.getUse());
 			colorItem.getElement().getStyle()
 					.setProperty("backgroundColor", "#" + color.getHex());

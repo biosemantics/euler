@@ -51,11 +51,12 @@ import com.sencha.gxt.widget.core.client.tree.Tree.TreeAppearance;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.ShowDescriptionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
@@ -67,7 +68,7 @@ public class TaxonomyView extends ContentPanel {
 	private static TaxonomyImages taxonomyImages = GWT.create(TaxonomyImages.class);
 	private TaxonProperties taxonProperties = GWT.create(TaxonProperties.class);
 	private HTML infoHtml = new HTML();
-	private Model model;
+	private Collection collection;
 	private EventBus eventBus;
 	private Tree<Taxon, Taxon> tree;
 	private TreeStore<Taxon> store = new TreeStore<Taxon>(taxonProperties.key());
@@ -121,10 +122,10 @@ public class TaxonomyView extends ContentPanel {
 	}
 
 	private void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
 			}
 		});
 		eventBus.addHandler(SetColorEvent.TYPE, new SetColorEvent.SetColorEventHandler() {
@@ -200,10 +201,10 @@ public class TaxonomyView extends ContentPanel {
 			@Override
 			public void render(com.google.gwt.cell.client.Cell.Context context,	Taxon taxon, SafeHtmlBuilder sb) {
 					String colorHex = "";
-					if(model.hasColor(taxon))
-						colorHex = model.getColor(taxon).getHex();
+					if(collection.getModel().hasColor(taxon))
+						colorHex = collection.getModel().getColor(taxon).getHex();
 					String style = "background-color:#" + colorHex + ";";
-					if(model.hasArticulationFor(taxon)) 
+					if(collection.getModel().hasArticulationFor(taxon)) 
 						style += " font-weight: bold;";
 					sb.append(SafeHtmlUtils.fromTrustedString("<div style='" + style + "'>" + 
 							taxon.getBiologicalName() + "</div>"));
@@ -265,7 +266,7 @@ public class TaxonomyView extends ContentPanel {
 				final MultiLinePromptMessageBox box = new MultiLinePromptMessageBox("Comment", "");
 
 				if(taxa.size() == 1)
-					box.getTextArea().setValue(model.hasComment(taxa.get(0)) ? model.getComment(taxa.get(0)) : "");
+					box.getTextArea().setValue(collection.getModel().hasComment(taxa.get(0)) ? collection.getModel().getComment(taxa.get(0)) : "");
 				else 
 					box.getTextArea().setValue("");
 				
@@ -289,7 +290,7 @@ public class TaxonomyView extends ContentPanel {
 		menu.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
-				if(!model.getColors().isEmpty()) {
+				if(!collection.getModel().getColors().isEmpty()) {
 					menu.insert(colorizeItem, menu.getWidgetIndex(commentItem));
 					//colors can change, refresh
 					colorizeItem.setSubMenu(createColorizeMenu());
@@ -336,7 +337,7 @@ public class TaxonomyView extends ContentPanel {
 			}
 		});
 		colorMenu.add(offItem);
-		for(final Color color : model.getColors()) {
+		for(final Color color : collection.getModel().getColors()) {
 			MenuItem colorItem = new MenuItem(color.getUse());
 			colorItem.getElement().getStyle().setProperty("backgroundColor", "#" + color.getHex());
 			colorItem.addSelectionHandler(new SelectionHandler<Item>() {
@@ -370,7 +371,7 @@ public class TaxonomyView extends ContentPanel {
 	}
 
 	protected void updateTextArea(Taxon taxon) {
-		infoHtml.setHTML(SafeHtmlUtils.fromSafeConstant(taxonDetailsProvider.getTaxonDetails(taxon, model)));
+		infoHtml.setHTML(SafeHtmlUtils.fromSafeConstant(taxonDetailsProvider.getTaxonDetails(taxon, collection.getModel())));
 	}
 
 	private void addToStoreRecursively(TreeStore<Taxon> store, Taxon taxon) {

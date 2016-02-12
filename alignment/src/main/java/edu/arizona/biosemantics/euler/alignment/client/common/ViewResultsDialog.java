@@ -15,6 +15,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorld;
 import edu.arizona.biosemantics.euler.alignment.shared.model.PossibleWorldProperties;
@@ -23,7 +24,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 public class ViewResultsDialog extends CommonDialog {
 	
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private ListStore<PossibleWorld> resultStore;
 	private ListView<PossibleWorld, String> resultList;
 	private TextButton viewButton = new TextButton("View");
@@ -37,9 +38,9 @@ public class ViewResultsDialog extends CommonDialog {
 			resultStore.addAll(run.getOutput().getPossibleWorlds());
 	}
 
-	public ViewResultsDialog(final EventBus eventBus, final Model model) {
+	public ViewResultsDialog(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		
 		resultStore = new ListStore<PossibleWorld>(possibleWorldProperties.key());
 		resultList = new ListView<PossibleWorld, String>(resultStore, possibleWorldProperties.displayName());
@@ -56,7 +57,7 @@ public class ViewResultsDialog extends CommonDialog {
 		aggregateButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				if(model.getRunHistory().getLast().hasOutput())
+				if(collection.getModel().getRunHistory().getLast().hasOutput())
 					Window.open(run.getOutput().getAggregateUrl(), "_blank", "");
 			}
 		});

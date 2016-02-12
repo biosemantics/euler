@@ -41,6 +41,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsync;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class EulerAlignment implements EntryPoint {
@@ -73,9 +74,11 @@ public class EulerAlignment implements EntryPoint {
 		dock.add(view.asWidget());
 		RootLayoutPanel.get().add(dock);
 		
+		int id = 5;
+		String secret = "test";
 		IEulerAlignmentServiceAsync eulerAlignmentService = GWT.create(IEulerAlignmentService.class);
 		// TaxonMatrix taxonMatrix = createSampleMatrix();
-		eulerAlignmentService.getModel(new AsyncCallback<Model>() {
+		eulerAlignmentService.getCollection(id, secret, new AsyncCallback<Collection>() {
 
 			@Override
 			public void onFailure(Throwable caught) {
@@ -83,8 +86,8 @@ public class EulerAlignment implements EntryPoint {
 			}
 
 			@Override
-			public void onSuccess(final Model result) {
-				view.setModel(result);
+			public void onSuccess(final Collection result) {
+				view.setCollection(result);
 			}
 		}); 
 		

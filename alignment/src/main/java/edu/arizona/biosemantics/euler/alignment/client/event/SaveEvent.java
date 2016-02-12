@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.SaveEvent.SaveHandler;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class SaveEvent extends GwtEvent<SaveHandler> {
@@ -13,10 +14,10 @@ public class SaveEvent extends GwtEvent<SaveHandler> {
 	}
 	
     public static Type<SaveHandler> TYPE = new Type<SaveHandler>();
-	private Model model;
+	private Collection collection;
 
-    public SaveEvent(Model model) {
-    	this.model = model;
+    public SaveEvent(Collection collection) {
+    	this.collection = collection;
     }
     
 	@Override
@@ -29,8 +30,8 @@ public class SaveEvent extends GwtEvent<SaveHandler> {
 		handler.onSave(this);
 	}
 
-	public Model getModel() {
-		return model;
+	public Collection getCollection() {
+		return collection;
 	}
 	
 }

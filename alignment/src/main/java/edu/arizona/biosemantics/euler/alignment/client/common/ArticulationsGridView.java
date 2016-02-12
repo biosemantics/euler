@@ -2,7 +2,6 @@ package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +64,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.EvidenceDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell.CommentColorizableObjectsProvider;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
@@ -73,6 +72,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEve
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -80,7 +80,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 public class ArticulationsGridView extends SimpleContainer /* extends ContentPanel*/ {
 
 	protected EventBus eventBus;
-	protected Model model;
+	protected Collection collection;
 	
 	protected ListStore<Articulation> articulationsStore;
 	protected Grid<Articulation> grid;
@@ -92,9 +92,9 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 	private ColumnConfig<Articulation, String> taxonACol;
 	private ColumnConfig<Articulation, String> taxonBCol;
 	
-	public ArticulationsGridView(EventBus eventBus, Model model, boolean relationEditEnabled, boolean removeEnabled) {
+	public ArticulationsGridView(EventBus eventBus, Collection collection, boolean relationEditEnabled, boolean removeEnabled) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		
 		this.relationEditEnabled = relationEditEnabled;
 		this.removeEnabled = removeEnabled;
@@ -125,19 +125,19 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 	}
 
 	private void updateTaxonColumnHeaders() {
-		if(model != null) {
-			grid.getView().getHeader().getHead(1).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + model.getTaxonomies().get(0).getFullName()));
-			grid.getView().getHeader().getHead(3).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + model.getTaxonomies().get(1).getFullName()));
-			taxonACol.setHeader("Taxonomic Concept " + model.getTaxonomies().get(0).getFullName());
-			taxonBCol.setHeader("Taxonomic Concept " + model.getTaxonomies().get(1).getFullName());
+		if(collection != null) {
+			grid.getView().getHeader().getHead(1).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getFullName()));
+			grid.getView().getHeader().getHead(3).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getFullName()));
+			taxonACol.setHeader("Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getFullName());
+			taxonBCol.setHeader("Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getFullName());
 		}
 	}
 
 	protected void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
 				updateTaxonColumnHeaders();
 			}
 		});
@@ -148,7 +148,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		articulationsStore.addAll(articulations);
 	}
 
-	public void removeArticulations(Collection<Articulation> articulations) {
+	public void removeArticulations(java.util.Collection<Articulation> articulations) {
 		for(Articulation articulation : articulations)
 			articulationsStore.remove(articulation);
 	}
@@ -169,7 +169,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 
 		checkBoxSelectionModel.setSelectionMode(SelectionMode.MULTI);
 
-		ColorableCell colorableCell = new ColorableCell(eventBus, model, null);
+		ColorableCell colorableCell = new ColorableCell(eventBus, collection, null);
 		colorableCell.setCommentColorizableObjectsStore(articulationsStore, new CommentColorizableObjectsProvider() {
 			@Override
 			public Object provide(Object source) {
@@ -182,9 +182,9 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 
 		String aHead = "Taxonomic Concept A";
 		String bHead = "Taxonomic Concept B";
-		if(model != null) {
-			 aHead = "Taxonomic Concept " + model.getTaxonomies().get(0).getFullName();
-			 bHead = "Taxonomic Concept " + model.getTaxonomies().get(1).getFullName();
+		if(collection != null) {
+			 aHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getFullName();
+			 bHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getFullName();
 		}
 		taxonACol = new ColumnConfig<Articulation, String>(
 				new ArticulationProperties.TaxonAStringValueProvider(), 250, aHead);
@@ -225,7 +225,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 				Context c = event.getContext();
 				int row = c.getIndex();
 				Articulation articulation = articulationsStore.get(row);
-				EvidenceDialog evidenceDialog = new EvidenceDialog(eventBus, model, articulation);
+				EvidenceDialog evidenceDialog = new EvidenceDialog(eventBus, collection, articulation);
 				evidenceDialog.setHideOnButtonClick(true);
 				evidenceDialog.show();
 			}
@@ -237,13 +237,13 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		ValueProvider<Articulation, String> commentValueProvider = new ValueProvider<Articulation, String>() {
 			@Override
 			public String getValue(Articulation object) {
-				if(model.hasComment(object))
-					return model.getComment(object);
+				if(collection.getModel().hasComment(object))
+					return collection.getModel().getComment(object);
 				return "";
 			}
 			@Override
 			public void setValue(Articulation object, String value) {
-				model.setComment(object, value);
+				collection.getModel().setComment(object, value);
 			}
 			@Override
 			public String getPath() {
@@ -262,9 +262,9 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		columns.add(taxonACol);
 		columns.add(relationCol);
 		columns.add(taxonBCol);
-		columns.add(evidenceCol);
-		columns.add(sourceCol);
-		columns.add(confidenceCol);
+		//columns.add(evidenceCol);
+		//columns.add(sourceCol);
+		//columns.add(confidenceCol);
 		columns.add(commentCol);
 		columns.add(createdCol);
 		ColumnModel<Articulation> cm = new ColumnModel<Articulation>(columns);
@@ -327,7 +327,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 			@Override
 			public void onStartEdit(StartEditEvent<Articulation> event) {
 				Articulation articulation = grid.getStore().get(event.getEditCell().getRow());
-				Collection<Relation> availableTypes = model.getAvailableRelations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER);
+				java.util.Collection<Relation> availableTypes = collection.getModel().getAvailableRelations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER);
 				availableRelationsStore.clear();
 				availableRelationsStore.addAll(availableTypes);
 			}
@@ -401,7 +401,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 				final MultiLinePromptMessageBox box = new MultiLinePromptMessageBox("Comment", "");
 
 				if(articulations.size() == 1)
-					box.getTextArea().setValue(model.hasComment(articulations.get(0)) ? model.getComment(articulations.get(0)) : "");
+					box.getTextArea().setValue(collection.getModel().hasComment(articulations.get(0)) ? collection.getModel().getComment(articulations.get(0)) : "");
 				else 
 					box.getTextArea().setValue("");
 				
@@ -427,7 +427,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		menu.addBeforeShowHandler(new BeforeShowHandler() {
 			@Override
 			public void onBeforeShow(BeforeShowEvent event) {
-				if(!model.getColors().isEmpty()) {
+				if(!collection.getModel().getColors().isEmpty()) {
 					menu.insert(colorizeItem, menu.getWidgetIndex(commentItem));
 					//colors can change, refresh
 					colorizeItem.setSubMenu(createColorizeMenu());
@@ -454,7 +454,7 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 			}
 		});
 		colorMenu.add(offItem);
-		for(final Color color : model.getColors()) {
+		for(final Color color : collection.getModel().getColors()) {
 			MenuItem colorItem = new MenuItem(color.getUse());
 			colorItem.getElement().getStyle().setProperty("backgroundColor", "#" + color.getHex());
 			colorItem.addSelectionHandler(new SelectionHandler<Item>() {

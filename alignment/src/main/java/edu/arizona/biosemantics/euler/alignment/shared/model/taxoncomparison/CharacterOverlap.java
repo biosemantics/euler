@@ -2,33 +2,37 @@ package edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 
-public class Similarities implements Serializable {
+public class CharacterOverlap implements Serializable {
 
 	private Taxon taxonA;
 	private Taxon taxonB;
 	private Collection<CharacterState> characterStatesA;
 	private Collection<CharacterState> characterStatesB;
-	private Map<CharacterState, Map<CharacterState, AsymmetricSimilarity<CharacterState>>> equalCharacters;
+	private List<Overlap> overlap;
 		
-	public Similarities() { }
+	public CharacterOverlap() { }
 	
-	public Similarities(
+	public CharacterOverlap(
 			Taxon taxonA,
 			Taxon taxonB,
 			Collection<CharacterState> characterStatesA,
 			Collection<CharacterState> characterStatesB,
-			Map<CharacterState, Map<CharacterState, AsymmetricSimilarity<CharacterState>>> equalCharacters) {
+			List<Overlap> overlap) {
 		super();
 		this.taxonA = taxonA;
 		this.taxonB = taxonB;
 		this.characterStatesA = characterStatesA;
 		this.characterStatesB = characterStatesB;
-		this.equalCharacters = equalCharacters;
+		this.overlap = overlap;
 	}
+	
+	
+	
 	public Taxon getTaxonA() {
 		return taxonA;
 	}
@@ -53,14 +57,12 @@ public class Similarities implements Serializable {
 	public void setCharacterStatesB(Collection<CharacterState> characterStatesB) {
 		this.characterStatesB = characterStatesB;
 	}
-	public Map<CharacterState, Map<CharacterState, AsymmetricSimilarity<CharacterState>>> getEqualCharacters() {
-		return equalCharacters;
+	public List<Overlap> getOverlap() {
+		return overlap;
 	}
-	public void setEqualCharacters(
-			Map<CharacterState, Map<CharacterState, AsymmetricSimilarity<CharacterState>>> equalCharacters) {
-		this.equalCharacters = equalCharacters;
-	}
-	
+	public void setOverlap(List<Overlap> overlap) {
+		this.overlap = overlap;
+	}	
 	
 	
 }

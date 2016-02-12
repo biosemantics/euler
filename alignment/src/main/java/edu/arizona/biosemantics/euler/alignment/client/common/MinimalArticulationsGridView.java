@@ -2,7 +2,6 @@ package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 import com.google.gwt.cell.client.Cell.Context;
@@ -62,7 +61,7 @@ import edu.arizona.biosemantics.euler.alignment.client.articulate.EvidenceDialog
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell.CommentColorizableObjectsProvider;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
@@ -70,6 +69,7 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEve
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -77,7 +77,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 public class MinimalArticulationsGridView extends SimpleContainer /* extends ContentPanel*/ {
 
 	protected EventBus eventBus;
-	protected Model model;
+	protected Collection collection;
 	
 	protected ListStore<Articulation> articulationsStore;
 	protected Grid<Articulation> grid;
@@ -86,9 +86,9 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 	private Type type;
 	private Articulation articulation;
 	
-	public MinimalArticulationsGridView(EventBus eventBus, Model model, Articulation articulation, Type type) {
+	public MinimalArticulationsGridView(EventBus eventBus, Collection collection, Articulation articulation, Type type) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		this.articulation = articulation;
 		this.type = type;
 		availableTypesStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
@@ -107,16 +107,16 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 		
 		//setHeadingText("Articulations");
 		add(createArticulationsGrid());
-		setArticulations(model.getArticulations(articulation.getTaxonA(), articulation.getTaxonB(), type));
+		setArticulations(collection.getModel().getArticulations(articulation.getTaxonA(), articulation.getTaxonB(), type));
 		
 		bindEvents();
 	}
 	
 	private void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
 			}
 		});
 		eventBus.addHandler(RemoveArticulationsEvent.TYPE, new RemoveArticulationsEvent.RemoveArticulationsEventHandler() {
@@ -144,7 +144,7 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 		articulationsStore.addAll(articulations);
 	}
 
-	public void removeArticulations(Collection<Articulation> articulations) {
+	public void removeArticulations(java.util.Collection<Articulation> articulations) {
 		for(Articulation articulation : articulations)
 			articulationsStore.remove(articulation);
 	}
@@ -159,7 +159,7 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 		articulationsStore.setAutoCommit(true);
 
 		IdentityValueProvider<Articulation> identity = new IdentityValueProvider<Articulation>();
-		ColorableCell colorableCell = new ColorableCell(eventBus, model, null);
+		ColorableCell colorableCell = new ColorableCell(eventBus, collection, null);
 		colorableCell.setCommentColorizableObjectsStore(articulationsStore, new CommentColorizableObjectsProvider() {
 			@Override
 			public Object provide(Object source) {
@@ -169,9 +169,9 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 
 		String aHead = "Taxonomic Concept A";
 		String bHead = "Taxonomic Concept B";
-		if(model != null) {
-			 aHead = "Taxonomic Concept " + model.getTaxonomies().get(0).getFullName();
-			 bHead = "Taxonomic Concept " + model.getTaxonomies().get(1).getFullName();
+		if(collection != null) {
+			 aHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getFullName();
+			 bHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getFullName();
 		}
 		//ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
 		//		new ArticulationProperties.TaxonAStringValueProvider(), 250, aHead);
@@ -186,13 +186,13 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 		ValueProvider<Articulation, String> commentValueProvider = new ValueProvider<Articulation, String>() {
 			@Override
 			public String getValue(Articulation object) {
-				if(model.hasComment(object))
-					return model.getComment(object);
+				if(collection.getModel().hasComment(object))
+					return collection.getModel().getComment(object);
 				return "";
 			}
 			@Override
 			public void setValue(Articulation object, String value) {
-				model.setComment(object, value);
+				collection.getModel().setComment(object, value);
 			}
 			@Override
 			public String getPath() {
@@ -225,7 +225,7 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 			@Override
 			public void onStartEdit(StartEditEvent<Articulation> event) {
 				Articulation articulation = grid.getStore().get(event.getEditCell().getRow());
-				Collection<Relation> availableTypes = model.getAvailableRelations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER);
+				java.util.Collection<Relation> availableTypes = collection.getModel().getAvailableRelations(articulation.getTaxonA(), articulation.getTaxonB(), Type.USER);
 				availableTypesStore.clear();
 				availableTypesStore.addAll(availableTypes);
 			}

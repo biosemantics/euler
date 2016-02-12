@@ -5,22 +5,23 @@ import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.TabItemConfig;
 import com.sencha.gxt.widget.core.client.TabPanel;
 
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class ViewHistoryDialog extends CommonDialog {
 
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 
-	public ViewHistoryDialog(final EventBus eventBus, final Model model) {
+	public ViewHistoryDialog(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		
 		TabPanel panel = new TabPanel();
 		panel.setTabScroll(true);
 		panel.setAnimScroll(true);
-		panel.add(new SingleRunView(eventBus, model), new TabItemConfig("Single", false));
-		panel.add(new CompareRunView(eventBus, model), new TabItemConfig("Compare", false));
+		panel.add(new SingleRunView(eventBus, collection), new TabItemConfig("Single", false));
+		panel.add(new CompareRunView(eventBus, collection), new TabItemConfig("Compare", false));
 
 		add(panel);
 		

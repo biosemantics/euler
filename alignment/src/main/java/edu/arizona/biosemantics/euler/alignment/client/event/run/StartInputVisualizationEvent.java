@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartInputVisualizationEvent.StartInputVisualizationEventHandler;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class StartInputVisualizationEvent extends GwtEvent<StartInputVisualizationEventHandler> {
@@ -13,10 +14,10 @@ public class StartInputVisualizationEvent extends GwtEvent<StartInputVisualizati
 	}
 	
     public static Type<StartInputVisualizationEventHandler> TYPE = new Type<StartInputVisualizationEventHandler>();
-	private Model model;
+	private Collection collection;
 
-    public StartInputVisualizationEvent(Model model) {
-    	this.model = model;
+    public StartInputVisualizationEvent(Collection collection) {
+    	this.collection = collection;
     }
     
 	@Override
@@ -29,8 +30,8 @@ public class StartInputVisualizationEvent extends GwtEvent<StartInputVisualizati
 		handler.onShow(this);
 	}
 
-	public Model getModel() {
-		return model;
+	public Collection getCollection() {
+		return collection;
 	}
 
 }

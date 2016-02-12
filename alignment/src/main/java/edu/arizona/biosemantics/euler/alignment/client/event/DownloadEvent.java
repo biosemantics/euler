@@ -4,6 +4,7 @@ import com.google.gwt.event.shared.EventHandler;
 import com.google.gwt.event.shared.GwtEvent;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.DownloadEvent.DownloadHandler;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class DownloadEvent extends GwtEvent<DownloadHandler> {
@@ -13,10 +14,10 @@ public class DownloadEvent extends GwtEvent<DownloadHandler> {
 	}
 	
     public static Type<DownloadHandler> TYPE = new Type<DownloadHandler>();
-	private Model model;
+	private Collection collection;
 
-    public DownloadEvent(Model model) {
-    	this.model = model;
+    public DownloadEvent(Collection collection) {
+    	this.collection = collection;
     }
     
 	@Override
@@ -29,8 +30,8 @@ public class DownloadEvent extends GwtEvent<DownloadHandler> {
 		handler.onDownload(this);
 	}
 
-	public Model getModel() {
-		return model;
+	public Collection getCollection() {
+		return collection;
 	}
 	
 }

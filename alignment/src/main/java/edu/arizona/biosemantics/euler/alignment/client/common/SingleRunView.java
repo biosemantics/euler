@@ -16,6 +16,7 @@ import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
 import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
 
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
@@ -23,7 +24,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
 public class SingleRunView extends BorderLayoutContainer {
 
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	//private ListStore<Run> runStore;
 	//private ListView<Run, String> runList;
 	private RunGridView runGridView;
@@ -33,13 +34,13 @@ public class SingleRunView extends BorderLayoutContainer {
 	
 	private RunProperties runProperties = GWT.create(RunProperties.class);
 	
-	public SingleRunView(final EventBus eventBus, final Model model) {
+	public SingleRunView(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		
-		articulationsGridView = new ArticulationsGridView(eventBus, model, false, false);
+		articulationsGridView = new ArticulationsGridView(eventBus, collection, false, false);
 
-		runGridView = new RunGridView(eventBus, model);
+		runGridView = new RunGridView(eventBus, collection);
 		/*runStore = new ListStore<Run>(runProperties.key());
 		runStore.addAll(model.getRunHistory());
 		runList = new ListView<Run, String>(runStore,
@@ -59,7 +60,7 @@ public class SingleRunView extends BorderLayoutContainer {
 			@Override
 			public void onSelect(SelectEvent event) {
 				Run run = runGridView.getSelectionModel().getSelectedItem();//.getSelectionModel().getSelectedItem();
-				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, model);
+				ViewResultsDialog dialog = new ViewResultsDialog(eventBus, collection);
 				dialog.setRun(run);
 				dialog.show();
 			}

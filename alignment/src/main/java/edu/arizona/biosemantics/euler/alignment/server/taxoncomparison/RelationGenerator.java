@@ -1,16 +1,13 @@
 package edu.arizona.biosemantics.euler.alignment.server.taxoncomparison;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.AsymmetricSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.RelationProposal;
-import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Similarities;
-import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Taxonomy;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterOverlap;
 
 public interface RelationGenerator {
 
@@ -20,6 +17,6 @@ public interface RelationGenerator {
 
 	public AsymmetricSimilarity<Taxon> getAsymmetricSimilarity(Taxon taxonA, Taxon taxonB);
 
-	public Similarities getSimilarities(Taxon taxonA, Taxon taxonB, double threshold);
+	public CharacterOverlap getCharacterOverlap(Taxon taxonA, Taxon taxonB, double threshold);
 	
 }

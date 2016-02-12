@@ -33,7 +33,7 @@ public class CollectionDAO {
 	public CollectionDAO() {} 
 	
 	public boolean isValidSecret(int id, String secret) throws QueryException  {
-		try(Query query = new Query("SELECT secret FROM ontologize_collection WHERE id = ?")) {
+		try(Query query = new Query("SELECT secret FROM alignment_collection WHERE id = ?")) {
 			query.setParameter(1, id);
 			ResultSet result = query.execute();
 			while(result.next()) {
@@ -49,7 +49,7 @@ public class CollectionDAO {
 	
 	public Collection get(int id) throws Exception  {
 		Collection collection = null;
-		try(Query query = new Query("SELECT * FROM ontologize_collection WHERE id = ?")) {
+		try(Query query = new Query("SELECT * FROM alignment_collection WHERE id = ?")) {
 			query.setParameter(1, id);
 			ResultSet result = query.execute();
 			while(result.next()) {
@@ -60,7 +60,7 @@ public class CollectionDAO {
 			throw new QueryException(e);
 		}
 		
-		try(Query query = new Query("UPDATE ontologize_collection SET lastretrieved = ? WHERE id = ?")) {
+		try(Query query = new Query("UPDATE alignment_collection SET lastretrieved = ? WHERE id = ?")) {
 			query.setParameter(2, id);
 			Date date = new Date();
 			query.setParameter(1, new Timestamp(date.getTime()));
@@ -86,10 +86,10 @@ public class CollectionDAO {
 		}
 	}
 	
-	private edu.arizona.biosemantics.matrixreview.shared.model.Model unserializeModel(int collectionId) throws FileNotFoundException, IOException, ClassNotFoundException {
+	private Model unserializeModel(int collectionId) throws FileNotFoundException, IOException, ClassNotFoundException {
 		try(ObjectInput input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(
 				Configuration.collectionsPath + File.separator + collectionId + File.separator + "Model.ser")))) {
-			edu.arizona.biosemantics.matrixreview.shared.model.Model model = (edu.arizona.biosemantics.matrixreview.shared.model.Model)input.readObject();
+			Model model = (Model)input.readObject();
 			return model;
 		}
 	}
@@ -134,5 +134,5 @@ public class CollectionDAO {
 			log(LogLevel.ERROR, "Query Exception", e);
 			throw e;
 		}
-	}	
+	}
 }

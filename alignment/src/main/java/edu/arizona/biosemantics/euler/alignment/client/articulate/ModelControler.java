@@ -8,8 +8,8 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnos
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent.AddArticulationEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent.ImportArticulationsEventHandler;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent.LoadModelEventHandler;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent.LoadCollectionEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticulationEvent.ModifyArticulationEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent;
@@ -28,13 +28,14 @@ import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.run.StartMIREvent.StartMIREventHandler;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ModelSwapper;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunConfig;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 
-public class ModelControler implements LoadModelEventHandler, SetColorsEventHandler,  AddArticulationEventHandler, 
+public class ModelControler implements LoadCollectionEventHandler, SetColorsEventHandler,  AddArticulationEventHandler, 
 	RemoveArticulationsEventHandler, ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler, EndMIREventHandler, 
 	SetColorEventHandler, SetCommentEventHandler, SwapTaxonomiesEvent.SwapTaxonomiesEventHandler, 
 	ModifyDiagnosticScopeEvent.ModifyDiagnosticScopeEventHandler, 
@@ -42,6 +43,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 
 	protected EventBus eventBus;
 	protected Model model;
+	private Collection collection;
 
 	public ModelControler(EventBus eventBus) {
 		this.eventBus = eventBus;
@@ -50,7 +52,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 	}
 
 	protected void addEventHandlers() {
-		eventBus.addHandler(LoadModelEvent.TYPE, this);
+		eventBus.addHandler(LoadCollectionEvent.TYPE, this);
 		eventBus.addHandler(SetColorsEvent.TYPE, this);
 		eventBus.addHandler(SetCommentEvent.TYPE, this);
 		eventBus.addHandler(SetColorEvent.TYPE, this);
@@ -65,8 +67,9 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 	}
 
 	@Override
-	public void onLoad(LoadModelEvent event) {
-		this.model = event.getModel();
+	public void onLoad(LoadCollectionEvent event) {
+		this.collection = event.getCollection();
+		this.model = collection.getModel();
 	}
 
 	@Override
@@ -130,7 +133,7 @@ public class ModelControler implements LoadModelEventHandler, SetColorsEventHand
 	@Override
 	public void onShow(SwapTaxonomiesEvent event) {
 		ModelSwapper swapper = new ModelSwapper();
-		eventBus.fireEvent(new LoadModelEvent(swapper.swap(model)));
+		eventBus.fireEvent(new LoadCollectionEvent(new Collection(collection.getId(), collection.getSecret(), swapper.swap(model))));
 	}
 
 	@Override

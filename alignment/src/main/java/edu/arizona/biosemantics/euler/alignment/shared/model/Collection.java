@@ -6,13 +6,13 @@ public class Collection implements Serializable {
 
 	private int id = -1;
 	private String secret;
-	private edu.arizona.biosemantics.matrixreview.shared.model.Model model;
+	private Model model;
 	
 	public Collection() {
 		
 	}
 	
-	public Collection(int id, String secret, edu.arizona.biosemantics.matrixreview.shared.model.Model model) {
+	public Collection(int id, String secret, Model model) {
 		this.id = id;
 		this.secret = secret;
 		this.model = model;
@@ -34,11 +34,11 @@ public class Collection implements Serializable {
 		this.id = id;
 	}
 
-	public edu.arizona.biosemantics.matrixreview.shared.model.Model getModel() {
+	public Model getModel() {
 		return model;
 	}
 
-	public void setModel(edu.arizona.biosemantics.matrixreview.shared.model.Model model) {
+	public void setModel(Model model) {
 		this.model = model;
 	}
 

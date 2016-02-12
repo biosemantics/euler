@@ -7,8 +7,8 @@ import java.util.Set;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.ArticulationsGenerator;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.RelationGenerator;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.ArticulationProposal;
-import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Taxonomy;
 
 public class AllCombinationsArticulationsGenerator implements ArticulationsGenerator {
 

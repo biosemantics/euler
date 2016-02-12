@@ -13,8 +13,9 @@ import com.sencha.gxt.widget.core.client.grid.ColumnHeader.ColumnHeaderStyles;
 import com.sencha.gxt.widget.core.client.grid.GridView.GridAppearance;
 import com.sencha.gxt.widget.core.client.grid.GridView.GridStyles;
 
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
@@ -49,21 +50,21 @@ public class ColorableCell<T> extends AbstractCell<T> {
 	
 	protected static Templates templates = GWT.create(Templates.class);
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private ListStore commentColorizableObjectsStore;
 	private CommentColorizableObjectsProvider commentColorizableObjectsProvider;
 	private QuickTipProvider<T> quickTipProvider;
 	
-	public ColorableCell(EventBus eventBus, Model model, QuickTipProvider<T> quickTipProvider) {
-		this(GWT.<ColumnHeaderAppearance> create(ColumnHeaderAppearance.class), GWT.<GridAppearance> create(GridAppearance.class), eventBus, model, quickTipProvider);
+	public ColorableCell(EventBus eventBus, Collection collection, QuickTipProvider<T> quickTipProvider) {
+		this(GWT.<ColumnHeaderAppearance> create(ColumnHeaderAppearance.class), GWT.<GridAppearance> create(GridAppearance.class), eventBus, collection, quickTipProvider);
 	}
 	
-	public ColorableCell(ColumnHeaderAppearance columnHeaderAppearance, GridAppearance gridAppearance, EventBus eventBus, Model model, 
+	public ColorableCell(ColumnHeaderAppearance columnHeaderAppearance, GridAppearance gridAppearance, EventBus eventBus, Collection collection, 
 			QuickTipProvider<T> quickTipProvider) {
 		super(BrowserEvents.MOUSEOVER, BrowserEvents.MOUSEOUT, BrowserEvents.CLICK);
 		
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		this.quickTipProvider = quickTipProvider;
 		this.columnHeaderAppearance = columnHeaderAppearance;
 		this.gridAppearance = gridAppearance;
@@ -90,10 +91,10 @@ public class ColorableCell<T> extends AbstractCell<T> {
 	}
 	
 	private void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
 			}
 		});
 	}
@@ -112,13 +113,13 @@ public class ColorableCell<T> extends AbstractCell<T> {
 			quickTipText = quickTipProvider.getQuickTip(value);
 		String comment = null;
 		if(commentColorizableObject != null) {
-			comment = model.getComment(commentColorizableObject);
+			comment = collection.getModel().getComment(commentColorizableObject);
 			if(comment != null && !comment.isEmpty())
 				quickTipText += "<br>Comment:" + comment;
 		}
 		Color color = null;
 		if(commentColorizableObject != null) {
-			color = model.getColor(commentColorizableObject);
+			color = collection.getModel().getColor(commentColorizableObject);
 		}
 
 		String colorHex = "";

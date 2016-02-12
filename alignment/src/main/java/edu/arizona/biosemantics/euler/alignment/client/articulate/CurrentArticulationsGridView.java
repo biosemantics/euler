@@ -25,7 +25,7 @@ import edu.arizona.biosemantics.euler.alignment.client.common.ArticulationsGridV
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveMachineArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveUserArticulationsEvent;
@@ -83,10 +83,10 @@ public class CurrentArticulationsGridView extends ArticulationsGridView {
 
 	protected void bindEvents() {
 		super.bindEvents();
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				setArticulations(event.getModel().getArticulations());
+			public void onLoad(LoadCollectionEvent event) {
+				setArticulations(event.getCollection().getModel().getArticulations());
 			}
 		});
 		eventBus.addHandler(AddArticulationsEvent.TYPE, new AddArticulationsEvent.AddArticulationEventHandler() {

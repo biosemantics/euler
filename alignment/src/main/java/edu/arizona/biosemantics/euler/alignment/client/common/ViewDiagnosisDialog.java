@@ -10,24 +10,25 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 import com.sencha.gxt.widget.core.client.event.SelectEvent;
 import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
 
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 
 public class ViewDiagnosisDialog extends CommonDialog {
 	
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private TextButton viewDiagnosisLatticeButton = new TextButton("View Diagnosis Lattice");
 	private Run run;
 	
-	public ViewDiagnosisDialog(final EventBus eventBus, final Model model) {
+	public ViewDiagnosisDialog(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		
 		viewDiagnosisLatticeButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				if(model.getRunHistory().getLast().hasOutput())
+				if(collection.getModel().getRunHistory().getLast().hasOutput())
 					Window.open(run.getOutput().getDiagnosisUrl(), "_blank", "");
 			}
 		});

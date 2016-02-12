@@ -15,6 +15,7 @@ import org.apache.commons.math3.exception.NullArgumentException;
 import org.apache.commons.math3.exception.NumberIsTooSmallException;
 import org.apache.commons.math3.stat.inference.TestUtils;
 
+import com.google.gwt.dev.util.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
 
@@ -27,11 +28,12 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.DiagnosticValue;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.AsymmetricSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterState;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Overlap;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.RelationProposal;
-import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Similarities;
-import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Taxonomy;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterOverlap;
 
 public class TTestBasedRelationGenerator implements RelationGenerator {
 	
@@ -159,33 +161,35 @@ public class TTestBasedRelationGenerator implements RelationGenerator {
 	}
 	
 	@Override
-	public Similarities getSimilarities(Taxon taxonA, Taxon taxonB, double threshold) {
+	public CharacterOverlap getCharacterOverlap(Taxon taxonA, Taxon taxonB, double threshold) {
 		Map<CharacterState, Map<CharacterState, AsymmetricSimilarity<CharacterState>>> betweenTaxaScores = betweenCharacterScores.get(taxonA).get(taxonB);
 		Map<CharacterState, Map<CharacterState, AsymmetricSimilarity<CharacterState>>> equalCharacters = new HashMap<CharacterState, 
 				Map<CharacterState, AsymmetricSimilarity<CharacterState>>>();
 		Set<CharacterState> remainingTaxonACharacterStates = new HashSet<CharacterState>(taxonA.getCharacterStates());
 		Set<CharacterState> remainingTaxonBCharacterStates = new HashSet<CharacterState>(taxonB.getCharacterStates());
 		
+		List<Overlap> overlap = new LinkedList<Overlap>();
 		for(CharacterState characterStateA : betweenTaxaScores.keySet()) {
 			for(CharacterState characterStateB : betweenTaxaScores.get(characterStateA).keySet()) {
 				AsymmetricSimilarity<CharacterState> similiarty = betweenTaxaScores.get(characterStateA).get(characterStateB);
-				if((similiarty.getSimilarity() + similiarty.getOppositeSimilarity())/2 > threshold) {
-					if(!equalCharacters.containsKey(characterStateA))
-						equalCharacters.put(characterStateA, new HashMap<CharacterState, AsymmetricSimilarity<CharacterState>>());
-					equalCharacters.get(characterStateA).put(characterStateB, similiarty);
-					
+				if((similiarty.getSimilarity() + similiarty.getOppositeSimilarity())/2 >= threshold) {
+					overlap.add(new Overlap(characterStateA, characterStateB, similiarty.getSimilarity(), 0.0, DiagnosticValue.MEDIUM, Rank.UNRANKED));
 					remainingTaxonACharacterStates.remove(characterStateA);
 					remainingTaxonBCharacterStates.remove(characterStateB);
 				}
 			}
 		}
-		Similarities similarities = new Similarities();
-		similarities.setEqualCharacters(equalCharacters);
-		similarities.setCharacterStatesA(remainingTaxonACharacterStates);
-		similarities.setCharacterStatesB(remainingTaxonBCharacterStates);
-		similarities.setTaxonA(taxonA);
-		similarities.setTaxonB(taxonB);
-		return similarities;
+		CharacterOverlap characterOverlap = new CharacterOverlap();
+		characterOverlap.setOverlap(overlap);
+		List<CharacterState> characterStatesA = new ArrayList<CharacterState>(remainingTaxonACharacterStates);
+		List<CharacterState> characterStatesB = new ArrayList<CharacterState>(remainingTaxonBCharacterStates);
+		Lists.sort(characterStatesA);
+		Lists.sort(characterStatesB);
+		characterOverlap.setCharacterStatesA(characterStatesA);
+		characterOverlap.setCharacterStatesB(characterStatesB);
+		characterOverlap.setTaxonA(taxonA);
+		characterOverlap.setTaxonB(taxonB);
+		return characterOverlap;
 	}
 	
 	@Override

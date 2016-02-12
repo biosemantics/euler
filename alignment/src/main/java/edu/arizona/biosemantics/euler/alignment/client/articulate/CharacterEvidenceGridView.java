@@ -7,6 +7,7 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.EventBus;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.IdentityValueProvider;
@@ -14,6 +15,7 @@ import com.sencha.gxt.core.client.ValueProvider;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
+import com.sencha.gxt.widget.core.client.box.MessageBox;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
 import com.sencha.gxt.widget.core.client.event.StartEditEvent;
@@ -36,6 +38,7 @@ import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
 import com.sencha.gxt.widget.core.client.tips.QuickTip;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
+import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell.CommentColorizableObjectsProvider;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.QuickTipProvider;
@@ -43,8 +46,11 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyArticul
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticScopeEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
+import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
+import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsync;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.DiagnosticValue;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
 import edu.arizona.biosemantics.euler.alignment.shared.model.EvidenceProperties;
@@ -53,17 +59,18 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 
 public class CharacterEvidenceGridView extends SimpleContainer {
 
+	private IEulerAlignmentServiceAsync alignmentService = GWT.create(IEulerAlignmentService.class);
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private Articulation articulation;
 	private ListStore<Evidence> evidenceStore;
 	private Grid<Evidence> grid;
 	private ListStore<DiagnosticValue> diagnosticValueStore;
 	private ListStore<Rank> rankStore;
 
-	public CharacterEvidenceGridView(EventBus eventBus, Model model, Articulation articulation) {
+	public CharacterEvidenceGridView(EventBus eventBus, Collection collection, Articulation articulation) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		this.articulation = articulation;
 		
 		add(createEvidenceGrid());
@@ -97,7 +104,7 @@ public class CharacterEvidenceGridView extends SimpleContainer {
 				return source;
 			}
 		};
-		ColorableCell colorableCell = new ColorableCell(eventBus, model, new QuickTipProvider<Object>() {
+		ColorableCell colorableCell = new ColorableCell(eventBus, collection, new QuickTipProvider<Object>() {
 			@Override
 			public String getQuickTip(Object value) {
 				return value.toString();
@@ -225,8 +232,20 @@ public class CharacterEvidenceGridView extends SimpleContainer {
 	}
 
 	public void setArticulation(Articulation articulation) {
-		this.articulation = articulation;		
-		evidenceStore.addAll(model.getEvidenceMap().get(articulation.getTaxonA()).get(articulation.getTaxonB()));
+		this.articulation = articulation;	
+		final MessageBox box = Alerter.startLoading();
+		alignmentService.getEvidence(collection, articulation.getTaxonA(), articulation.getTaxonB(), new AsyncCallback<List<Evidence>>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				caught.printStackTrace();
+				Alerter.stopLoading(box);
+			}
+			@Override
+			public void onSuccess(List<Evidence> result) {
+				evidenceStore.addAll(result);
+				Alerter.stopLoading(box);
+			}
+		});
 	}
 	
 	public GridSelectionModel<Evidence> getSelectionModel() {

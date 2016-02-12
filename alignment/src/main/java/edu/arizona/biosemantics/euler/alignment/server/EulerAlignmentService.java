@@ -26,10 +26,16 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
+import com.sencha.gxt.data.shared.ListStore;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
 import edu.arizona.biosemantics.euler.alignment.server.db.CollectionDAO;
 import edu.arizona.biosemantics.euler.alignment.server.db.Query.QueryException;
+import edu.arizona.biosemantics.euler.alignment.server.io.MatrixReviewModelReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterStateSimilarityMetric;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.RelationGenerator;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.ContainmentCharacterStateSimilarityMetric;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.TTestBasedRelationGenerator;
 import edu.arizona.biosemantics.euler.alignment.shared.Highlight;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
@@ -43,7 +49,9 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterOverlap;
 import edu.arizona.biosemantics.euler.io.ArticulationsReader;
+import edu.arizona.biosemantics.taxoncomparison.comparison.Configuration;
 
 public class EulerAlignmentService extends RemoteServiceServlet implements IEulerAlignmentService {
 
@@ -53,23 +61,147 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 	public EulerAlignmentService(CollectionDAO collectionDAO) throws Exception {
 		this.collectionDAO = collectionDAO;
 		
-		Collection collection = new Collection();
+		/*Collection collection = new Collection();
 		collection.setSecret("test");
 		
 		edu.arizona.biosemantics.matrixreview.shared.model.Model model = unserializeMatrix("C:\\gitEtc3\\euler2\\alignment\\TaxonMatrix.ser");
-		collection.setModel(model);
-		this.createCollection(collection);
+		collection.setModel(createModel(model));
+		this.createCollection(collection);*/
 	}
 	
+	private Model createModel(edu.arizona.biosemantics.matrixreview.shared.model.Model matrixReviewModel) {
+		MatrixReviewModelReader reader = new MatrixReviewModelReader();
+		Taxonomy taxonomyA = reader.getTaxonomy(matrixReviewModel);
+		Taxonomy taxonomyB = reader.getTaxonomy(matrixReviewModel);
+		Taxonomies taxonomies = new Taxonomies();
+		taxonomies.add(taxonomyA);
+		taxonomies.add(taxonomyB);
+		
+		Map<Taxon, Map<Taxon, List<Evidence>>> evidenceMap = new HashMap<Taxon, Map<Taxon, List<Evidence>>>();
+		for(Taxon taxon1 : taxonomyA.getTaxaDFS()) {
+			evidenceMap.put(taxon1, new HashMap<Taxon, List<Evidence>>());
+			for(Taxon taxon2 : taxonomyB.getTaxaDFS()) {
+				evidenceMap.get(taxon1).put(taxon2, createEvidence(taxon1, taxon2));
+			}
+		}
+		
+		Model model = new Model(taxonomies, evidenceMap);
+		return model;
+	}
+	
+	private List<Evidence> createEvidence(Taxon taxon1, Taxon taxon2) {
+		List<Evidence> result = new LinkedList<Evidence>();
+		//result.add(new Evidence(taxon1, taxon2, "metus", "nibh", 0.5, 0, DiagnosticValue.MEDIUM, Rank.SPECIES));
+		return result;
+	}
+
 	private edu.arizona.biosemantics.matrixreview.shared.model.Model unserializeMatrix(String file) throws FileNotFoundException, IOException, ClassNotFoundException {
 		try(ObjectInput input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)))) {
-			Object object = input.readObject();
 			edu.arizona.biosemantics.matrixreview.shared.model.Model model = (edu.arizona.biosemantics.matrixreview.shared.model.Model)input.readObject();
 			return model;
 		}
 	}
+
+	@Override
+	public Articulations getArticulations(Collection collection, String text) throws Exception {
+		ArticulationsReader articulationsReader = new ArticulationsReader();
+		return articulationsReader.read(text, collection.getModel());
+	}
+
+	@Override
+	public SafeHtml getHighlighted(String content, Set<Highlight> highlights) {
+		for(Highlight highlight : highlights) {
+			Document document = Jsoup.parseBodyFragment(content);
+			List<Node> result = new ArrayList<Node>();
+			for(Node node : document.body().childNodes()) {
+				if(node instanceof TextNode) {
+					TextNode textNode = ((TextNode)node);
+					String regex = createRegex(highlight);
+					if(regex == null) {
+						result.add(node);
+					} else {
+						List<Node> newNodes = createHighlightedNodes(textNode, regex, highlight.getColorHex());
+						result.addAll(newNodes);
+					}
+				} else {
+					result.add(node);
+				}
+			}
+			Element body = new Element(Tag.valueOf("body"), "");
+			for(Node newNode : result)
+				body.appendChild(newNode);
+			content = body.toString();
+		}
+		return SafeHtmlUtils.fromTrustedString(content);
+	}
+
+	private String createRegex(Highlight highlight) {
+		String parts = "";
+		for(String part : highlight.getText().trim().split(" ")) {
+			if(!part.isEmpty())
+				parts += Pattern.quote(part) + "|";
+		}
+		if(!parts.isEmpty())
+			parts = parts.substring(0, parts.length() - 1);
+		if(!parts.isEmpty())
+			return "\\b(" + parts + ")\\b";
+		return null;
+	}
+
+	private List<Node> createHighlightedNodes(TextNode textNode, String regex, String colorHex) {
+		List<Node> result = new ArrayList<Node>();
+		String text = textNode.text();
+		StringBuilder textBuilder = new StringBuilder(text);
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(text);
+		if(!matcher.find()) {
+			result.add(textNode);
+			return result;
+		}
+		StringBuilder beforeReplaceText = new StringBuilder(textBuilder.substring(0, matcher.start(1)));
+		String afterReplaceText = textBuilder.substring(matcher.end(1), textBuilder.length());
+		result.add(new TextNode(beforeReplaceText.toString(), ""));
+		Element fontElement = new Element(Tag.valueOf("font"), "");
+		fontElement.attr("color", "#" + colorHex);
+		fontElement.text(text.substring(matcher.start(1), matcher.end(1)));
+		result.add(fontElement);
+		result.addAll(createHighlightedNodes(new TextNode(afterReplaceText, ""), regex, colorHex));
+		return result;
+	}
+
+	@Override
+	public Collection createCollection(Collection collection) throws QueryException, IOException {
+		collection = collectionDAO.insert(collection);
+		return collection;
+	}
 	
 	@Override
+	public Collection getCollection(int id, String secret) throws Exception {
+		if(collectionDAO.isValidSecret(id, secret)) 
+			return collectionDAO.get(id);
+		throw new Exception();
+	}
+
+	@Override
+	public List<Evidence> getEvidence(Collection collection, Taxon taxonA, Taxon taxonB) throws Exception {
+		List<Evidence> result = new LinkedList<Evidence>();
+		return result;
+	}
+
+	@Override
+	public CharacterOverlap getCharacterOverlap(Collection collection, Taxon taxonA, Taxon taxonB, double threshold) {
+		Taxonomy taxonomyA = collection.getModel().getTaxonomies().get(0);
+		Taxonomy taxonomyB = collection.getModel().getTaxonomies().get(1);
+		CharacterStateSimilarityMetric characterStateSimilarityMetric = new ContainmentCharacterStateSimilarityMetric();
+		RelationGenerator pairwiseArticulationGenerator = new TTestBasedRelationGenerator(0, 0, 0, 0, 0, 
+				characterStateSimilarityMetric, taxonomyA, taxonomyB);
+		CharacterOverlap overlap = pairwiseArticulationGenerator.getCharacterOverlap(taxonA, taxonB, threshold);
+		return overlap;
+	}
+	
+	
+	
+	/*@Override
 	public Model getModel() {
 		return createSampleModel();
 	}
@@ -218,86 +350,6 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 		return new Model(taxonomies, evidenceMap);*/
 		
 		
-	}
-
-
-
-	private List<Evidence> createEvidence(Taxon taxon1, Taxon taxon2) {
-		List<Evidence> result = new LinkedList<Evidence>();
-		//result.add(new Evidence(taxon1, taxon2, "metus", "nibh", 0.5, 0, DiagnosticValue.MEDIUM, Rank.SPECIES));
-		return result;
-	}
-
-	@Override
-	public Articulations getArticulations(String text, Model model) throws Exception {
-		ArticulationsReader articulationsReader = new ArticulationsReader();
-		return articulationsReader.read(text, model);
-	}
-
-	@Override
-	public SafeHtml getHighlighted(String content, Set<Highlight> highlights) {
-		for(Highlight highlight : highlights) {
-			Document document = Jsoup.parseBodyFragment(content);
-			List<Node> result = new ArrayList<Node>();
-			for(Node node : document.body().childNodes()) {
-				if(node instanceof TextNode) {
-					TextNode textNode = ((TextNode)node);
-					String regex = createRegex(highlight);
-					if(regex == null) {
-						result.add(node);
-					} else {
-						List<Node> newNodes = createHighlightedNodes(textNode, regex, highlight.getColorHex());
-						result.addAll(newNodes);
-					}
-				} else {
-					result.add(node);
-				}
-			}
-			Element body = new Element(Tag.valueOf("body"), "");
-			for(Node newNode : result)
-				body.appendChild(newNode);
-			content = body.toString();
-		}
-		return SafeHtmlUtils.fromTrustedString(content);
-	}
-
-	private String createRegex(Highlight highlight) {
-		String parts = "";
-		for(String part : highlight.getText().trim().split(" ")) {
-			if(!part.isEmpty())
-				parts += Pattern.quote(part) + "|";
-		}
-		if(!parts.isEmpty())
-			parts = parts.substring(0, parts.length() - 1);
-		if(!parts.isEmpty())
-			return "\\b(" + parts + ")\\b";
-		return null;
-	}
-
-	private List<Node> createHighlightedNodes(TextNode textNode, String regex, String colorHex) {
-		List<Node> result = new ArrayList<Node>();
-		String text = textNode.text();
-		StringBuilder textBuilder = new StringBuilder(text);
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(text);
-		if(!matcher.find()) {
-			result.add(textNode);
-			return result;
-		}
-		StringBuilder beforeReplaceText = new StringBuilder(textBuilder.substring(0, matcher.start(1)));
-		String afterReplaceText = textBuilder.substring(matcher.end(1), textBuilder.length());
-		result.add(new TextNode(beforeReplaceText.toString(), ""));
-		Element fontElement = new Element(Tag.valueOf("font"), "");
-		fontElement.attr("color", "#" + colorHex);
-		fontElement.text(text.substring(matcher.start(1), matcher.end(1)));
-		result.add(fontElement);
-		result.addAll(createHighlightedNodes(new TextNode(afterReplaceText, ""), regex, colorHex));
-		return result;
-	}
-
-	@Override
-	public Collection createCollection(Collection collection) throws QueryException, IOException {
-		collection = collectionDAO.insert(collection);
-		return collection;
-	}
+	//}
+	
 }

@@ -1,7 +1,6 @@
 package edu.arizona.biosemantics.euler.alignment.client.articulate;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,9 +32,10 @@ import com.sencha.gxt.widget.core.client.form.DualListField.DualListFieldMessage
 import com.sencha.gxt.widget.core.client.form.DualListField.Mode;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
@@ -101,7 +101,7 @@ public class MyDualListField extends AdapterField<List<Relation>> {
 
   private boolean enableDnd = true;
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private ComboBox<Taxon> taxonomyACombo;
 	private ComboBox<Taxon> taxonomyBCombo;
 
@@ -116,8 +116,8 @@ public class MyDualListField extends AdapterField<List<Relation>> {
    */
   @UiConstructor
   public MyDualListField(ListStore<Relation> fromStore, ListStore<Relation> toStore, ValueProvider<? super Relation, String> valueProvider,
-      Cell<String> cell, EventBus eventBus, Model model, ComboBox<Taxon> taxonomyACombo, ComboBox<Taxon> taxonomyBCombo) {
-    this(fromStore, toStore, valueProvider, cell, eventBus, model, taxonomyACombo, taxonomyBCombo, GWT.<DualListFieldAppearance>create(DualListFieldAppearance.class));
+      Cell<String> cell, EventBus eventBus, Collection collection, ComboBox<Taxon> taxonomyACombo, ComboBox<Taxon> taxonomyBCombo) {
+    this(fromStore, toStore, valueProvider, cell, eventBus, collection, taxonomyACombo, taxonomyBCombo, GWT.<DualListFieldAppearance>create(DualListFieldAppearance.class));
   }
 
   /**
@@ -131,10 +131,10 @@ public class MyDualListField extends AdapterField<List<Relation>> {
    * @param appearance the appearance instance to use when rendering this widget
    */
   public MyDualListField(ListStore<Relation> fromStore, ListStore<Relation> toStore, ValueProvider<? super Relation, String> valueProvider,
-                       Cell<String> cell, EventBus eventBus, Model model, ComboBox<Taxon> taxonomyACombo, ComboBox<Taxon> taxonomyBCombo, DualListFieldAppearance appearance) {
+                       Cell<String> cell, EventBus eventBus, Collection collection, ComboBox<Taxon> taxonomyACombo, ComboBox<Taxon> taxonomyBCombo, DualListFieldAppearance appearance) {
     super(new HorizontalPanel());
     this.eventBus = eventBus;
-    this.model = model;
+    this.collection = collection;
     this.taxonomyACombo = taxonomyACombo;
     this.taxonomyBCombo = taxonomyBCombo;
 
@@ -232,10 +232,10 @@ public class MyDualListField extends AdapterField<List<Relation>> {
   }
 
   private void bindEvents() {
-	eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+	eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 		@Override
-		public void onLoad(LoadModelEvent event) {
-			model = event.getModel();
+		public void onLoad(LoadCollectionEvent event) {
+			collection = event.getCollection();
 		}
 	});
   }
@@ -404,7 +404,7 @@ public DualListFieldAppearance getAppearance() {
        	    
        		List<Articulation> articulations = new LinkedList<Articulation>();
        		for (Relation m : models) {
-       			articulations.add(model.getArticulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m));
+       			articulations.add(collection.getModel().getArticulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m));
        		}
        		eventBus.fireEvent(new RemoveArticulationsEvent(articulations));
        	    
@@ -575,7 +575,7 @@ public DualListFieldAppearance getAppearance() {
 	}
 	
 	public void onAllLeft() {
-		Collection<Articulation> articulations = model.getArticulations(taxonomyACombo.getValue(), taxonomyBCombo.getValue());
+		java.util.Collection<Articulation> articulations = collection.getModel().getArticulations(taxonomyACombo.getValue(), taxonomyBCombo.getValue());
 		eventBus.fireEvent(new RemoveArticulationsEvent(articulations));
 
 		List<Relation> sel = toStore.getAll();
@@ -590,7 +590,7 @@ public DualListFieldAppearance getAppearance() {
 				.getSelectedItems();
 		for (Relation m : sel) {
 			getToStore().remove(m);
-			articulations.add(model.getArticulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m));
+			articulations.add(collection.getModel().getArticulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), m));
 		}
 		getFromStore().addAll(sel);
 		getFromView().getSelectionModel().select(sel, false);

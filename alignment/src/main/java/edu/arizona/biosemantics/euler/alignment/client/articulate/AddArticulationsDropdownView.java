@@ -24,7 +24,7 @@
 //
 //import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 //import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
-//import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+//import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 //import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 //import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationEntry;
 //import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
@@ -62,9 +62,9 @@
 //
 //
 //	private void bindEvents() {
-//		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+//		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 //			@Override
-//			public void onLoad(LoadModelEvent event) {
+//			public void onLoad(LoadCollectionEvent event) {
 //				model = event.getModel();
 //				taxonomyAStore.clear();
 //				taxonomyBStore.clear();

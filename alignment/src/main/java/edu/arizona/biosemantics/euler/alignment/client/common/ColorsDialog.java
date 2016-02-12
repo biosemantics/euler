@@ -40,6 +40,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetColorEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Color;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ColorProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -140,16 +141,16 @@ public class ColorsDialog extends CommonDialog {
 	}
 
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private ListStore<ColorEntry> colorEntriesStore;
 	private Grid<ColorEntry> grid;
 	private ColorEntryProperties colorEntryProperties = GWT.create(ColorEntryProperties.class);
 	private ColorProperties colorProperties = GWT.create(ColorProperties.class);
 	private ColorPaletteBaseAppearance appearance = GWT.create(ColorPaletteAppearance.class);
 
-	public ColorsDialog(final EventBus eventBus, final Model model) {
+	public ColorsDialog(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		
 		IdentityValueProvider<ColorEntry> identity = new IdentityValueProvider<ColorEntry>();
 	    final CheckBoxSelectionModel<ColorEntry> checkBoxSelectionModel = new CheckBoxSelectionModel<ColorEntry>(identity);
@@ -181,9 +182,9 @@ public class ColorsDialog extends CommonDialog {
 			}
 		});*/
 		
-		int numColors = model.getColors().size();
+		int numColors = collection.getModel().getColors().size();
 		appearance.setColumnCount(8);
-		List<Color> colors = model.getColors();
+		List<Color> colors = collection.getModel().getColors();
 		final Map<String, Color> hexColorsMap = new HashMap<String, Color>();
 		String[] hexs = new String[colors.size()];
 		String[] labels = new String[colors.size()];
@@ -369,28 +370,28 @@ public class ColorsDialog extends CommonDialog {
 	private List<ColorEntry> createColorEntries() {	
 		List<ColorEntry> colorEntries = new LinkedList<ColorEntry>();
 				
-		for(Taxonomy taxonomy : model.getTaxonomies()) {
+		for(Taxonomy taxonomy : collection.getModel().getTaxonomies()) {
 			for (Taxon taxon : taxonomy.getTaxaDFS()) {
-				if (model.hasColor(taxon))
-					colorEntries.add(new ColorEntry("taxon-" + taxon.getId(), taxon, taxon.getBiologicalName(), model
+				if (collection.getModel().hasColor(taxon))
+					colorEntries.add(new ColorEntry("taxon-" + taxon.getId(), taxon, taxon.getBiologicalName(), collection.getModel()
 							.getColor(taxon)));
 			}
 		}
-		for(Articulation articulation : model.getArticulations()) {
-			if(model.hasColor(articulation))
-				colorEntries.add(new ColorEntry("articulation-" + articulation.getId(), articulation, articulation.getText(), model
+		for(Articulation articulation : collection.getModel().getArticulations()) {
+			if(collection.getModel().hasColor(articulation))
+				colorEntries.add(new ColorEntry("articulation-" + articulation.getId(), articulation, articulation.getText(), collection.getModel()
 					.getColor(articulation)));
 		}
 		
-		for(Run run : model.getRunHistory()) {
+		for(Run run : collection.getModel().getRunHistory()) {
 			RunProperties.DisplayNameValueProvider nameProvider = new RunProperties.DisplayNameValueProvider();
 			String runName = nameProvider.getValue(run);
-			if(model.hasColor(run))
-				colorEntries.add(new ColorEntry("run-" + run.getId(), run, runName, model.getColor(run)));
+			if(collection.getModel().hasColor(run))
+				colorEntries.add(new ColorEntry("run-" + run.getId(), run, runName, collection.getModel().getColor(run)));
 			
 			for(Articulation articulation : run.getArticulations()) {
-				if(model.hasColor(articulation)) {
-					colorEntries.add(new ColorEntry("articulation-" + articulation.getId(), articulation, "(Run: " + runName + ") " + articulation.getText(), model.getColor(articulation)));
+				if(collection.getModel().hasColor(articulation)) {
+					colorEntries.add(new ColorEntry("articulation-" + articulation.getId(), articulation, "(Run: " + runName + ") " + articulation.getText(), collection.getModel().getColor(articulation)));
 				}
 			}
 		}

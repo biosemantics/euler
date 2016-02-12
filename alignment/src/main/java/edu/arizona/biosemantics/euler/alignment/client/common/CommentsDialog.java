@@ -36,6 +36,7 @@ import com.sencha.gxt.widget.core.client.menu.MenuItem;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.model.SetCommentEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunProperties;
@@ -135,13 +136,13 @@ public class CommentsDialog extends CommonDialog {
 	}
 
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private ListStore<Comment> commentStore;
 	private Grid<Comment> grid;
 
-	public CommentsDialog(final EventBus eventBus, final Model model) {
+	public CommentsDialog(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 		CommentProperties commentProperties = GWT
 				.create(CommentProperties.class);
 
@@ -256,27 +257,27 @@ public class CommentsDialog extends CommonDialog {
 	private List<Comment> createComments() {
 		List<Comment> comments = new LinkedList<Comment>();
 		
-		for(Taxonomy taxonomy : model.getTaxonomies()) {
+		for(Taxonomy taxonomy : collection.getModel().getTaxonomies()) {
 			for (Taxon taxon : taxonomy.getTaxaDFS()) {
-				if (model.hasComment(taxon))
-					comments.add(new Comment("taxon-" + taxon.getId(), taxon, taxon.getBiologicalName(), model
+				if (collection.getModel().hasComment(taxon))
+					comments.add(new Comment("taxon-" + taxon.getId(), taxon, taxon.getBiologicalName(), collection.getModel()
 							.getComment(taxon)));
 			}
 		}
-		for(Articulation articulation : model.getArticulations()) {
-			if(model.hasComment(articulation)) {
-				comments.add(new Comment("articulation-" + articulation.getId(), articulation, articulation.getText(), model.getComment(articulation)));
+		for(Articulation articulation : collection.getModel().getArticulations()) {
+			if(collection.getModel().hasComment(articulation)) {
+				comments.add(new Comment("articulation-" + articulation.getId(), articulation, articulation.getText(), collection.getModel().getComment(articulation)));
 			}
 		}
-		for(Run run : model.getRunHistory()) {
+		for(Run run : collection.getModel().getRunHistory()) {
 			RunProperties.DisplayNameValueProvider nameProvider = new RunProperties.DisplayNameValueProvider();
 			String runName = nameProvider.getValue(run);
-			if(model.hasComment(run))
-				comments.add(new Comment("run-" + run.getId(), run, runName, model.getComment(run)));
+			if(collection.getModel().hasComment(run))
+				comments.add(new Comment("run-" + run.getId(), run, runName, collection.getModel().getComment(run)));
 			
 			for(Articulation articulation : run.getArticulations()) {
-				if(model.hasComment(articulation)) {
-					comments.add(new Comment("articulation-" + articulation.getId(), articulation, "(Run: " + runName + ") " + articulation.getText(), model.getComment(articulation)));
+				if(collection.getModel().hasComment(articulation)) {
+					comments.add(new Comment("articulation-" + articulation.getId(), articulation, "(Run: " + runName + ") " + articulation.getText(), collection.getModel().getComment(articulation)));
 				}
 			}
 		}

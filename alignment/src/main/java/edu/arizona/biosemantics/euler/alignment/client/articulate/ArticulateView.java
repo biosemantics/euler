@@ -20,14 +20,15 @@ import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.Selecti
 
 import edu.arizona.biosemantics.euler.alignment.client.event.TaxonSelectionAEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.TaxonSelectionBEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 
 public class ArticulateView extends BorderLayoutContainer {
 	
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	
 	private TaxonomyView taxaViewA;
 	private TaxonomyView taxaViewB;
@@ -76,12 +77,12 @@ public class ArticulateView extends BorderLayoutContainer {
 
 
 	private void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
-				taxaViewA.loadModel(model.getTaxonomies().get(0));
-				taxaViewB.loadModel(model.getTaxonomies().get(1));
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
+				taxaViewA.loadModel(collection.getModel().getTaxonomies().get(0));
+				taxaViewB.loadModel(collection.getModel().getTaxonomies().get(1));
 			}
 		});
 		taxaViewA.addSelectionChangeHandler(new SelectionChangedHandler<Taxon>() {

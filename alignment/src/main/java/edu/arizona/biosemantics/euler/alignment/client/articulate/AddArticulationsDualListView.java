@@ -1,6 +1,5 @@
 package edu.arizona.biosemantics.euler.alignment.client.articulate;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -27,10 +26,11 @@ import com.sencha.gxt.dnd.core.client.ListViewDropTarget;
 import com.sencha.gxt.dnd.core.client.ListViewDragSource;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RelationProperties;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
@@ -40,7 +40,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.TaxonProperties;
 public class AddArticulationsDualListView extends ContentPanel {
 
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	
 	private TaxonProperties taxonProperties = GWT.create(TaxonProperties.class);
 	private ArticulationProperties articulationProperties = GWT.create(ArticulationProperties.class);
@@ -66,14 +66,14 @@ public class AddArticulationsDualListView extends ContentPanel {
 	}
 
 	private void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE, new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE, new LoadCollectionEvent.LoadCollectionEventHandler() {
 			@Override
-			public void onLoad(LoadModelEvent event) {
-				model = event.getModel();
+			public void onLoad(LoadCollectionEvent event) {
+				collection = event.getCollection();
 				taxonomyAStore.clear();
 				taxonomyBStore.clear();
-				taxonomyAStore.addAll(model.getTaxonomies().get(0).getTaxaDFS());
-				taxonomyBStore.addAll(model.getTaxonomies().get(1).getTaxaDFS());
+				taxonomyAStore.addAll(collection.getModel().getTaxonomies().get(0).getTaxaDFS());
+				taxonomyBStore.addAll(collection.getModel().getTaxonomies().get(1).getTaxaDFS());
 			}
 		});
 		
@@ -111,7 +111,7 @@ public class AddArticulationsDualListView extends ContentPanel {
 		Taxon taxonA = this.taxonomyACombo.getValue();
 		Taxon taxonB = this.taxonomyBCombo.getValue();
 		this.fromRelationsStore.clear();
-		Set<Relation> existing = model.getArticulationTypes(taxonA, taxonB);
+		Set<Relation> existing = collection.getModel().getArticulationTypes(taxonA, taxonB);
 		for(Relation articulationType : Relation.values()) {
 			if(!existing.contains(articulationType))
 				this.fromRelationsStore.add(articulationType);
@@ -136,7 +136,7 @@ public class AddArticulationsDualListView extends ContentPanel {
 		});
 		MyDualListField relationList = new MyDualListField(fromRelationsStore, 
 				pickedRelationsStore, articulationTypeProperties.displayName(),
-		          new TextCell(), eventBus, model, taxonomyACombo, taxonomyBCombo);
+		          new TextCell(), eventBus, collection, taxonomyACombo, taxonomyBCombo);
 		
 		/*DualListField<ArticulationType, String> relationList = new DualListField<ArticulationType, String>(fromRelationsStore, 
 				pickedRelationsStore, articulationTypeProperties.displayName(),

@@ -2,7 +2,6 @@ package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -20,8 +19,9 @@ import com.sencha.gxt.widget.core.client.grid.Grid;
 
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell.CommentColorizableObjectsProvider;
-import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadModelEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.LoadCollectionEvent;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
@@ -48,16 +48,16 @@ public class ComparedArticulationsGridView extends ContentPanel {
 	}
 	
 	protected EventBus eventBus;
-	protected Model model;
+	protected Collection collection;
 
 	protected ListStore<ComparedArticulation> store;
 	protected Grid<ComparedArticulation> grid;
 	protected ListStore<Relation> typesStore;
 	protected ListStore<ComparisonResult> comparisonResultStore;
 	
-	public ComparedArticulationsGridView(EventBus eventBus, Model model) {
+	public ComparedArticulationsGridView(EventBus eventBus, Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 
 		typesStore = new ListStore<Relation>(
 				new ModelKeyProvider<Relation>() {
@@ -79,11 +79,11 @@ public class ComparedArticulationsGridView extends ContentPanel {
 	}
 
 	protected void bindEvents() {
-		eventBus.addHandler(LoadModelEvent.TYPE,
-				new LoadModelEvent.LoadModelEventHandler() {
+		eventBus.addHandler(LoadCollectionEvent.TYPE,
+				new LoadCollectionEvent.LoadCollectionEventHandler() {
 					@Override
-					public void onLoad(LoadModelEvent event) {
-						model = event.getModel();
+					public void onLoad(LoadCollectionEvent event) {
+						collection = event.getCollection();
 					}
 				});
 	}
@@ -97,7 +97,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 		store.addAll(createComparedArticulations(run1, run2));
 	}
 
-	private Collection<? extends ComparedArticulation> createComparedArticulations(
+	private java.util.Collection<? extends ComparedArticulation> createComparedArticulations(
 			Run run1, Run run2) {
 		List<ComparedArticulation> result = new LinkedList<ComparedArticulation>();
 		
@@ -132,7 +132,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 		});
 		store.setAutoCommit(true);
 
-		ColorableCell colorableCell = new ColorableCell(eventBus, model, null);
+		ColorableCell colorableCell = new ColorableCell(eventBus, collection, null);
 		colorableCell.setCommentColorizableObjectsStore(store, new CommentColorizableObjectsProvider() {
 			@Override
 			public Object provide(Object source) {
@@ -206,8 +206,8 @@ public class ComparedArticulationsGridView extends ContentPanel {
 		ValueProvider<ComparedArticulation, String> commentValueProvider = new ValueProvider<ComparedArticulation, String>() {
 			@Override
 			public String getValue(ComparedArticulation object) {
-				if (model.hasComment(object))
-					return model.getComment(object);
+				if (collection.getModel().hasComment(object))
+					return collection.getModel().getComment(object);
 				return "";
 			}
 

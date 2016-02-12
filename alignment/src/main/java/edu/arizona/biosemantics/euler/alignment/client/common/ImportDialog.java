@@ -14,17 +14,18 @@ import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticul
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentServiceAsync;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 
 public class ImportDialog extends CommonDialog {
 	
 	private EventBus eventBus;
-	private Model model;
+	private Collection collection;
 	private IEulerAlignmentServiceAsync eulerAlignmentService = GWT.create(IEulerAlignmentService.class);
 
-	public ImportDialog(final EventBus eventBus, final Model model) {
+	public ImportDialog(final EventBus eventBus, final Collection collection) {
 		this.eventBus = eventBus;
-		this.model = model;
+		this.collection = collection;
 				
 		ContentPanel panel = new ContentPanel();
 		final TextArea textArea = new TextArea();
@@ -34,7 +35,7 @@ public class ImportDialog extends CommonDialog {
 		importButton.addSelectHandler(new SelectHandler() {
 			@Override
 			public void onSelect(SelectEvent event) {
-				eulerAlignmentService.getArticulations(textArea.getValue(), model, new AsyncCallback<Articulations>() {
+				eulerAlignmentService.getArticulations(collection, textArea.getValue(), new AsyncCallback<Articulations>() {
 					@Override
 					public void onFailure(Throwable caught) {
 						Alerter.failedToImportArticulations(caught);								
