@@ -5,6 +5,7 @@ import com.google.gwt.event.shared.EventBus;
 import edu.arizona.biosemantics.euler.alignment.client.event.SwapTaxonomiesEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticScopeEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent3;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent.AddArticulationEventHandler;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent;
 import edu.arizona.biosemantics.euler.alignment.client.event.model.ImportArticulationsEvent.ImportArticulationsEventHandler;
@@ -35,17 +36,18 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.Run;
 import edu.arizona.biosemantics.euler.alignment.shared.model.RunConfig;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 
-public class ModelControler implements LoadCollectionEventHandler, SetColorsEventHandler,  AddArticulationEventHandler, 
+public class ModelController implements LoadCollectionEventHandler, SetColorsEventHandler,  AddArticulationEventHandler, 
 	RemoveArticulationsEventHandler, ModifyArticulationEventHandler, StartMIREventHandler, ImportArticulationsEventHandler, EndMIREventHandler, 
 	SetColorEventHandler, SetCommentEventHandler, SwapTaxonomiesEvent.SwapTaxonomiesEventHandler, 
 	ModifyDiagnosticScopeEvent.ModifyDiagnosticScopeEventHandler, 
-	edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent.ModifyDiagnosticValueEventHandler {
+	edu.arizona.biosemantics.euler.alignment.client.event.model.ModifyDiagnosticValueEvent.ModifyDiagnosticValueEventHandler, 
+	ModifyDiagnosticValueEvent3.ModifyDiagnosticValueEventHandler {
 
 	protected EventBus eventBus;
 	protected Model model;
 	private Collection collection;
 
-	public ModelControler(EventBus eventBus) {
+	public ModelController(EventBus eventBus) {
 		this.eventBus = eventBus;
 		
 		addEventHandlers();
@@ -64,6 +66,7 @@ public class ModelControler implements LoadCollectionEventHandler, SetColorsEven
 		eventBus.addHandler(EndMIREvent.TYPE, this);
 		eventBus.addHandler(SwapTaxonomiesEvent.TYPE, this);
 		eventBus.addHandler(ModifyDiagnosticScopeEvent.TYPE, this);
+		eventBus.addHandler(ModifyDiagnosticValueEvent3.TYPE, this);
 	}
 
 	@Override
@@ -144,6 +147,11 @@ public class ModelControler implements LoadCollectionEventHandler, SetColorsEven
 	@Override
 	public void onModify(ModifyDiagnosticValueEvent event) {
 		event.getEvidence().setDiagnosticValue(event.getNewDiagnosticValue());
+	}
+
+	@Override
+	public void onModify(ModifyDiagnosticValueEvent3 event) {
+		model.setDiagnosticValue(event.getNode(), event.getNewDiagnosticValue());
 	}
 
 }

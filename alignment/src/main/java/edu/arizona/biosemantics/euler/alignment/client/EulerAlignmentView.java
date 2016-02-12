@@ -13,7 +13,7 @@ import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.Verti
 
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateMenuView;
 import edu.arizona.biosemantics.euler.alignment.client.articulate.ArticulateView;
-import edu.arizona.biosemantics.euler.alignment.client.articulate.ModelControler;
+import edu.arizona.biosemantics.euler.alignment.client.articulate.ModelController;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewDiagnosisDialog;
 import edu.arizona.biosemantics.euler.alignment.client.common.ViewResultsDialog;
 import edu.arizona.biosemantics.euler.alignment.client.desktop.DesktopView;
@@ -29,7 +29,7 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 	
 	private Collection collection;
 	private SimpleEventBus eventBus;
-	private ModelControler modelControler;
+	private ModelController modelControler;
 	
 	private SimpleContainer contentContainer = new SimpleContainer();
 	private SimpleContainer menuContainer = new SimpleContainer();
@@ -41,7 +41,7 @@ public class EulerAlignmentView extends SplitLayoutPanel {
 	
 	public EulerAlignmentView() {	
 		eventBus = new SimpleEventBus();
-		modelControler = new ModelControler(eventBus);
+		modelControler = new ModelController(eventBus);
 		
 		alignmentView = new ArticulateView(eventBus);
 		desktopView = new DesktopView(eventBus);

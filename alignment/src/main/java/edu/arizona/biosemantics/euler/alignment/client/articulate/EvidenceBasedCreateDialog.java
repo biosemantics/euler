@@ -45,7 +45,9 @@ import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Slider;
+import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
 import com.sencha.gxt.widget.core.client.box.MessageBox;
+import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
@@ -79,8 +81,6 @@ import com.sencha.gxt.widget.core.client.tree.Tree;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
-import edu.arizona.biosemantics.euler.alignment.client.articulate.TaxonCharactersView.Node;
-import edu.arizona.biosemantics.euler.alignment.client.articulate.TaxonCharactersView.StateNode;
 import edu.arizona.biosemantics.euler.alignment.client.common.Alerter;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.ColorableCell;
 import edu.arizona.biosemantics.euler.alignment.client.common.cell.QuickTipProvider;
@@ -106,6 +106,8 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Cha
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterState;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Overlap;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.OverlapProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.charactertree.Node;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.charactertree.StateNode;
 
 public class EvidenceBasedCreateDialog extends Dialog {
 		
@@ -126,7 +128,6 @@ public class EvidenceBasedCreateDialog extends Dialog {
 	private OverlapGridView overlapGridView;
 	private ContentPanel descriptionsContentPanel;
 	private ContentPanel circlesContentPanel;
-	private Map<Relation, CheckBox> relationCheckBoxes = new HashMap<Relation, CheckBox>();
 
 	public EvidenceBasedCreateDialog(final EventBus eventBus, Collection collection, final Taxon taxonA, final Taxon taxonB) {
 		this.eventBus = eventBus;
@@ -141,6 +142,12 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		northData.setSplit(true);
 		circlesContentPanel = new ContentPanel();
 		taxonCirclesView = new TaxonCirclesView(eventBus, collection, taxonA, taxonB);
+		taxonCirclesView.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Integer> event) {
+				update();
+			}
+		});
 		circlesContentPanel.setWidget(taxonCirclesView);
 		blc.setNorthWidget(circlesContentPanel, northData);
 		
@@ -150,7 +157,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		westData.setSplit(true);
 		taxonAContentPanel = new ContentPanel();
 		taxonAContentPanel.setHeadingText(taxonA.getBiologicalName());
-		taxonCharactersViewA = new TaxonCharactersView();
+		taxonCharactersViewA = new TaxonCharactersView(eventBus, collection);
 		taxonCharactersViewA.addSelectionHandler(new SelectionHandler<Node>() {
 			@Override
 			public void onSelection(SelectionEvent<Node> event) {
@@ -180,7 +187,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		eastData.setSplit(true);
 		taxonBContentPanel = new ContentPanel();
 		taxonBContentPanel.setHeadingText(taxonB.getBiologicalName());
-		taxonCharactersViewB = new TaxonCharactersView();
+		taxonCharactersViewB = new TaxonCharactersView(eventBus, collection);
 		taxonCharactersViewB.addSelectionHandler(new SelectionHandler<Node>() {
 			@Override
 			public void onSelection(SelectionEvent<Node> event) {
@@ -245,55 +252,30 @@ public class EvidenceBasedCreateDialog extends Dialog {
 				});
 			}
 		});
-		overlapGridView.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+		/*overlapGridView.addValueChangeHandler(new ValueChangeHandler<Integer>() {
 			@Override
 			public void onValueChange(ValueChangeEvent<Integer> event) {
 				update();
 			}
-		});
+		});*/
 		overlapContentPanel.setHeadingText("Character overlap");
 		overlapContentPanel.setWidget(overlapGridView);
 		blc.setCenterWidget(overlapContentPanel);		
-
-		Relation[] relations = Relation.values();
-		for(int i=0; i<relations.length; i++) {
-			final Relation relation = relations[i];
-			CheckBox articulationCheckBox = new CheckBox();
-			relationCheckBoxes.put(relation, articulationCheckBox);
-			
-			articulationCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-				@Override
-				public void onValueChange(ValueChangeEvent<Boolean> event) {
-					if(event.getValue()) {
-						eventBus.fireEvent(new AddArticulationsEvent(new Articulation(taxonA, taxonB, relation, 1.0, Type.USER)));
-					} else {
-						eventBus.fireEvent(new RemoveArticulationsEvent(new Articulation(taxonA, taxonB, relation, 1.0, Type.USER)));
-					}
-				}
-			});
-			
-			articulationCheckBox.setBoxLabel(SafeHtmlUtils.fromString(relation.displayName()).asString());
-			this.getButtonBar().insert(articulationCheckBox, i);
-		}
 		
 		this.setHideOnButtonClick(true);
 		this.setHeight(800);
 		this.setWidth(1000);
 		this.setMaximizable(true);
+		TextButton button = this.getButton(PredefinedButton.OK);
+		button.setText("Close");
+		this.setHeadingText("Character Comparison");
 
 		this.update();	
 	}	
 	
 	protected void update() {
-		List<Articulation> articulations = collection.getModel().getArticulations(taxonA, taxonB, Type.USER);
-		for(Articulation articulation : articulations) {
-			if(relationCheckBoxes.containsKey(articulation.getRelation())) {
-				relationCheckBoxes.get(articulation.getRelation()).setValue(true);
-			}
-		}
-		
 		final MessageBox box = Alerter.startLoading();
-		alignmentService.getCharacterOverlap(collection, taxonA, taxonB, overlapGridView.getThreshold(), new AsyncCallback<CharacterOverlap>() {
+		alignmentService.getCharacterOverlap(collection, taxonA, taxonB, taxonCirclesView.getThreshold()/*overlapGridView.getThreshold()*/, new AsyncCallback<CharacterOverlap>() {
 			@Override
 			public void onFailure(Throwable caught) {
 				caught.printStackTrace();

@@ -67,7 +67,7 @@ public class OverlapGridView extends SimpleContainer {
 	private IEulerAlignmentServiceAsync alignmentService = GWT.create(IEulerAlignmentService.class);
 	private Grid<Overlap> overlapGrid;
 	private TextField thresholdField;
-	private Slider thresholdSlider;
+	//private Slider thresholdSlider;
 	private EventBus eventBus;
 	private Collection collection;
 	private Taxon taxonA;
@@ -123,24 +123,22 @@ public class OverlapGridView extends SimpleContainer {
 		taxonBCol.setCell(colorableCell);
 		taxonBCol.setToolTip(SafeHtmlUtils.fromTrustedString(taxonB.getBiologicalName()));
 		
-		ValueProvider<Overlap, Double> similarityUniquenessProvider = new ValueProvider<Overlap, Double>() {
+		ValueProvider<Overlap, Double> similarityProvider = new ValueProvider<Overlap, Double>() {
 			@Override
 			public Double getValue(Overlap object) {
-				if(object.getSimilarity() < 0)
-					return object.getUniqueness();
 				return object.getSimilarity();
 			}
 			@Override
 			public void setValue(Overlap object, Double value) { }
 			@Override
 			public String getPath() {
-				return "similarityUniqueness";
+				return "similarity";
 			}
 		};
-		ColumnConfig<Overlap, Double> similarityUniquenessCol = new ColumnConfig<Overlap, Double>(
-				similarityUniquenessProvider, 100, "Similarity/Uniqueness");
-		similarityUniquenessCol.setCell(colorableCell);
-		similarityUniquenessCol.setToolTip(SafeHtmlUtils.fromTrustedString("Similarity/Uniqueness"));
+		ColumnConfig<Overlap, Double> similarityCol = new ColumnConfig<Overlap, Double>(
+				similarityProvider, 100, "Similarity");
+		similarityCol.setCell(colorableCell);
+		similarityCol.setToolTip(SafeHtmlUtils.fromTrustedString("Similarity/Uniqueness"));
 		final ColumnConfig<Overlap, DiagnosticValue> diagnosticValueCol = new ColumnConfig<Overlap, DiagnosticValue>(
 				overlapProperties.diagnosticValue(), 70, "Diagnostic Value");
 		diagnosticValueCol.setCell(colorableCell);
@@ -153,7 +151,7 @@ public class OverlapGridView extends SimpleContainer {
 		List<ColumnConfig<Overlap, ?>> columns = new ArrayList<ColumnConfig<Overlap, ?>>();
 		columns.add(taxonACol);
 		columns.add(taxonBCol);
-		columns.add(similarityUniquenessCol);
+		columns.add(similarityCol);
 		//columns.add(diagnosticValueCol);
 		//columns.add(diagnosticScopeCol);
 		ColumnModel<Overlap> cm = new ColumnModel<Overlap>(columns);
@@ -166,7 +164,7 @@ public class OverlapGridView extends SimpleContainer {
 		
 		StringFilter<Overlap> taxonACharacterFilter = new StringFilter<Overlap>(new OverlapProperties.TaxonACharacterString());
 		StringFilter<Overlap> taxonBCharacterFilter = new StringFilter<Overlap>(new OverlapProperties.TaxonBCharacterString());
-		NumericFilter<Overlap, Double> similarityUniquenessFilter = new NumericFilter<Overlap, Double>(similarityUniquenessProvider, 
+		NumericFilter<Overlap, Double> similarityUniquenessFilter = new NumericFilter<Overlap, Double>(similarityProvider, 
 				new NumberPropertyEditor.DoublePropertyEditor());
 		
 		ListFilter<Overlap, DiagnosticValue> diagnosticValueFilter = new ListFilter<Overlap, DiagnosticValue>(
@@ -207,12 +205,12 @@ public class OverlapGridView extends SimpleContainer {
 		//FlowLayoutContainer flowLayoutContainer = new FlowLayoutContainer();
 		//flowLayoutContainer.setScrollMode(ScrollMode.AUTOY);
 		simpleContainer.add(overlapGrid);
-		vlc.add(simpleContainer, new VerticalLayoutData(1, 0.9999));
-		vlc.add(createResizeSlider(), new VerticalLayoutData(1, 40, new Margins(5)));
+		vlc.add(simpleContainer, new VerticalLayoutData(1, 1));//0.9999));
+		//vlc.add(createResizeSlider(), new VerticalLayoutData(1, 40, new Margins(5)));
 		this.setWidget(vlc);
 	}
 	
-	private Widget createResizeSlider() {
+	/*private Widget createResizeSlider() {
 	    thresholdField = new TextField();
 		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
 		thresholdSlider = new Slider();
@@ -231,19 +229,19 @@ public class OverlapGridView extends SimpleContainer {
 	    hlc.add(thresholdField, new HorizontalLayoutData(0.5, -1, new Margins(5)));
 	    updateThresholdField();
 		return hlc;
-	}
+	}*/
 	
-	protected void updateThresholdField() {
+	/*protected void updateThresholdField() {
 		thresholdField.setValue(String.valueOf(getThreshold()));
-	}
+	}*/
 
 	public void addSelectionHandler(SelectionHandler<Overlap> handler) {
 		this.overlapGrid.getSelectionModel().addSelectionHandler(handler);
 	}
 	
-	public void addValueChangeHandler(ValueChangeHandler<Integer> valueChangeHandler) {
+	/*public void addValueChangeHandler(ValueChangeHandler<Integer> valueChangeHandler) {
 		thresholdSlider.addValueChangeHandler(valueChangeHandler);
-	};
+	};*/
 		
 	private ComboBox<Rank> createDiagnosticScopeCombo(ListStore<Rank> rankStore) {
 		ComboBox<Rank> diagnosticValueCombo = new ComboBox<Rank>(rankStore, new LabelProvider<Rank>() {
@@ -273,9 +271,9 @@ public class OverlapGridView extends SimpleContainer {
 		return diagnosticValueCombo;
 	}
 
-	public double getThreshold() {
+	/*public double getThreshold() {
 		return (double)thresholdSlider.getValue()/100;
-	}
+	}*/
 
 	public void update(List<Overlap> overlap) {
 		overlapGrid.getStore().clear();

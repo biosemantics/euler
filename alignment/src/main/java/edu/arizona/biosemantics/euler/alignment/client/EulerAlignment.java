@@ -74,7 +74,7 @@ public class EulerAlignment implements EntryPoint {
 		dock.add(view.asWidget());
 		RootLayoutPanel.get().add(dock);
 		
-		int id = 5;
+		int id = 10;
 		String secret = "test";
 		IEulerAlignmentServiceAsync eulerAlignmentService = GWT.create(IEulerAlignmentService.class);
 		// TaxonMatrix taxonMatrix = createSampleMatrix();

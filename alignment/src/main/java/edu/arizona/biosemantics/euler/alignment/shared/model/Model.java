@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.charactertree.Node;
 
 public class Model implements Serializable {
 	
@@ -22,6 +23,7 @@ public class Model implements Serializable {
 	private List<Color> colors = new ArrayList<Color>();
 	private Map<Object, Color> coloreds = new HashMap<Object, Color>();
 	private Map<Object, String> comments = new HashMap<Object, String>();
+	private Map<Node, DiagnosticValue> diagnosticValues = new HashMap<Node, DiagnosticValue>();
 	
 	private Map<Taxon, Map<Taxon, List<Evidence>>> evidenceMap = new HashMap<Taxon, Map<Taxon, List<Evidence>>>();
 	
@@ -32,6 +34,16 @@ public class Model implements Serializable {
 	public Model(Taxonomies taxonomies, Map<Taxon, Map<Taxon, List<Evidence>>> evidenceMap) {
 		this.taxonomies = taxonomies;
 		this.evidenceMap = evidenceMap;
+	}
+	
+	public void setDiagnosticValue(Node node, DiagnosticValue diagnosticValue) {
+		this.diagnosticValues.put(node, diagnosticValue);
+	}
+	
+	public DiagnosticValue getDiagnosticValue(Node node) {
+		if(!diagnosticValues.containsKey(node))
+			return DiagnosticValue.MEDIUM;
+		return this.diagnosticValues.get(node);
 	}
 	
 	public List<Color> getColors() {

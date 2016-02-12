@@ -10,8 +10,6 @@ public class CharacterState implements Serializable, Comparable<CharacterState> 
 	private String organ;
 	private String character;
 	private String state;
-	private DiagnosticValue diagnosticValue;
-	private Rank diagnosticScope;
 		
 	public CharacterState() {
 		
@@ -22,8 +20,6 @@ public class CharacterState implements Serializable, Comparable<CharacterState> 
 		this.organ = organ;
 		this.character = character;
 		this.state = state;
-		this.diagnosticScope = Rank.UNRANKED;
-		this.diagnosticValue = DiagnosticValue.MEDIUM;
 	}
 
 	public void setOrgan(String organ) {
@@ -58,23 +54,5 @@ public class CharacterState implements Serializable, Comparable<CharacterState> 
 	@Override
 	public int compareTo(CharacterState o) {
 		return this.toString().compareTo(o.toString());
-	}
-
-	public DiagnosticValue getDiagnosticValue() {
-		return diagnosticValue;
-	}
-
-	public Rank getDiagnosticScope() {
-		return diagnosticScope;
-	}
-
-	public void setDiagnosticValue(DiagnosticValue diagnosticValue) {
-		this.diagnosticValue = diagnosticValue;
-	}
-
-	public void setDiagnosticScope(Rank diagnosticScope) {
-		this.diagnosticScope = diagnosticScope;
-	}
-	
-	
+	}	
 }

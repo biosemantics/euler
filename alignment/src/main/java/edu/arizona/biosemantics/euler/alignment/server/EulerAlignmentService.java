@@ -61,12 +61,12 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 	public EulerAlignmentService(CollectionDAO collectionDAO) throws Exception {
 		this.collectionDAO = collectionDAO;
 		
-		/*Collection collection = new Collection();
+		Collection collection = new Collection();
 		collection.setSecret("test");
 		
 		edu.arizona.biosemantics.matrixreview.shared.model.Model model = unserializeMatrix("C:\\gitEtc3\\euler2\\alignment\\TaxonMatrix.ser");
 		collection.setModel(createModel(model));
-		this.createCollection(collection);*/
+		this.createCollection(collection);
 	}
 	
 	private Model createModel(edu.arizona.biosemantics.matrixreview.shared.model.Model matrixReviewModel) {

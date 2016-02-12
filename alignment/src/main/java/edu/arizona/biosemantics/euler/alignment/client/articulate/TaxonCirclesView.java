@@ -1,20 +1,40 @@
 package edu.arizona.biosemantics.euler.alignment.client.articulate;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.sgx.raphael4gwt.raphael.Circle;
 import org.sgx.raphael4gwt.raphael.Paper;
 import org.sgx.raphael4gwt.raphael.Raphael;
 
 import com.google.gwt.dom.client.Element;
+import com.google.gwt.event.logical.shared.SelectionHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.Slider;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.HorizontalLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.TextField;
 
+import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.client.event.model.RemoveArticulationsEvent;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterOverlap;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Overlap;
 
 public class TaxonCirclesView extends SimpleContainer {
 	
@@ -29,16 +49,20 @@ public class TaxonCirclesView extends SimpleContainer {
 	
 	private Circle taxonACircle;
 	private Circle taxonBCircle;
+	
+	private Map<Relation, CheckBox> relationCheckBoxes = new HashMap<Relation, CheckBox>();
+	private TextField thresholdField;
+	private Slider thresholdSlider;
 
-	public TaxonCirclesView(EventBus eventBus, Collection collection, Taxon taxonA, Taxon taxonB) {
+	public TaxonCirclesView(final EventBus eventBus, Collection collection, final Taxon taxonA, final Taxon taxonB) {
 		this.eventBus = eventBus;
 		this.collection = collection;
 		this.taxonA = taxonA;
 		this.taxonB = taxonB;
 		
-		HorizontalLayoutContainer hlc = new HorizontalLayoutContainer();
-		final SimpleContainer container = new SimpleContainer();
-		Paper paper = Raphael.paper(container.getElement(), paperWidth, paperHeight);
+		HorizontalLayoutContainer circleContainer = new HorizontalLayoutContainer();
+		final SimpleContainer paperContainer = new SimpleContainer();
+		Paper paper = Raphael.paper(paperContainer.getElement(), paperWidth, paperHeight);
 		taxonACircle = paper.circle(140, 100, defaultR);
 		taxonACircle.setAttribute("fill", "red");
 		taxonACircle.setAttribute("fill-opacity", "0.5");
@@ -100,14 +124,82 @@ public class TaxonCirclesView extends SimpleContainer {
 			}	
 		});*/
 
-		hlc.add(new Label(), new HorizontalLayoutData(0.5, -1));
-		hlc.add(container, new HorizontalLayoutData(-1, -1));
-		hlc.add(new Label(), new HorizontalLayoutData(0.5, -1));
-			      
-		this.setWidget(hlc);
+		circleContainer.add(new Label(), new HorizontalLayoutData(0.5, -1));
+		circleContainer.add(paperContainer, new HorizontalLayoutData(-1, -1));
+		HorizontalLayoutContainer controlPaddingContainer = new HorizontalLayoutContainer();
+		circleContainer.add(controlPaddingContainer, new HorizontalLayoutData(0.5, -1));
+		
+		VerticalLayoutContainer controlContainer = new VerticalLayoutContainer();
+		controlPaddingContainer.add(new Label(""), new HorizontalLayoutData(0.999, -1));
+		controlPaddingContainer.add(controlContainer, new HorizontalLayoutData(200, -1));
+		
+		controlContainer.add(new HorizontalLayoutContainer(), new VerticalLayoutData(1, 65));
+		Relation[] relations = Relation.values();
+		for(int i=0; i<relations.length; i++) {
+			final Relation relation = relations[i];
+			CheckBox articulationCheckBox = new CheckBox();
+			relationCheckBoxes.put(relation, articulationCheckBox);
+			
+			articulationCheckBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+				@Override
+				public void onValueChange(ValueChangeEvent<Boolean> event) {
+					if(event.getValue()) {
+						eventBus.fireEvent(new AddArticulationsEvent(new Articulation(taxonA, taxonB, relation, 1.0, Type.USER)));
+					} else {
+						eventBus.fireEvent(new RemoveArticulationsEvent(new Articulation(taxonA, taxonB, relation, 1.0, Type.USER)));
+					}
+				}
+			});
+			
+			articulationCheckBox.setBoxLabel(SafeHtmlUtils.fromString(relation.displayName()).asString());
+			
+			HorizontalLayoutContainer h = new HorizontalLayoutContainer();
+			h.add(new Label(""), new HorizontalLayoutData(0.999, -1));
+			h.add(articulationCheckBox, new HorizontalLayoutData(50, -1));
+			controlContainer.add(h, new VerticalLayoutData(1, 20));
+		}
+		
+		thresholdField = new TextField();
+		thresholdField.addValueChangeHandler(new ValueChangeHandler<String>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<String> event) {
+				updateThresholdSlider(Double.valueOf(event.getValue()));
+			}
+		});
+		HorizontalLayoutContainer thresholdContainer = new HorizontalLayoutContainer();
+		thresholdSlider = new Slider();
+		thresholdSlider.setMessage("");
+	    thresholdSlider.setMinValue(0);
+	    thresholdSlider.setMaxValue(100);
+	    thresholdSlider.setValue(50);
+	    thresholdSlider.setIncrement(2);
+	    thresholdSlider.addValueChangeHandler(new ValueChangeHandler<Integer>() {
+			@Override
+			public void onValueChange(ValueChangeEvent<Integer> event) {
+				updateThresholdField();
+			}
+	    });
+	    thresholdContainer.add(thresholdSlider, new HorizontalLayoutData(0.999, -1, new Margins(5)));
+	    thresholdContainer.add(thresholdField, new HorizontalLayoutData(50, -1, new Margins(5)));
+	    updateThresholdField();
+	    controlContainer.add(thresholdContainer, new VerticalLayoutData(1, 50));
+	    
+
+		this.setWidget(circleContainer);
 	}
 	
+	protected void updateThresholdSlider(Double value) {
+		this.thresholdSlider.setValue((int)Math.round(value * 100), true);
+	}
+
 	protected void update(CharacterOverlap characterOverlap) {
+		List<Articulation> articulations = collection.getModel().getArticulations(taxonA, taxonB, Type.USER);
+		for(Articulation articulation : articulations) {
+			if(relationCheckBoxes.containsKey(articulation.getRelation())) {
+				relationCheckBoxes.get(articulation.getRelation()).setValue(true);
+			}
+		}
+		
 		int targetAbsoluteOverlapSize = characterOverlap.getOverlap().size();
 		int targetAbsoluteCircleSize1 = characterOverlap.getCharacterStatesA().size() + targetAbsoluteOverlapSize;
 		int targetAbsoluteCircleSize2 = characterOverlap.getCharacterStatesB().size() + targetAbsoluteOverlapSize;
@@ -200,4 +292,16 @@ public class TaxonCirclesView extends SimpleContainer {
 		Double intersectionArea = part1 + part2 - part3;
 		return intersectionArea;
 	}
+	
+	public double getThreshold() {
+		return (double)thresholdSlider.getValue()/100;
+	}
+	
+	protected void updateThresholdField() {
+		thresholdField.setValue(String.valueOf(getThreshold()));
+	}
+	
+	public void addValueChangeHandler(ValueChangeHandler<Integer> valueChangeHandler) {
+		thresholdSlider.addValueChangeHandler(valueChangeHandler);
+	};
 }
