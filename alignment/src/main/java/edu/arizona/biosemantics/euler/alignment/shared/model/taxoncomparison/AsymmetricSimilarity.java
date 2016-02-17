@@ -15,6 +15,8 @@ public class AsymmetricSimilarity<T> implements Serializable {
 	
 	public AsymmetricSimilarity(T itemA, T itemB, double similarity, double oppSimilarity) {
 		super();
+		this.itemA = itemA;
+		this.itemB = itemB;
 		this.similarity = similarity;
 		this.oppositeSimilarity = oppSimilarity;
 	}
@@ -41,6 +43,10 @@ public class AsymmetricSimilarity<T> implements Serializable {
 
 	public double getOppositeSimilarity() {
 		return oppositeSimilarity;
+	}
+	
+	public double getAverageSimilarity() {
+		return Math.abs((similarity - oppositeSimilarity) / 2);
 	}
 	
 	public T getItemA() {

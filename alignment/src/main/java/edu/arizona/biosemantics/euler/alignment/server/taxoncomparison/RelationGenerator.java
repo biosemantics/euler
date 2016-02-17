@@ -15,8 +15,6 @@ public interface RelationGenerator {
 
 	public List<Evidence> getEvidence(Taxon taxonA, Taxon taxonB);
 
-	public AsymmetricSimilarity<Taxon> getAsymmetricSimilarity(Taxon taxonA, Taxon taxonB);
-
 	public CharacterOverlap getCharacterOverlap(Taxon taxonA, Taxon taxonB, double threshold);
 	
 }

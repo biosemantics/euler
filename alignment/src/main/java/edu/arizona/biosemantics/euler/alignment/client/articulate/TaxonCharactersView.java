@@ -232,6 +232,10 @@ public class TaxonCharactersView extends SimpleContainer {
 		return diagnosticValueCombo;
 	}
 
+	protected void expandAll() {
+		taxonTree.expandAll();
+	}
+	
 	protected void update(java.util.Collection<CharacterState> characterStates) {
 		taxonTreeStore.clear();
 		for(CharacterState characterState : characterStates) {
@@ -260,7 +264,5 @@ public class TaxonCharactersView extends SimpleContainer {
 				taxonTreeStore.add(characterNode, stateNode);
 			}
 		}
-		taxonTree.expandAll();
 	}
-	
 }

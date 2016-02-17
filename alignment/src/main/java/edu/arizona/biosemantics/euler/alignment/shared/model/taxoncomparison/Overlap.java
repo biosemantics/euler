@@ -15,22 +15,17 @@ public class Overlap implements Serializable {
 	private CharacterState taxonACharacter;
 	private CharacterState taxonBCharacter;
 	private double similarity;
-	private double uniqueness;
 	private DiagnosticValue diagnosticValue;
-	private Rank diagnosticScope;
 	
 	public Overlap() { }
 
 	public Overlap(CharacterState taxonACharacter, CharacterState taxonBCharacter,
-			double similarity, double uniqueness,
-			DiagnosticValue diagnosticValue, Rank diagnosticScope) {
+			double similarity, DiagnosticValue diagnosticValue) {
 		super();
 		this.taxonACharacter = taxonACharacter;
 		this.taxonBCharacter = taxonBCharacter;
 		this.similarity = similarity;
-		this.uniqueness = uniqueness;
 		this.diagnosticValue = diagnosticValue;
-		this.diagnosticScope = diagnosticScope;
 	}
 
 	public CharacterState getTaxonACharacter() {
@@ -57,28 +52,12 @@ public class Overlap implements Serializable {
 		this.similarity = similarity;
 	}
 
-	public double getUniqueness() {
-		return uniqueness;
-	}
-
-	public void setUniqueness(double uniqueness) {
-		this.uniqueness = uniqueness;
-	}
-
 	public DiagnosticValue getDiagnosticValue() {
 		return diagnosticValue;
 	}
 
 	public void setDiagnosticValue(DiagnosticValue diagnosticValue) {
 		this.diagnosticValue = diagnosticValue;
-	}
-
-	public Rank getDiagnosticScope() {
-		return diagnosticScope;
-	}
-
-	public void setDiagnosticScope(Rank diagnosticScope) {
-		this.diagnosticScope = diagnosticScope;
 	}
 
 	public int getId() {

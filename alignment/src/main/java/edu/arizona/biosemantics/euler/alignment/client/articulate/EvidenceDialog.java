@@ -165,7 +165,7 @@ public class EvidenceDialog extends CommonDialog {
 	}
 
 	private Widget createDescriptionPanel() {
-		descriptionsView = new DescriptionsView(eventBus, collection);
+		descriptionsView = new DescriptionsView(eventBus, collection, null, null);
 		descriptionsView.setTaxonADescription(SafeHtmlUtils.fromTrustedString(articulation.getTaxonA().getDescription()));
 		descriptionsView.setTaxonBDescription(SafeHtmlUtils.fromTrustedString(articulation.getTaxonB().getDescription()));
 		return descriptionsView;

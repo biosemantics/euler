@@ -45,7 +45,9 @@ import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.Dialog;
 import com.sencha.gxt.widget.core.client.Slider;
+import com.sencha.gxt.widget.core.client.ContentPanel.ContentPanelAppearance;
 import com.sencha.gxt.widget.core.client.Dialog.PredefinedButton;
+import com.sencha.gxt.widget.core.client.TabPanel;
 import com.sencha.gxt.widget.core.client.box.MessageBox;
 import com.sencha.gxt.widget.core.client.button.TextButton;
 import com.sencha.gxt.widget.core.client.button.ToolButton;
@@ -123,11 +125,15 @@ public class EvidenceBasedCreateDialog extends Dialog {
 	private ContentPanel taxonBContentPanel;
 	private ContentPanel overlapContentPanel;
 	private TaxonCirclesView taxonCirclesView;
-	private TaxonCharactersView taxonCharactersViewA;
-	private TaxonCharactersView taxonCharactersViewB;
+	private TaxonCharactersView uniqueTaxonCharactersViewA;
+	private TaxonCharactersView uniqueTaxonCharactersViewB;
 	private OverlapGridView overlapGridView;
 	private ContentPanel descriptionsContentPanel;
 	private ContentPanel circlesContentPanel;
+	private TaxonCharactersView allTaxonCharactersViewA;
+	private TaxonCharactersView allTaxonCharactersViewB;
+	private TabPanel tabPanelA;
+	private TabPanel tabPanelB;
 
 	public EvidenceBasedCreateDialog(final EventBus eventBus, Collection collection, final Taxon taxonA, final Taxon taxonB) {
 		this.eventBus = eventBus;
@@ -155,60 +161,55 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		westData.setCollapsible(true);
 		westData.setFloatable(true);
 		westData.setSplit(true);
-		taxonAContentPanel = new ContentPanel();
+		taxonAContentPanel = new ContentPanel((ContentPanelAppearance) GWT.create(RedContentPanelAppearance.class));
+		taxonAContentPanel.getHeader().getElement().getStyle().setBackgroundColor("red");
 		taxonAContentPanel.setHeadingText(taxonA.getBiologicalName());
-		taxonCharactersViewA = new TaxonCharactersView(eventBus, collection);
-		taxonCharactersViewA.addSelectionHandler(new SelectionHandler<Node>() {
+		tabPanelA = new TabPanel();
+		uniqueTaxonCharactersViewA = new TaxonCharactersView(eventBus, collection);
+		uniqueTaxonCharactersViewA.addSelectionHandler(new SelectionHandler<Node>() {
 			@Override
 			public void onSelection(SelectionEvent<Node> event) {
-				if(event.getSelectedItem() instanceof StateNode) {
-					StateNode stateNode = (StateNode)event.getSelectedItem();
-					Set<Highlight> highlight = new HashSet<Highlight>();
-					highlight.add(new Highlight(stateNode.characterState.toString(), "D84840"));
-					alignmentService.getHighlighted(taxonA.getDescription(), highlight, new AsyncCallback<SafeHtml>() {
-						@Override
-						public void onFailure(Throwable caught) {
-							Alerter.failedToHighlight();
-						}
-						@Override
-						public void onSuccess(SafeHtml result) {
-							descriptionsView.setTaxonADescription(result);
-						}
-					});
-				}
+				highlightCharacterSelectionA(event.getSelectedItem());
 			}
 		});
-		taxonAContentPanel.setWidget(taxonCharactersViewA);
+		allTaxonCharactersViewA = new TaxonCharactersView(eventBus, collection);
+		allTaxonCharactersViewA.addSelectionHandler(new SelectionHandler<Node>() {
+			@Override
+			public void onSelection(SelectionEvent<Node> event) {
+				highlightCharacterSelectionA(event.getSelectedItem());
+			}
+		});
+		allTaxonCharactersViewA.update(taxonA.getCharacterStates());
+		tabPanelA.add(uniqueTaxonCharactersViewA, "Unique characters (" + taxonA.getCharacterStates().size() + ")");
+		tabPanelA.add(allTaxonCharactersViewA, "All characters (" + taxonA.getCharacterStates().size() + ")");
+		taxonAContentPanel.setWidget(tabPanelA);
 		blc.setWestWidget(taxonAContentPanel, westData);
 		
 		BorderLayoutData eastData = new BorderLayoutData(250);
 		eastData.setCollapsible(true);
 		eastData.setFloatable(true);
 		eastData.setSplit(true);
-		taxonBContentPanel = new ContentPanel();
+		taxonBContentPanel = new ContentPanel((ContentPanelAppearance) GWT.create(GreenContentPanelAppearance.class));
 		taxonBContentPanel.setHeadingText(taxonB.getBiologicalName());
-		taxonCharactersViewB = new TaxonCharactersView(eventBus, collection);
-		taxonCharactersViewB.addSelectionHandler(new SelectionHandler<Node>() {
+		tabPanelB = new TabPanel();
+		uniqueTaxonCharactersViewB = new TaxonCharactersView(eventBus, collection);
+		uniqueTaxonCharactersViewB.addSelectionHandler(new SelectionHandler<Node>() {
 			@Override
 			public void onSelection(SelectionEvent<Node> event) {
-				if(event.getSelectedItem() instanceof StateNode) {
-					StateNode stateNode = (StateNode)event.getSelectedItem();
-					Set<Highlight> highlight = new HashSet<Highlight>();
-					highlight.add(new Highlight(stateNode.characterState.toString(), "2763A1"));
-					alignmentService.getHighlighted(taxonB.getDescription(), highlight, new AsyncCallback<SafeHtml>() {
-						@Override
-						public void onFailure(Throwable caught) {
-							Alerter.failedToHighlight();
-						}
-						@Override
-						public void onSuccess(SafeHtml result) {
-							descriptionsView.setTaxonBDescription(result);
-						}
-					});
-				}
+				highlightCharacterSelectionB(event.getSelectedItem());
 			}
 		});
-		taxonBContentPanel.setWidget(taxonCharactersViewB);
+		allTaxonCharactersViewB = new TaxonCharactersView(eventBus, collection);
+		allTaxonCharactersViewB.addSelectionHandler(new SelectionHandler<Node>() {
+			@Override
+			public void onSelection(SelectionEvent<Node> event) {
+				highlightCharacterSelectionB(event.getSelectedItem());
+			}
+		});
+		allTaxonCharactersViewB.update(taxonB.getCharacterStates());
+		tabPanelB.add(uniqueTaxonCharactersViewB, "Unique characters (" + taxonB.getCharacterStates().size() + ")");
+		tabPanelB.add(allTaxonCharactersViewB, "All characters (" + taxonB.getCharacterStates().size() + ")");
+		taxonBContentPanel.setWidget(tabPanelB);
 		blc.setEastWidget(taxonBContentPanel, eastData);
 		
 		BorderLayoutData southData = new BorderLayoutData(60);
@@ -222,7 +223,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		blc.setSouthWidget(descriptionsContentPanel, southData);
 		this.setWidget(blc);
 		
-		overlapContentPanel = new ContentPanel();
+		overlapContentPanel = new ContentPanel((ContentPanelAppearance) GWT.create(MixedContentPanelAppearance.class));
 		overlapGridView = new OverlapGridView(eventBus, collection, taxonA, taxonB);
 		overlapGridView.addSelectionHandler(new SelectionHandler<Overlap>() {
 			@Override
@@ -273,6 +274,42 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		this.update();	
 	}	
 	
+	protected void highlightCharacterSelectionA(Node selectedItem) {
+		if(selectedItem instanceof StateNode) {
+			StateNode stateNode = (StateNode)selectedItem;
+			Set<Highlight> highlight = new HashSet<Highlight>();
+			highlight.add(new Highlight(stateNode.characterState.toString(), "D84840"));
+			alignmentService.getHighlighted(taxonA.getDescription(), highlight, new AsyncCallback<SafeHtml>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					Alerter.failedToHighlight();
+				}
+				@Override
+				public void onSuccess(SafeHtml result) {
+					descriptionsView.setTaxonADescription(result);
+				}
+			});
+		}
+	}
+	
+	protected void highlightCharacterSelectionB(Node selectedItem) {
+		if(selectedItem instanceof StateNode) {
+			StateNode stateNode = (StateNode)selectedItem;
+			Set<Highlight> highlight = new HashSet<Highlight>();
+			highlight.add(new Highlight(stateNode.characterState.toString(), "2763A1"));
+			alignmentService.getHighlighted(taxonB.getDescription(), highlight, new AsyncCallback<SafeHtml>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					Alerter.failedToHighlight();
+				}
+				@Override
+				public void onSuccess(SafeHtml result) {
+					descriptionsView.setTaxonBDescription(result);
+				}
+			});
+		}
+	}
+
 	protected void update() {
 		final MessageBox box = Alerter.startLoading();
 		alignmentService.getCharacterOverlap(collection, taxonA, taxonB, taxonCirclesView.getThreshold()/*overlapGridView.getThreshold()*/, new AsyncCallback<CharacterOverlap>() {
@@ -283,12 +320,19 @@ public class EvidenceBasedCreateDialog extends Dialog {
 			}
 			@Override
 			public void onSuccess(CharacterOverlap characterOverlap) {
-				taxonAContentPanel.setHeadingText(taxonA.getBiologicalName() + " unique characters: " + characterOverlap.getCharacterStatesA().size());
-				taxonBContentPanel.setHeadingText(taxonB.getBiologicalName() + " unique characters: " + characterOverlap.getCharacterStatesB().size());
-				overlapContentPanel.setHeadingText("Character overlap: " + characterOverlap.getOverlap().size());
+				overlapContentPanel.setHeadingText("Character overlap (" + characterOverlap.getOverlap().size() + ")");
 				taxonCirclesView.update(characterOverlap);
-				taxonCharactersViewA.update(characterOverlap.getCharacterStatesA());
-				taxonCharactersViewB.update(characterOverlap.getCharacterStatesB());
+				uniqueTaxonCharactersViewA.update(characterOverlap.getCharacterStatesA());
+				tabPanelA.getConfig(uniqueTaxonCharactersViewA).setText("Unique characters (" + characterOverlap.getCharacterStatesA().size() + ")");
+				tabPanelA.update(uniqueTaxonCharactersViewA, tabPanelA.getConfig(uniqueTaxonCharactersViewA));
+				uniqueTaxonCharactersViewB.update(characterOverlap.getCharacterStatesB());
+				tabPanelB.getConfig(uniqueTaxonCharactersViewB).setText("Unique characters (" + characterOverlap.getCharacterStatesB().size() + ")");
+				tabPanelB.update(uniqueTaxonCharactersViewB, tabPanelB.getConfig(uniqueTaxonCharactersViewB));
+				
+				uniqueTaxonCharactersViewA.expandAll();
+				uniqueTaxonCharactersViewB.expandAll();
+				allTaxonCharactersViewA.expandAll();
+				allTaxonCharactersViewB.expandAll();
 				overlapGridView.update(characterOverlap.getOverlap());
 				
 				Alerter.stopLoading(box);

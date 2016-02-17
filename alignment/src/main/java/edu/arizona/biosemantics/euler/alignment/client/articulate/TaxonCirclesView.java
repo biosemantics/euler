@@ -24,6 +24,7 @@ import com.sencha.gxt.widget.core.client.container.HorizontalLayoutContainer.Hor
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
 import com.sencha.gxt.widget.core.client.form.CheckBox;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
 import com.sencha.gxt.widget.core.client.form.TextField;
 
 import edu.arizona.biosemantics.euler.alignment.client.event.model.AddArticulationsEvent;
@@ -131,7 +132,7 @@ public class TaxonCirclesView extends SimpleContainer {
 		
 		VerticalLayoutContainer controlContainer = new VerticalLayoutContainer();
 		controlPaddingContainer.add(new Label(""), new HorizontalLayoutData(0.999, -1));
-		controlPaddingContainer.add(controlContainer, new HorizontalLayoutData(200, -1));
+		controlPaddingContainer.add(controlContainer, new HorizontalLayoutData(240, -1));
 		
 		controlContainer.add(new HorizontalLayoutContainer(), new VerticalLayoutData(1, 65));
 		Relation[] relations = Relation.values();
@@ -179,11 +180,11 @@ public class TaxonCirclesView extends SimpleContainer {
 				updateThresholdField();
 			}
 	    });
-	    thresholdContainer.add(thresholdSlider, new HorizontalLayoutData(0.999, -1, new Margins(5)));
-	    thresholdContainer.add(thresholdField, new HorizontalLayoutData(50, -1, new Margins(5)));
+	    thresholdContainer.add(new Label("Min. Similarity:"), new HorizontalLayoutData(90, -1, new Margins(2)));
+	    thresholdContainer.add(thresholdSlider, new HorizontalLayoutData(0.999, -1, new Margins(2)));
+	    thresholdContainer.add(thresholdField, new HorizontalLayoutData(50, -1, new Margins(2)));
 	    updateThresholdField();
 	    controlContainer.add(thresholdContainer, new VerticalLayoutData(1, 50));
-	    
 
 		this.setWidget(circleContainer);
 	}

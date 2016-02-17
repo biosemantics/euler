@@ -21,8 +21,10 @@ import com.google.inject.name.Named;
 
 import edu.arizona.biosemantics.common.log.LogLevel;
 import edu.arizona.biosemantics.common.taxonomy.Rank;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterOverlapCalculator;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterStateSimilarityMetric;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.RelationGenerator;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.TaxonSimilarityCalculator;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.DiagnosticValue;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
@@ -35,7 +37,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Ove
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.RelationProposal;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterOverlap;
 
-public class TTestBasedRelationGenerator implements RelationGenerator {
+public class TTestBasedRelationGenerator implements RelationGenerator, TaxonSimilarityCalculator, CharacterOverlapCalculator {
 	
 	private double disjointSimilarityMax;
 	private double symmmetricDifferenceMax;
@@ -71,14 +73,6 @@ public class TTestBasedRelationGenerator implements RelationGenerator {
 		initializeBetweenTaxonomyScores(taxonomyA, taxonomyB);
 	}
 
-	/*wrong idea, making all taxon in one taxonomy the same
-	//union the characters of the concept and all its lower concepts
-	HashSet<OrganCharacterState> refCharacters = new HashSet<OrganCharacterState>();
-	unionCharacters(refCharacters, reference);
-	
-	HashSet<OrganCharacterState> compCharacters = new HashSet<OrganCharacterState>();
-	unionCharacters(compCharacters, comparison);
-	*/
 	private void initializeBetweenTaxonomyScores(Taxonomy taxonomyA, Taxonomy taxonomyB) {
 		log(LogLevel.DEBUG, "initialize between taxonomy scores");
 		betweenTaxonomyScores = new HashMap<Taxon, Map<Taxon, AsymmetricSimilarity<Taxon>>>();
@@ -172,8 +166,8 @@ public class TTestBasedRelationGenerator implements RelationGenerator {
 		for(CharacterState characterStateA : betweenTaxaScores.keySet()) {
 			for(CharacterState characterStateB : betweenTaxaScores.get(characterStateA).keySet()) {
 				AsymmetricSimilarity<CharacterState> similiarty = betweenTaxaScores.get(characterStateA).get(characterStateB);
-				if((similiarty.getSimilarity() + similiarty.getOppositeSimilarity())/2 >= threshold) {
-					overlap.add(new Overlap(characterStateA, characterStateB, similiarty.getSimilarity(), 0.0, DiagnosticValue.MEDIUM, Rank.UNRANKED));
+				if(similiarty.getAverageSimilarity() >= threshold) {
+					overlap.add(new Overlap(characterStateA, characterStateB, similiarty.getAverageSimilarity(), DiagnosticValue.MEDIUM));
 					remainingTaxonACharacterStates.remove(characterStateA);
 					remainingTaxonBCharacterStates.remove(characterStateB);
 				}
@@ -193,7 +187,7 @@ public class TTestBasedRelationGenerator implements RelationGenerator {
 	}
 	
 	@Override
-	public AsymmetricSimilarity<Taxon> getAsymmetricSimilarity(Taxon taxonA, Taxon taxonB) {
+	public AsymmetricSimilarity<Taxon> getTaxonSimilarity(Taxon taxonA, Taxon taxonB) {
 		return betweenTaxonomyScores.get(taxonA).get(taxonB);
 	}
 
@@ -203,7 +197,7 @@ public class TTestBasedRelationGenerator implements RelationGenerator {
 				taxonB.getTaxonIdentification().getDisplayName());
 		Set<RelationProposal> result = new HashSet<RelationProposal>();
 		
-		AsymmetricSimilarity<Taxon> asymmetricSimilarity = getAsymmetricSimilarity(taxonA, taxonB);
+		AsymmetricSimilarity<Taxon> asymmetricSimilarity = getTaxonSimilarity(taxonA, taxonB);
 		double similarity = asymmetricSimilarity.getSimilarity();
 		double oppositeSimilarity = asymmetricSimilarity.getOppositeSimilarity();
 		double similarityDifference = Math.abs(similarity - oppositeSimilarity);		

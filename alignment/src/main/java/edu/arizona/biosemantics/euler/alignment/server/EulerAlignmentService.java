@@ -26,32 +26,30 @@ import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
-import com.sencha.gxt.data.shared.ListStore;
 
-import edu.arizona.biosemantics.common.taxonomy.Rank;
+import edu.arizona.biosemantics.common.biology.TaxonGroup;
+import edu.arizona.biosemantics.common.ling.know.lib.InMemoryGlossary;
+import edu.arizona.biosemantics.common.log.LogLevel;
 import edu.arizona.biosemantics.euler.alignment.server.db.CollectionDAO;
 import edu.arizona.biosemantics.euler.alignment.server.db.Query.QueryException;
 import edu.arizona.biosemantics.euler.alignment.server.io.MatrixReviewModelReader;
-import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterStateSimilarityMetric;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterOverlapCalculator;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.RelationGenerator;
-import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.ContainmentCharacterStateSimilarityMetric;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.PartOfModel;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.MyCharacterStateSimilarlityMetric;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.MyOverlapCalculator;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.TTestBasedRelationGenerator;
 import edu.arizona.biosemantics.euler.alignment.shared.Highlight;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Collection;
-import edu.arizona.biosemantics.euler.alignment.shared.model.DiagnosticValue;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
-import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterOverlap;
 import edu.arizona.biosemantics.euler.io.ArticulationsReader;
-import edu.arizona.biosemantics.taxoncomparison.comparison.Configuration;
 
 public class EulerAlignmentService extends RemoteServiceServlet implements IEulerAlignmentService {
 
@@ -61,12 +59,15 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 	public EulerAlignmentService(CollectionDAO collectionDAO) throws Exception {
 		this.collectionDAO = collectionDAO;
 		
-		Collection collection = new Collection();
+		/*Collection collection = new Collection();
 		collection.setSecret("test");
+		collection.setOntologyPath("C:\\OntologyOWLFilesTemp\\18\\lo\\lo.owl");
+		collection.setGlossaryPath("C:\\Users\\rodenhausen\\etcsite\\users\\12\\1_outputTR_by_TC_task_2");
+		collection.setTaxonGroup(TaxonGroup.PLANT);
 		
 		edu.arizona.biosemantics.matrixreview.shared.model.Model model = unserializeMatrix("C:\\gitEtc3\\euler2\\alignment\\TaxonMatrix.ser");
 		collection.setModel(createModel(model));
-		this.createCollection(collection);
+		this.createCollection(collection);*/
 	}
 	
 	private Model createModel(edu.arizona.biosemantics.matrixreview.shared.model.Model matrixReviewModel) {
@@ -189,12 +190,23 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 	}
 
 	@Override
-	public CharacterOverlap getCharacterOverlap(Collection collection, Taxon taxonA, Taxon taxonB, double threshold) {
-		Taxonomy taxonomyA = collection.getModel().getTaxonomies().get(0);
-		Taxonomy taxonomyB = collection.getModel().getTaxonomies().get(1);
-		CharacterStateSimilarityMetric characterStateSimilarityMetric = new ContainmentCharacterStateSimilarityMetric();
-		RelationGenerator pairwiseArticulationGenerator = new TTestBasedRelationGenerator(0, 0, 0, 0, 0, 
-				characterStateSimilarityMetric, taxonomyA, taxonomyB);
+	public CharacterOverlap getCharacterOverlap(Collection collection, Taxon taxonA, Taxon taxonB, double threshold) {	
+		InMemoryGlossary glossary = null;
+		try {
+			glossary = collectionDAO.unserializeGlossary(collection.getId());
+		} catch(Exception e) {
+			log(LogLevel.ERROR, "Could not deserialize glossary", e);
+			glossary = new InMemoryGlossary();
+		}
+		PartOfModel partOfModel = null;
+		try {
+			partOfModel = collectionDAO.unserializePartOfModel(collection.getId());
+		} catch(Exception e) {
+			log(LogLevel.ERROR, "Could not deserialize partOfModel", e);
+			partOfModel = new PartOfModel();
+		}
+		MyCharacterStateSimilarlityMetric characterStateSimilarityMetric = new MyCharacterStateSimilarlityMetric(partOfModel, glossary, 3);
+		CharacterOverlapCalculator pairwiseArticulationGenerator = new MyOverlapCalculator(characterStateSimilarityMetric);
 		CharacterOverlap overlap = pairwiseArticulationGenerator.getCharacterOverlap(taxonA, taxonB, threshold);
 		return overlap;
 	}

@@ -4,7 +4,7 @@
 	<groupId>edu.arizona.biosemantics.euler</groupId>
 	<artifactId>alignment</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.51-SNAPSHOT</version>
+	<version>0.0.52-SNAPSHOT</version>
 	
 	<properties>
 		<gwtVersion>2.6.1</gwtVersion>
@@ -33,6 +33,27 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+		  <groupId>edu.arizona.biosemantics.common</groupId>
+		  <artifactId>ling</artifactId>
+		  <version>0.0.13-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+		  <groupId>edu.arizona.biosemantics.common</groupId>
+		  <artifactId>biology</artifactId>
+		  <version>0.0.7-SNAPSHOT</version>
+		  <classifier>sources</classifier>
+		</dependency>
+		<dependency>
+		  <groupId>edu.arizona.biosemantics.common</groupId>
+		  <artifactId>biology</artifactId>
+		  <version>0.0.7-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-distribution</artifactId>
+			<version>4.0.2</version>
+		</dependency>
 		<dependency>
 			<groupId>org.sgx</groupId>
 			<artifactId>raphael4gwt</artifactId>

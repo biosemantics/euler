@@ -10,3 +10,6 @@ database_maxConnectionsPerPartition=20
 
 #Files
 collectionsPath=
+
+wordnet_directory=
+oto_url=http://biosemantics.arizona.edu:8080/OTO

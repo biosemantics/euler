@@ -22,13 +22,14 @@ public class Configuration {
 	public static int database_minConnectionsPerPartition;
 	public static int database_maxConnectionsPerPartition;
 	public static int database_partitionCount;
+
+	public static String wordNetDirectory;
+	public static String otoURL;
 	
 	/** Files **/
 	public static String collectionsPath;
 
 	private static Properties properties;
-
-
 
 	static {
 		try {
@@ -44,6 +45,10 @@ public class Configuration {
 			database_minConnectionsPerPartition = Integer.valueOf(properties.getProperty("database_minConnectionsPerPartition"));
 			database_maxConnectionsPerPartition = Integer.valueOf(properties.getProperty("database_maxConnectionsPerPartition"));
 			database_partitionCount = Integer.valueOf(properties.getProperty("database_partitionCount"));
+
+			wordNetDirectory = properties.getProperty("wordnet_directory");
+			collectionsPath = properties.getProperty("collections_path");
+			otoURL = properties.getProperty("oto_url");
 			
 			collectionsPath = properties.getProperty("collectionsPath");
 		} catch(Exception e) {
