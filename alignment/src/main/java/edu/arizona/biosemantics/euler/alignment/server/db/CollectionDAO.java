@@ -114,10 +114,11 @@ public class CollectionDAO {
 	private Collection createCollection(ResultSet result) throws Exception {
 		int id = result.getInt("id");
 		String secret = result.getString("secret");
-		String glossaryPath = result.getString("glossary_path");
+		String glossaryPath1 = result.getString("glossary_path1");
+		String glossaryPath2 = result.getString("glossary_path2");
 		String ontologyPath = result.getString("ontology_path");
 		TaxonGroup taxonGroup = TaxonGroup.valueOf(result.getString("taxon_group"));
-		return new Collection(id, secret, taxonGroup, unserializeModel(id), glossaryPath, ontologyPath);
+		return new Collection(id, secret, taxonGroup, unserializeModel(id), glossaryPath1, glossaryPath2, ontologyPath);
 	}
 	
 	private void serializeModel(Collection collection) throws IOException {
@@ -154,23 +155,36 @@ public class CollectionDAO {
 
 	private void createAndSerializeGlossary(Collection collection) throws IOException {
 		GlossaryCreator glossaryCreator = new GlossaryCreator();
-		File dir = new File(collection.getGlossaryPath());
-		if(dir.exists() && dir.isDirectory()) {
-			File categoryTermFile = null;
-			File synonymFile = null;
-			for(File file : new File(collection.getGlossaryPath()).listFiles()) {
+		File dir1 = new File(collection.getGlossaryPath1());
+		File dir2 = new File(collection.getGlossaryPath1());
+		
+		Set<File> categoryTermFiles = new HashSet<File>();
+		Set<File> synonymFiles = new HashSet<File>();
+		if(dir1.exists() && dir1.isDirectory()) {
+			for(File file : dir1.listFiles()) {
 				if(file.getName().startsWith("category_term") && file.getName().endsWith(".csv")) {
-					categoryTermFile = file;
+					categoryTermFiles.add(file);
 				}
 				if(file.getName().startsWith("category_mainterm_synonymterm") && file.getName().endsWith(".csv")) {
-					synonymFile = file;
+					synonymFiles.add(file);
 				}
 			}
-			InMemoryGlossary glossary = glossaryCreator.create(collection.getTaxonGroup(), categoryTermFile, synonymFile);
-			try(ObjectOutput output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(
-					Configuration.collectionsPath + File.separator + collection.getId() + File.separator + "Glossary.ser")))) {
-				output.writeObject(glossary);
+		}
+		if(dir2.exists() && dir2.isDirectory()) {
+			for(File file : dir2.listFiles()) {
+				if(file.getName().startsWith("category_term") && file.getName().endsWith(".csv")) {
+					categoryTermFiles.add(file);
+				}
+				if(file.getName().startsWith("category_mainterm_synonymterm") && file.getName().endsWith(".csv")) {
+					synonymFiles.add(file);
+				}
 			}
+		}
+		
+		InMemoryGlossary glossary = glossaryCreator.create(collection.getTaxonGroup(), categoryTermFiles, synonymFiles);
+		try(ObjectOutput output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(
+				Configuration.collectionsPath + File.separator + collection.getId() + File.separator + "Glossary.ser")))) {
+			output.writeObject(glossary);
 		}
 	}
 
@@ -185,11 +199,13 @@ public class CollectionDAO {
 	public Collection insert(Collection collection) throws QueryException, IOException  {
 		if(collection.hasId()) 
 			this.remove(collection);
-		try(Query insert = new Query("INSERT INTO `alignment_collection` (`secret`, `taxon_group`, `glossary_path`, `ontology_path`) VALUES(?, ?, ?, ?)")) {
+		try(Query insert = new Query("INSERT INTO `alignment_collection` (`secret`, `taxon_group`, `glossary_path1`, `glossary_path2`, "
+				+ "`ontology_path`) VALUES(?, ?, ?, ?, ?)")) {
 			insert.setParameter(1, collection.getSecret());
 			insert.setParameter(2, collection.getTaxonGroup().toString());
-			insert.setParameter(3, collection.getGlossaryPath());
-			insert.setParameter(4, collection.getOntologyPath());
+			insert.setParameter(3, collection.getGlossaryPath1());
+			insert.setParameter(4, collection.getGlossaryPath2());
+			insert.setParameter(5, collection.getOntologyPath());
 			insert.execute();
 			ResultSet generatedKeys = insert.getGeneratedKeys();
 			generatedKeys.next();
@@ -209,12 +225,14 @@ public class CollectionDAO {
 	}
 
 	public void update(Collection collection) throws QueryException, IOException  {		
-		try(Query query = new Query("UPDATE alignment_collection SET secret = ?, taxon_group = ?, glossary_path = ?, ontology_path = ? WHERE id = ?")) {
+		try(Query query = new Query("UPDATE alignment_collection SET secret = ?, taxon_group = ?, glossary_path1 = ?, "
+				+ "glossary_path2 = ?, ontology_path = ? WHERE id = ?")) {
 			query.setParameter(1, collection.getSecret());
 			query.setParameter(2, collection.getTaxonGroup().toString());
-			query.setParameter(3, collection.getGlossaryPath());
-			query.setParameter(4, collection.getOntologyPath());
-			query.setParameter(5, collection.getId());
+			query.setParameter(3, collection.getGlossaryPath1());
+			query.setParameter(4, collection.getGlossaryPath2());
+			query.setParameter(5, collection.getOntologyPath());
+			query.setParameter(6, collection.getId());
 			query.execute();
 		} catch(QueryException e) {
 			log(LogLevel.ERROR, "Query Exception", e);

@@ -30,20 +30,21 @@ import edu.arizona.biosemantics.oto.model.lite.Synonym;
 
 public class GlossaryCreator {
 
-	public InMemoryGlossary create(TaxonGroup taxonGroup, File categoryTermFile, File synonymFile) {
+	public InMemoryGlossary create(TaxonGroup taxonGroup, Set<File> categoryTermFiles, Set<File> synonymFiles) {
 		InMemoryGlossary glossary = new InMemoryGlossary();
 		try {
 			WordNetPOSKnowledgeBase wordNetPOSKnowledgeBase = new WordNetPOSKnowledgeBase(Configuration.wordNetDirectory, false);
 			SingularPluralProvider singularPluralProvider = new SingularPluralProvider();
 			IInflector inflector = new SomeInflector(wordNetPOSKnowledgeBase, singularPluralProvider.getSingulars(), singularPluralProvider.getPlurals());
-			initGlossary(glossary, inflector, taxonGroup, categoryTermFile, synonymFile);
+			initGlossary(glossary, inflector, taxonGroup, categoryTermFiles, synonymFiles);
 		} catch(IOException e) {
 			log(LogLevel.ERROR, "Could not initialize glossary", e);
 		}	
 		return glossary;
 	}
 	
-	private void initGlossary(IGlossary glossary, IInflector inflector, TaxonGroup taxonGroup, File categoryTermFile, File synonymFile) throws IOException {
+	private void initGlossary(IGlossary glossary, IInflector inflector, TaxonGroup taxonGroup, Set<File> categoryTermFiles, 
+			Set<File> synonymFiles) throws IOException {
 		OTOClient otoClient = new OTOClient(Configuration.otoURL);
 		GlossaryDownload glossaryDownload = new GlossaryDownload();		
 		String glossaryVersion = "latest";
@@ -105,21 +106,25 @@ public class GlossaryCreator {
 		
 		List<Synonym> synonyms = new LinkedList<Synonym>();
 		Set<String> hasSynonym = new HashSet<String>();
-		try(CSVReader reader = new CSVReader(new FileReader(synonymFile))) {
-			List<String[]> lines = reader.readAll();
-			int i=0;
-			for(String[] line : lines) {
-				synonyms.add(new Synonym(String.valueOf(i), line[1], line[0], line[2]));
-				hasSynonym.add(line[1]);
-			}	
+		for(File synonymFile : synonymFiles) {
+			try(CSVReader reader = new CSVReader(new FileReader(synonymFile))) {
+				List<String[]> lines = reader.readAll();
+				int i=0;
+				for(String[] line : lines) {
+					synonyms.add(new Synonym(String.valueOf(i), line[1], line[0], line[2]));
+					hasSynonym.add(line[1]);
+				}	
+			}
 		}
 
 		List<Decision> decisions = new LinkedList<Decision>();
-		try(CSVReader reader = new CSVReader(new FileReader(categoryTermFile))) {
-			List<String[]> lines = reader.readAll();
-			int i=0;
-			for(String[] line : lines) {
-				decisions.add(new Decision(String.valueOf(i), line[1], line[0], hasSynonym.contains(line[1]), ""));
+		for(File categoryTermFile : categoryTermFiles) {
+			try(CSVReader reader = new CSVReader(new FileReader(categoryTermFile))) {
+				List<String[]> lines = reader.readAll();
+				int i=0;
+				for(String[] line : lines) {
+					decisions.add(new Decision(String.valueOf(i), line[1], line[0], hasSynonym.contains(line[1]), ""));
+				}
 			}
 		}
 

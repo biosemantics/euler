@@ -11,7 +11,8 @@ public class Collection implements Serializable {
 	private String secret;
 	private Model model;
 	private String ontologyPath;
-	private String glossaryPath;
+	private String glossaryPath1;
+	private String glossaryPath2;
 	private TaxonGroup taxonGroup = TaxonGroup.PLANT;
 	
 	public Collection() {
@@ -24,12 +25,14 @@ public class Collection implements Serializable {
 		this.model = model;
 	}
 	
-	public Collection(int id, String secret, TaxonGroup taxonGroup, Model model, String glossaryPath, String ontologyPath) {
+	public Collection(int id, String secret, TaxonGroup taxonGroup, Model model, String glossaryPath1, String glossaryPath2,
+			String ontologyPath) {
 		this.id = id;
 		this.secret = secret;
 		this.taxonGroup = taxonGroup;
 		this.model = model;
-		this.glossaryPath = glossaryPath;
+		this.glossaryPath1 = glossaryPath1;
+		this.glossaryPath2 = glossaryPath2;
 		this.ontologyPath = ontologyPath;
 	}
 
@@ -69,12 +72,20 @@ public class Collection implements Serializable {
 		this.ontologyPath = ontologyPath;
 	}
 
-	public String getGlossaryPath() {
-		return glossaryPath;
+	public String getGlossaryPath1() {
+		return glossaryPath1;
 	}
 
-	public void setGlossaryPath(String glossaryPath) {
-		this.glossaryPath = glossaryPath;
+	public void setGlossaryPath1(String glossaryPath) {
+		this.glossaryPath1 = glossaryPath;
+	}
+	
+	public String getGlossaryPath2() {
+		return glossaryPath2;
+	}
+
+	public void setGlossaryPath2(String glossaryPath) {
+		this.glossaryPath2 = glossaryPath;
 	}
 
 	public TaxonGroup getTaxonGroup() {
