@@ -121,7 +121,7 @@ public class CollectionDAO {
 		return new Collection(id, secret, taxonGroup, unserializeModel(id), glossaryPath1, glossaryPath2, ontologyPath);
 	}
 	
-	private void serializeModel(Collection collection) throws IOException {
+	public void serializeModel(Collection collection) throws IOException {
 		try(ObjectOutput output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(
 				Configuration.collectionsPath + File.separator + collection.getId() + File.separator + "Model.ser")))) {
 			output.writeObject(collection.getModel());

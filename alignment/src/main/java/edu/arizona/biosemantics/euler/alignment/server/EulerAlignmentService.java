@@ -182,6 +182,11 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 			return collectionDAO.get(id);
 		throw new Exception();
 	}
+	
+	@Override
+	public void saveCollection(Collection collection) throws IOException {
+		collectionDAO.serializeModel(collection);
+	}
 
 	@Override
 	public List<Evidence> getEvidence(Collection collection, Taxon taxonA, Taxon taxonB) throws Exception {

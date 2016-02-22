@@ -28,5 +28,7 @@ public interface IEulerAlignmentServiceAsync {
 
 	public void getCharacterOverlap(Collection collection, Taxon taxonA, Taxon taxonB, double threshold, AsyncCallback<CharacterOverlap> callback);
 	
+	public void saveCollection(Collection collection, AsyncCallback<Void> callback);
+	
 }
 

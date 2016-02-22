@@ -32,5 +32,7 @@ public interface IEulerAlignmentService extends RemoteService {
 	public List<Evidence> getEvidence(Collection collection, Taxon taxonA, Taxon taxonB) throws Exception;
 
 	public CharacterOverlap getCharacterOverlap(Collection collection, Taxon taxonA, Taxon taxonB, double threshold);
+
+	public void saveCollection(Collection collection) throws IOException;
 	
 }
