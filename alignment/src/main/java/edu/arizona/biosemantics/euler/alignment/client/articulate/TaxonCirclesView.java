@@ -249,7 +249,7 @@ public class TaxonCirclesView extends SimpleContainer {
 		int closestDistance = -1;
 		double closestOverlapDistance = Integer.MAX_VALUE;
 		for(int d=0; d <= (radiusCircle1 + radiusCircle2 + 1); d++) {
-			System.out.println(d);
+			//System.out.println(d);
 			int x1 = 0;
 			int y1 = 0;
 			int r1 = radiusCircle1;
@@ -258,8 +258,8 @@ public class TaxonCirclesView extends SimpleContainer {
 			int r2 = radiusCircle2;
 			double calculatedOverlap = calculateOverlap(x1, y1, r1, x2, y2, r2); //absolute
 
-			System.out.println("overlap " + calculatedOverlap);
-			System.out.println("asked overlap " + absoluteOverlap);
+			//System.out.println("overlap " + calculatedOverlap);
+			//System.out.println("asked overlap " + absoluteOverlap);
 			
 			if(Math.abs(calculatedOverlap - absoluteOverlap) <= closestOverlapDistance) {
 				closestDistance = d;

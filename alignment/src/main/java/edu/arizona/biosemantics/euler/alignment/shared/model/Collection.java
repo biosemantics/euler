@@ -95,4 +95,16 @@ public class Collection implements Serializable {
 	public void setTaxonGroup(TaxonGroup taxonGroup) {
 		this.taxonGroup = taxonGroup;
 	}
+
+	public boolean hasGlossaryPath1() {
+		return this.glossaryPath1 != null && !this.glossaryPath1.isEmpty();
+	}
+	
+	public boolean hasGlossaryPath2() {
+		return this.glossaryPath2 != null && !this.glossaryPath2.isEmpty();
+	}
+
+	public boolean hasOntologyPath() {
+		return this.ontologyPath != null && !this.ontologyPath.isEmpty();
+	}
 }

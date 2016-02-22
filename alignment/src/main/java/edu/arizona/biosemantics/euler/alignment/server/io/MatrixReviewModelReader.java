@@ -1,11 +1,13 @@
 package edu.arizona.biosemantics.euler.alignment.server.io;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
 import edu.arizona.biosemantics.common.log.LogLevel;
+import edu.arizona.biosemantics.common.taxonomy.Rank;
 import edu.arizona.biosemantics.common.taxonomy.RankData;
 import edu.arizona.biosemantics.common.taxonomy.TaxonIdentification;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
@@ -18,20 +20,35 @@ import edu.arizona.biosemantics.matrixreview.shared.model.core.TaxonMatrix;
 import edu.arizona.biosemantics.matrixreview.shared.model.core.Value;
 
 public class MatrixReviewModelReader {
-
-	public Taxonomy getTaxonomy(Model model) {
-		List<edu.arizona.biosemantics.euler.alignment.shared.model.Taxon> rootTaxa = new LinkedList<edu.arizona.biosemantics.euler.alignment.shared.model.Taxon>();
+	
+	public Taxonomy getTaxonomy(Model model) throws Exception {
 		TaxonMatrix matrix = model.getTaxonMatrix();
 		
-		for(Taxon taxon : matrix.getHierarchyRootTaxa()) {
-			edu.arizona.biosemantics.euler.alignment.shared.model.Taxon rootTaxon = createCharacterizedTaxon(taxon, model);
-			rootTaxa.add(rootTaxon);
-			addChildren(rootTaxon, taxon, model);
-		}		
-		return new Taxonomy(rootTaxa.get(0).getYear(), rootTaxa.get(0).getName(), rootTaxa);
+		Taxon reviewRootTaxon = null;
+		if(matrix.getHierarchyRootTaxa().size() == 0) {
+			throw new Exception("Empty taxonomy cannot be used as input.");
+		}
+		if(matrix.getHierarchyRootTaxa().size() == 1) {
+			reviewRootTaxon = matrix.getHierarchyRootTaxa().get(0);
+		}
+		if(matrix.getHierarchyRootTaxa().size() > 1) {
+			reviewRootTaxon = new Taxon();
+			reviewRootTaxon.setDescription("");
+			LinkedList<RankData> rankData = new LinkedList<RankData>();
+			rankData.add(new RankData(Rank.LIFE, "Root", null, "NA", String.valueOf(Calendar.getInstance().get(Calendar.YEAR))));
+			TaxonIdentification taxonIdentification = new TaxonIdentification(rankData, "NA", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
+			reviewRootTaxon.setTaxonIdentification(taxonIdentification);
+			reviewRootTaxon.setChildren(matrix.getHierarchyRootTaxa());
+		}	
+		
+		edu.arizona.biosemantics.euler.alignment.shared.model.Taxon rootTaxon = createCharacterizedTaxon(reviewRootTaxon, model);
+		List<edu.arizona.biosemantics.euler.alignment.shared.model.Taxon> rootTaxa = new LinkedList<edu.arizona.biosemantics.euler.alignment.shared.model.Taxon>();
+		rootTaxa.add(rootTaxon);
+		addChildren(rootTaxon, reviewRootTaxon, model);		
+		return new Taxonomy(reviewRootTaxon.getYear(), reviewRootTaxon.getName(), rootTaxa);
 	}
 
-	private void addChildren(edu.arizona.biosemantics.euler.alignment.shared.model.Taxon rootTaxon, Taxon taxon, Model model) {
+	private void addChildren(edu.arizona.biosemantics.euler.alignment.shared.model.Taxon rootTaxon, Taxon taxon, Model model) throws Exception {
 		for(Taxon child : taxon.getChildren()) {
 			edu.arizona.biosemantics.euler.alignment.shared.model.Taxon childTaxon = createCharacterizedTaxon(child, model);
 			rootTaxon.addChild(childTaxon);
@@ -39,7 +56,13 @@ public class MatrixReviewModelReader {
 		}
 	}
 
-	private edu.arizona.biosemantics.euler.alignment.shared.model.Taxon createCharacterizedTaxon(Taxon taxon, Model model) {		
+	private edu.arizona.biosemantics.euler.alignment.shared.model.Taxon createCharacterizedTaxon(Taxon taxon, Model model) throws Exception {		
+		String author = taxon.getTaxonIdentification().getRankData().getLast().getAuthor();
+		String year = taxon.getTaxonIdentification().getRankData().getLast().getDate();
+		if(author == null || author.isEmpty() || year == null || year.isEmpty()) {
+			throw new Exception("Taxon concept required as input. All taxa are required to have author and year");
+		}
+		
 		edu.arizona.biosemantics.euler.alignment.shared.model.Taxon newTaxon = new edu.arizona.biosemantics.euler.alignment.shared.model.Taxon(taxon.getTaxonIdentification(), taxon.getDescription());
 		newTaxon.setCharacterStates(createCharacters(taxon, model));
 		return newTaxon;

@@ -74,40 +74,43 @@ public class MyOverlapCalculator implements CharacterOverlapCalculator, TaxonSim
 
 	@Override
 	public CharacterOverlap getCharacterOverlap(Taxon taxonA, Taxon taxonB, double threshold) {
+		
 		Map<CharacterState, Map<CharacterState, AsymmetricSimilarity<CharacterState>>> betweenTaxaMap = this.getCharacterSimilarity(taxonA, taxonB);
 		
 		List<CharacterState> characterStatesA = new ArrayList<CharacterState>(taxonA.getCharacterStates());
 		List<CharacterState> characterStatesB = new ArrayList<CharacterState>(taxonB.getCharacterStates());
-		double[][] costMatrix = new double[characterStatesA.size()][characterStatesB.size()];
-		for(int i=0; i<characterStatesA.size(); i++) {
-			CharacterState characterStateA = characterStatesA.get(i);
-			for(int j=0; j<characterStatesB.size(); j++) {
-				CharacterState characterStateB = characterStatesB.get(j);
-				AsymmetricSimilarity<CharacterState> asymmetricSimilarity = betweenTaxaMap.get(characterStateA).get(characterStateB);
-				costMatrix[i][j] = 1 - asymmetricSimilarity.getAverageSimilarity();
-			}
-		}
-		HungarianAlgorithm hungarianAlgorithm = new HungarianAlgorithm(costMatrix);
-		int[] assignments = hungarianAlgorithm.execute();
-
-		List<AsymmetricSimilarity<CharacterState>> maximumSimilarityPairs = new LinkedList<AsymmetricSimilarity<CharacterState>>();
-		for(int i=0; i < assignments.length; i++) {
-			CharacterState characterStateA = characterStatesA.get(i);
-			if(assignments[i] != -1) {
-				CharacterState characterStateB = characterStatesB.get(assignments[i]);
-				maximumSimilarityPairs.add(betweenTaxaMap.get(characterStateA).get(characterStateB));
-			}
-		}
-		
 		Set<CharacterState> remainingTaxonACharacterStates = new HashSet<CharacterState>(taxonA.getCharacterStates());
 		Set<CharacterState> remainingTaxonBCharacterStates = new HashSet<CharacterState>(taxonB.getCharacterStates());
 		List<Overlap> overlap = new LinkedList<Overlap>();
-		for(AsymmetricSimilarity<CharacterState> similarity : maximumSimilarityPairs) {
-			if(similarity.getAverageSimilarity() >= threshold) {
-				overlap.add(new Overlap(similarity.getItemA(), similarity.getItemB(), similarity.getAverageSimilarity(), 
-						DiagnosticValue.MEDIUM));
-				remainingTaxonACharacterStates.remove(similarity.getItemA());;
-				remainingTaxonBCharacterStates.remove(similarity.getItemB());
+		if(!characterStatesA.isEmpty() && !characterStatesB.isEmpty()) {
+			double[][] costMatrix = new double[characterStatesA.size()][characterStatesB.size()];
+			for(int i=0; i<characterStatesA.size(); i++) {
+				CharacterState characterStateA = characterStatesA.get(i);
+				for(int j=0; j<characterStatesB.size(); j++) {
+					CharacterState characterStateB = characterStatesB.get(j);
+					AsymmetricSimilarity<CharacterState> asymmetricSimilarity = betweenTaxaMap.get(characterStateA).get(characterStateB);
+					costMatrix[i][j] = 1 - asymmetricSimilarity.getAverageSimilarity();
+				}
+			}
+			HungarianAlgorithm hungarianAlgorithm = new HungarianAlgorithm(costMatrix);
+			int[] assignments = hungarianAlgorithm.execute();
+
+			List<AsymmetricSimilarity<CharacterState>> maximumSimilarityPairs = new LinkedList<AsymmetricSimilarity<CharacterState>>();
+			for(int i=0; i < assignments.length; i++) {
+				CharacterState characterStateA = characterStatesA.get(i);
+				if(assignments[i] != -1) {
+					CharacterState characterStateB = characterStatesB.get(assignments[i]);
+					maximumSimilarityPairs.add(betweenTaxaMap.get(characterStateA).get(characterStateB));
+				}
+			}
+			
+			for(AsymmetricSimilarity<CharacterState> similarity : maximumSimilarityPairs) {
+				if(similarity.getAverageSimilarity() >= threshold) {
+					overlap.add(new Overlap(similarity.getItemA(), similarity.getItemB(), similarity.getAverageSimilarity(), 
+							DiagnosticValue.MEDIUM));
+					remainingTaxonACharacterStates.remove(similarity.getItemA());;
+					remainingTaxonBCharacterStates.remove(similarity.getItemB());
+				}
 			}
 		}
 		

@@ -70,7 +70,7 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 		this.createCollection(collection);*/
 	}
 	
-	private Model createModel(edu.arizona.biosemantics.matrixreview.shared.model.Model matrixReviewModel) {
+	private Model createModel(edu.arizona.biosemantics.matrixreview.shared.model.Model matrixReviewModel) throws Exception {
 		MatrixReviewModelReader reader = new MatrixReviewModelReader();
 		Taxonomy taxonomyA = reader.getTaxonomy(matrixReviewModel);
 		Taxonomy taxonomyB = reader.getTaxonomy(matrixReviewModel);

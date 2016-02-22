@@ -270,8 +270,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		TextButton button = this.getButton(PredefinedButton.OK);
 		button.setText("Close");
 		this.setHeadingText("Character Comparison");
-
-		this.update();	
+		this.setModal(true);
 	}	
 	
 	protected void highlightCharacterSelectionA(Node selectedItem) {

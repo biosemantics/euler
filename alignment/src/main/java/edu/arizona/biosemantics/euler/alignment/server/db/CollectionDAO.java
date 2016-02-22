@@ -130,7 +130,9 @@ public class CollectionDAO {
 	
 	private void createAndSerializeOntologyPartOfModel(Collection collection) throws IOException {
 		PartOfModelCreator partOfModelCreator = new PartOfModelCreator();
-		PartOfModel partOfModel = partOfModelCreator.create(collection.getOntologyPath());
+		PartOfModel partOfModel = new PartOfModel();
+		if(collection.hasOntologyPath())
+			partOfModel = partOfModelCreator.create(collection.getOntologyPath());
 		try(ObjectOutput output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(
 				Configuration.collectionsPath + File.separator + collection.getId() + File.separator + "PartOf.ser")))) {
 			output.writeObject(partOfModel);
@@ -155,12 +157,15 @@ public class CollectionDAO {
 
 	private void createAndSerializeGlossary(Collection collection) throws IOException {
 		GlossaryCreator glossaryCreator = new GlossaryCreator();
-		File dir1 = new File(collection.getGlossaryPath1());
-		File dir2 = new File(collection.getGlossaryPath1());
+		File dir1 = null, dir2 = null;
+		if(collection.hasGlossaryPath1())
+			dir1 = new File(collection.getGlossaryPath1());
+		if(collection.hasGlossaryPath2())
+			dir2 = new File(collection.getGlossaryPath1());
 		
 		Set<File> categoryTermFiles = new HashSet<File>();
 		Set<File> synonymFiles = new HashSet<File>();
-		if(dir1.exists() && dir1.isDirectory()) {
+		if(dir1 != null && dir1.exists() && dir1.isDirectory()) {
 			for(File file : dir1.listFiles()) {
 				if(file.getName().startsWith("category_term") && file.getName().endsWith(".csv")) {
 					categoryTermFiles.add(file);
@@ -170,7 +175,7 @@ public class CollectionDAO {
 				}
 			}
 		}
-		if(dir2.exists() && dir2.isDirectory()) {
+		if(dir2 != null && dir2.exists() && dir2.isDirectory()) {
 			for(File file : dir2.listFiles()) {
 				if(file.getName().startsWith("category_term") && file.getName().endsWith(".csv")) {
 					categoryTermFiles.add(file);

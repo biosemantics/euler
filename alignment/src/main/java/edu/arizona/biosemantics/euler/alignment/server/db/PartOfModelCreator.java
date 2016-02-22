@@ -29,6 +29,8 @@ public class PartOfModelCreator {
 
 	public PartOfModel create(String ontologyPath) {
 		PartOfModel partOfModel = new PartOfModel();
+		if(ontologyPath == null || (!new File(ontologyPath).exists()))
+			return partOfModel;
 		
 		OWLOntologyManager owlOntologyManager = OWLManager.createOWLOntologyManager();
 		try {

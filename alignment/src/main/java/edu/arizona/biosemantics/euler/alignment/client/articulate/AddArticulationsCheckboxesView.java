@@ -206,6 +206,7 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 				public void onSelect(SelectEvent event) {
 					EvidenceBasedCreateDialog dialog = new EvidenceBasedCreateDialog(eventBus, collection, taxonomyACombo.getValue(), taxonomyBCombo.getValue());
 					dialog.show();
+					dialog.update();
 					/*
 					Articulation articulation = new Articulation(taxonomyACombo.getValue(), taxonomyBCombo.getValue(), relation, 1.0, Type.USER);
 					EvidenceDialog evidenceDialog = new EvidenceDialog(eventBus, collection, articulation);
