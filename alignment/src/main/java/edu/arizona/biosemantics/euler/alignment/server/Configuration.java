@@ -28,8 +28,10 @@ public class Configuration {
 	
 	/** Files **/
 	public static String collectionsPath;
+	public static double stateWeight;
 
 	private static Properties properties;
+
 
 	static {
 		try {
@@ -51,6 +53,7 @@ public class Configuration {
 			otoURL = properties.getProperty("oto_url");
 			
 			collectionsPath = properties.getProperty("collectionsPath");
+			stateWeight = Double.valueOf(properties.getProperty("stateWeight"));
 		} catch(Exception e) {
 			logger.error("Couldn't read configuration", e);
 		}

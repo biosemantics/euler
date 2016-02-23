@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import edu.arizona.biosemantics.common.ling.know.IGlossary;
+import edu.arizona.biosemantics.euler.alignment.server.Configuration;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterStateSimilarityMetric;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.KnowsPartOf;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.AsymmetricSimilarity;

@@ -74,7 +74,6 @@ public class MyOverlapCalculator implements CharacterOverlapCalculator, TaxonSim
 
 	@Override
 	public CharacterOverlap getCharacterOverlap(Taxon taxonA, Taxon taxonB, double threshold) {
-		
 		Map<CharacterState, Map<CharacterState, AsymmetricSimilarity<CharacterState>>> betweenTaxaMap = this.getCharacterSimilarity(taxonA, taxonB);
 		
 		List<CharacterState> characterStatesA = new ArrayList<CharacterState>(taxonA.getCharacterStates());
@@ -82,6 +81,7 @@ public class MyOverlapCalculator implements CharacterOverlapCalculator, TaxonSim
 		Set<CharacterState> remainingTaxonACharacterStates = new HashSet<CharacterState>(taxonA.getCharacterStates());
 		Set<CharacterState> remainingTaxonBCharacterStates = new HashSet<CharacterState>(taxonB.getCharacterStates());
 		List<Overlap> overlap = new LinkedList<Overlap>();
+
 		if(!characterStatesA.isEmpty() && !characterStatesB.isEmpty()) {
 			double[][] costMatrix = new double[characterStatesA.size()][characterStatesB.size()];
 			for(int i=0; i<characterStatesA.size(); i++) {
@@ -113,13 +113,14 @@ public class MyOverlapCalculator implements CharacterOverlapCalculator, TaxonSim
 				}
 			}
 		}
-		
+
 		CharacterOverlap characterOverlap = new CharacterOverlap();
 		characterOverlap.setOverlap(overlap);
 		characterStatesA = new ArrayList<CharacterState>(remainingTaxonACharacterStates);
 		characterStatesB = new ArrayList<CharacterState>(remainingTaxonBCharacterStates);
-		Lists.sort(characterStatesA);
-		Lists.sort(characterStatesB);
+		//fails on server due to diff. JVM version?
+		//Lists.sort(characterStatesA);
+		//Lists.sort(characterStatesB);
 		characterOverlap.setCharacterStatesA(characterStatesA);
 		characterOverlap.setCharacterStatesB(characterStatesB);
 		characterOverlap.setTaxonA(taxonA);

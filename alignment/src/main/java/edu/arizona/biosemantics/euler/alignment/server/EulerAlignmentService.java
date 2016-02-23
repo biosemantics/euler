@@ -210,7 +210,7 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 			log(LogLevel.ERROR, "Could not deserialize partOfModel", e);
 			partOfModel = new PartOfModel();
 		}
-		MyCharacterStateSimilarlityMetric characterStateSimilarityMetric = new MyCharacterStateSimilarlityMetric(partOfModel, glossary, 3);
+		MyCharacterStateSimilarlityMetric characterStateSimilarityMetric = new MyCharacterStateSimilarlityMetric(partOfModel, glossary, Configuration.stateWeight);
 		CharacterOverlapCalculator pairwiseArticulationGenerator = new MyOverlapCalculator(characterStateSimilarityMetric);
 		CharacterOverlap overlap = pairwiseArticulationGenerator.getCharacterOverlap(taxonA, taxonB, threshold);
 		return overlap;
