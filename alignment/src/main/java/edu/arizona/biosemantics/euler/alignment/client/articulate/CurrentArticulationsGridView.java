@@ -39,7 +39,7 @@ public class CurrentArticulationsGridView extends ArticulationsGridView {
 		super(eventBus, null, true, true);
 		bindEvents();
 
-		grid.setContextMenu(createContextMenu());
+		//grid.setContextMenu(createContextMenu());
 	}
 
 	private Menu createContextMenu() {

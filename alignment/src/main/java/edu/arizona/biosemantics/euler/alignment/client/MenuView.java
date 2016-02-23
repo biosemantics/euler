@@ -74,7 +74,7 @@ public class MenuView extends MenuBar {
 		Menu sub = new Menu();
 		
 		MenuBarItem articulationsItem = new MenuBarItem("Articulations", sub);
-		MenuItem settingsItem = new MenuItem("Machine Articulation Settings");
+		/*MenuItem settingsItem = new MenuItem("Machine Articulation Settings");
 		settingsItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
@@ -82,7 +82,7 @@ public class MenuView extends MenuBar {
 				dialog.show();
 				//dialog.setWidget(new EqualSizeCircleOverlap(200, 200, 400, 200, 100, "green", "red"));
 			}
-		});
+		});*/
 		MenuItem importItem = new MenuItem("Import Articulations");
 		importItem.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
@@ -91,29 +91,29 @@ public class MenuView extends MenuBar {
 				importDialog.show();
 			}
 		});
-		MenuItem addMachineGeneratedArticulations = new MenuItem("Add Machine-generated Articulations");
+		/*MenuItem addMachineGeneratedArticulations = new MenuItem("Add Machine-generated Articulations");
 		addMachineGeneratedArticulations.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
 				eventBus.fireEvent(new LoadMachineArticulationsEvent());
 			}
-		});
+		});*/
 		
-		MenuItem removeMachineGeneratedArticulations = new MenuItem("Remove Machine-generated Articulations");
+		/*MenuItem removeMachineGeneratedArticulations = new MenuItem("Remove Machine-generated Articulations");
 		removeMachineGeneratedArticulations.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
 				eventBus.fireEvent(new RemoveMachineArticulationsEvent());
 			}
-		});
+		});*/
 		
-		MenuItem removeUserCreatedArticulations = new MenuItem("Remove User-created Articulations");
+		/*MenuItem removeUserCreatedArticulations = new MenuItem("Remove User-created Articulations");
 		removeUserCreatedArticulations.addSelectionHandler(new SelectionHandler<Item>() {
 			@Override
 			public void onSelection(SelectionEvent<Item> event) {
 				eventBus.fireEvent(new RemoveUserArticulationsEvent());
 			}
-		});		
+		});		*/
 		MenuItem downloadItem = new MenuItem("Download Articulations");
 		downloadItem.setTitle("please set your browser to allow popup windows to use this function");
 		downloadItem.addSelectionHandler(new SelectionHandler<Item>() {
@@ -124,11 +124,11 @@ public class MenuView extends MenuBar {
 		});
 
 		// sub.add(subMatrixItem);
-		sub.add(settingsItem);
+		//sub.add(settingsItem);
 		sub.add(importItem);
-		sub.add(addMachineGeneratedArticulations);
-		sub.add(removeMachineGeneratedArticulations);
-		sub.add(removeUserCreatedArticulations);
+		//sub.add(addMachineGeneratedArticulations);
+		//sub.add(removeMachineGeneratedArticulations);
+		//sub.add(removeUserCreatedArticulations);
 		sub.add(downloadItem);
 		return articulationsItem;
 	}
