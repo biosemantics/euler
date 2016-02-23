@@ -9,16 +9,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import edu.arizona.biosemantics.common.log.LogLevel;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Evidence;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomies;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 
 public class ArticulationsReader {
 
@@ -100,10 +103,10 @@ public class ArticulationsReader {
 		Taxon b = getTaxon(taxonomyB, nameTaxonB);
 		if(b == null)
 			throw new Exception("Could not find taxon with name: " + nameTaxonB + ". Line: " + line);
-		ArticulationType articulationType = getArticulationTypeFromEuler(relation);
-		if(articulationType == null)
+		Relation articulationRelation = getArticulationTypeFromEuler(relation);
+		if(articulationRelation == null)
 			throw new Exception("Relation not recognized: " + relation + ". Line: " + line);
-		return new Articulation(a, b, articulationType);
+		return new Articulation(a, b, articulationRelation, 1.0, Type.USER);
 	}
 	
 	private Taxon getTaxon(Taxonomy taxonomy, String name) {
@@ -115,18 +118,18 @@ public class ArticulationsReader {
 		return null;
 	}
 
-	private ArticulationType getArticulationTypeFromEuler(String text) {
+	private Relation getArticulationTypeFromEuler(String text) {
 		switch(text) {
 		case "includes": 
-			return ArticulationType.A_INCLUDES_B;
+			return Relation.A_INCLUDES_B;
 		case "equals": 
-			return ArticulationType.CONGRUENT;
+			return Relation.CONGRUENT;
 		case "disjoint": 
-			return ArticulationType.DISJOINT;
+			return Relation.DISJOINT;
 		case "is_included_in": 
-			return ArticulationType.B_INCLUDES_A;
+			return Relation.B_INCLUDES_A;
 		case "overlaps": 
-			return ArticulationType.OVERLAP;
+			return Relation.OVERLAP;
 		default:
 			return null;
 		}
@@ -193,7 +196,8 @@ public class ArticulationsReader {
 		Taxonomies taxonomies = new Taxonomies();
 		taxonomies.add(a);
 		taxonomies.add(b);
-		Model model = new Model(taxonomies);
+		Map<Taxon, Map<Taxon, List<Evidence>>> evidenceMap = new HashMap<Taxon, Map<Taxon, List<Evidence>>>();
+		Model model = new Model(taxonomies, evidenceMap);
 		Articulations articulations = reader.read(
 				"articulation 2005-1993 Groves_MSW3-Groves_MSW2\n"
 				+ "[2005.Cheirogaleoidae includes 1993.Cheirogaleidae]\n"

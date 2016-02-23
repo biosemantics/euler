@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
 
@@ -34,15 +34,15 @@ public class ArticulationsWriter {
 			Taxon taxonB = articulation.getTaxonB();
 			String taxonAString = taxonTaxonomyMap.get(taxonA).getYear() + "." + taxonA.getName();
 			String taxonBString = taxonTaxonomyMap.get(taxonB).getYear() + "." + taxonB.getName();
-			String relation = getEulerRelation(articulation.getType());
+			String relation = getEulerRelation(articulation.getRelation());
 			if(relation != null) 
 				result += "[" + taxonAString + " " + relation + " " + taxonBString + "]\n";
 		}
 		return result;
 	}
 
-	private String getEulerRelation(ArticulationType type) {
-		switch(type) {
+	private String getEulerRelation(Relation relation) {
+		switch(relation) {
 		case A_INCLUDES_B:
 			return "includes";
 		case B_INCLUDES_A:

@@ -10,10 +10,11 @@ import java.util.List;
 import java.util.Map;
 
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation;
-import edu.arizona.biosemantics.euler.alignment.shared.model.ArticulationType;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Relation;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Model;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxon;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Taxonomy;
+import edu.arizona.biosemantics.euler.alignment.shared.model.Articulation.Type;
 
 public class EulerInputFileWriter {
 
@@ -52,7 +53,7 @@ public class EulerInputFileWriter {
 	private void appendArticulation(Articulation articulation, BufferedWriter bw, Model model, Map<Taxon, Taxonomy> taxonTaxonomyMap) throws IOException {
 		Taxon taxonA = articulation.getTaxonA();
 		Taxon taxonB = articulation.getTaxonB();
-		String relation = getEulerRelationName(articulation.getType());
+		String relation = getEulerRelationName(articulation.getRelation());
 		if(relation != null) {
 			bw.append("[" + taxonTaxonomyMap.get(taxonA).getYear() + "." + taxonA.getName() + " " + relation + " " + 
 					taxonTaxonomyMap.get(taxonB).getYear() + "." + taxonB.getName() + "]\n");
@@ -71,8 +72,8 @@ public class EulerInputFileWriter {
 		}
 	}
 	
-	public String getEulerRelationName(ArticulationType type) {
-		switch(type) {
+	public String getEulerRelationName(Relation relation) {
+		switch(relation) {
 		case A_INCLUDES_B:
 			return "includes";
 		case B_INCLUDES_A:
@@ -112,10 +113,10 @@ public class EulerInputFileWriter {
 		model.getTaxonomies().add(taxonomyA);
 		model.getTaxonomies().add(taxonomyB);
 		
-		model.addArticulation(new Articulation(a, b, ArticulationType.OVERLAP));
-		model.addArticulation(new Articulation(a, b, ArticulationType.B_INCLUDES_A));
-		model.addArticulation(new Articulation(rootA, rootB, ArticulationType.DISJOINT));
-		model.addArticulation(new Articulation(rootB, rootA, ArticulationType.CONGRUENT));
+		model.addArticulation(new Articulation(a, b, Relation.OVERLAP, 1.0, Type.USER));
+		model.addArticulation(new Articulation(a, b, Relation.B_INCLUDES_A, 1.0, Type.USER));
+		model.addArticulation(new Articulation(rootA, rootB, Relation.DISJOINT, 1.0, Type.USER));
+		model.addArticulation(new Articulation(rootB, rootA, Relation.CONGRUENT, 1.0, Type.USER));
 		
 		
 		EulerInputFileWriter fw = new EulerInputFileWriter("out.txt");
