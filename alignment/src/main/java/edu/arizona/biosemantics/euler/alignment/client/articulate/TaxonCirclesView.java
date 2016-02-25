@@ -7,6 +7,7 @@ import java.util.Map;
 import org.sgx.raphael4gwt.raphael.Circle;
 import org.sgx.raphael4gwt.raphael.Paper;
 import org.sgx.raphael4gwt.raphael.Raphael;
+import org.sgx.raphael4gwt.raphael.base.Attrs;
 
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.logical.shared.SelectionHandler;

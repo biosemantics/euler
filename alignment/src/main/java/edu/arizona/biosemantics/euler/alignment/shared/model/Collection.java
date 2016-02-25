@@ -9,7 +9,7 @@ public class Collection implements Serializable {
 
 	private int id = -1;
 	private String secret;
-	private Model model;
+	private Model model = new Model();
 	private String ontologyPath;
 	private String glossaryPath1;
 	private String glossaryPath2;

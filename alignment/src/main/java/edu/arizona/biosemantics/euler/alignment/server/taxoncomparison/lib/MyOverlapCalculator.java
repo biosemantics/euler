@@ -2,6 +2,7 @@ package edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -119,8 +120,8 @@ public class MyOverlapCalculator implements CharacterOverlapCalculator, TaxonSim
 		characterStatesA = new ArrayList<CharacterState>(remainingTaxonACharacterStates);
 		characterStatesB = new ArrayList<CharacterState>(remainingTaxonBCharacterStates);
 		//fails on server due to diff. JVM version?
-		//Lists.sort(characterStatesA);
-		//Lists.sort(characterStatesB);
+		Collections.sort(characterStatesA);
+		Collections.sort(characterStatesB);
 		characterOverlap.setCharacterStatesA(characterStatesA);
 		characterOverlap.setCharacterStatesB(characterStatesB);
 		characterOverlap.setTaxonA(taxonA);
