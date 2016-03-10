@@ -111,4 +111,15 @@ public class Taxonomy implements Serializable, Cloneable {
 		return result;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setYear(String year) {
+		this.year = year;
+	}
+
+	public void setRootTaxa(List<Taxon> rootTaxa) {
+		this.rootTaxa = rootTaxa;
+	}
 }
