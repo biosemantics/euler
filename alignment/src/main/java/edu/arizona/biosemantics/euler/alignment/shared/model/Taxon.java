@@ -49,6 +49,7 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 		this.name = taxonIdentification.getRankData().getLast().getName();
 		this.author = taxonIdentification.getAuthor();
 		this.year = taxonIdentification.getDate();
+		this.rank = taxonIdentification.getRankData().getLast().getRank();
 	}
 	
 	public Taxon(TaxonIdentification taxonIdentification, String description) {

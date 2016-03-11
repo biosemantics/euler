@@ -170,8 +170,8 @@ public class MinimalArticulationsGridView extends SimpleContainer /* extends Con
 		String aHead = "Taxonomic Concept A";
 		String bHead = "Taxonomic Concept B";
 		if(collection != null) {
-			 aHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getFullName();
-			 bHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getFullName();
+			 aHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getSecString();
+			 bHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getSecString();
 		}
 		//ColumnConfig<Articulation, String> taxonACol = new ColumnConfig<Articulation, String>(
 		//		new ArticulationProperties.TaxonAStringValueProvider(), 250, aHead);

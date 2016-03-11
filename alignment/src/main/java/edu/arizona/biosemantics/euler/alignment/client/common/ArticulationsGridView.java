@@ -126,10 +126,10 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 
 	private void updateTaxonColumnHeaders() {
 		if(collection != null) {
-			grid.getView().getHeader().getHead(1).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getFullName()));
-			grid.getView().getHeader().getHead(3).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getFullName()));
-			taxonACol.setHeader("Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getFullName());
-			taxonBCol.setHeader("Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getFullName());
+			grid.getView().getHeader().getHead(1).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getSecString()));
+			grid.getView().getHeader().getHead(3).setHeader(SafeHtmlUtils.fromSafeConstant("Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getSecString()));
+			taxonACol.setHeader("Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getSecString());
+			taxonBCol.setHeader("Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getSecString());
 		}
 	}
 
@@ -183,8 +183,8 @@ public class ArticulationsGridView extends SimpleContainer /* extends ContentPan
 		String aHead = "Taxonomic Concept A";
 		String bHead = "Taxonomic Concept B";
 		if(collection != null) {
-			 aHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getFullName();
-			 bHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getFullName();
+			 aHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(0).getSecString();
+			 bHead = "Taxonomic Concept " + collection.getModel().getTaxonomies().get(1).getSecString();
 		}
 		taxonACol = new ColumnConfig<Articulation, String>(
 				new ArticulationProperties.TaxonAStringValueProvider(), 250, aHead);

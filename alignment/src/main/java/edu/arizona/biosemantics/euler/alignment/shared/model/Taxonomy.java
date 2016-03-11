@@ -60,16 +60,18 @@ public class Taxonomy implements Serializable, Cloneable {
 		}
 	}
 	
+	private String id;
 	private String year;
-	private String name;
+	private String author;
 	private List<Taxon> rootTaxa = new ArrayList<Taxon>();
 
 	public Taxonomy() {
 	}
 
-	public Taxonomy(String year, String name, List<Taxon> rootTaxa) {
+	public Taxonomy(String id, String year, String author, List<Taxon> rootTaxa) {
+		this.id = id;
 		this.year = year;
-		this.name = name;
+		this.author = author;
 		this.rootTaxa = rootTaxa;
 		
 		for(Taxon taxon : this.getTaxaBFS())
@@ -88,21 +90,29 @@ public class Taxonomy implements Serializable, Cloneable {
 		return rootTaxa;
 	}
 	
-	public String getName() {
-		return name;
+	public String getAuthor() {
+		return author;
 	}
 	
 	public String getYear() {
 		return year;
 	}
 	
-	public String getFullName() {
-		return " sec " + name + " " + year;
+	public String getSecString() {
+		return " sec " + author + " " + year;
 	}
-	
+		
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	@Override
 	public String toString() {
-		String result = "Taxonomy: " + name + "\n";
+		String result = "Taxonomy: " + id + " " + this.getSecString() + "\n";
 		String taxa = "";
 		for(Taxon taxon : rootTaxa) {
 			taxa += taxon.printHierarchy() + "\n";
@@ -111,14 +121,14 @@ public class Taxonomy implements Serializable, Cloneable {
 		return result;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setAuthor(String author) {
+		this.author = author;
 	}
 
 	public void setYear(String year) {
 		this.year = year;
 	}
-
+	
 	public void setRootTaxa(List<Taxon> rootTaxa) {
 		this.rootTaxa = rootTaxa;
 	}

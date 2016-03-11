@@ -356,7 +356,7 @@ public class TaxonomyView extends ContentPanel {
 	
 	public void loadModel(Taxonomy taxonomy) {
 		this.taxonomy = taxonomy;
-		this.setHeadingText(taxonomy.getFullName());
+		this.setHeadingText(taxonomy.getSecString());
 		store.clear();
 		for(Taxon rootTaxon : taxonomy.getRootTaxa()) {
 			store.add(rootTaxon);
