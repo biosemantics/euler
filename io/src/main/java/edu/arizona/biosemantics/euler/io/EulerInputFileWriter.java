@@ -27,10 +27,11 @@ public class EulerInputFileWriter {
 	public void write(Model model) throws IOException {
 		Map<Taxon, Taxonomy> taxonTaxonomyMap = new HashMap<Taxon, Taxonomy>();
 		try(BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), "UTF-8"))) {
-			String taxonomiesYearString = "";
-			String taxonomiesNameString = "";
+			String taxonomiesIdString = "";
+			//String taxonomiesYearString = "";
+			//String taxonomiesNameString = "";
 			for(Taxonomy taxonomy : model.getTaxonomies()) {
-				bw.append("taxonomy " + taxonomy.getYear() + " " + taxonomy.getName() + "\n");
+				bw.append("taxonomy " + taxonomy.getId() + " " + taxonomy.getYear() + " " + taxonomy.getAuthor() + "\n");
 				
 				for(Taxon taxon : taxonomy.getTaxaDFS()) 
 					taxonTaxonomyMap.put(taxon, taxonomy);
@@ -38,12 +39,15 @@ public class EulerInputFileWriter {
 					appendTaxon(rootTaxon, bw);
 				
 				bw.append("\n");
-				taxonomiesYearString += taxonomy.getYear() + "-";
-				taxonomiesNameString += taxonomy.getName() + "-";
+				taxonomiesIdString += taxonomy.getId() + "-";
+				//taxonomiesYearString += taxonomy.getYear() + "-";
+				//taxonomiesNameString += taxonomy.getAuthor() + "-";
 				
 			}
-			bw.append("articulation " + taxonomiesYearString.substring(0, taxonomiesYearString.length() - 1) + " "  +
-					taxonomiesNameString.substring(0, taxonomiesNameString.length() - 1) + "\n");
+			bw.append("articulation " + 
+					taxonomiesIdString.substring(0, taxonomiesIdString.length() - 1) + "\n");/* + 
+					taxonomiesYearString.substring(0, taxonomiesYearString.length() - 1) + " "  +
+					taxonomiesNameString.substring(0, taxonomiesNameString.length() - 1) + "\n"); */
 			
 			for(Articulation articuation : model.getArticulations()) 
 				appendArticulation(articuation, bw, model, taxonTaxonomyMap);
@@ -55,8 +59,8 @@ public class EulerInputFileWriter {
 		Taxon taxonB = articulation.getTaxonB();
 		String relation = getEulerRelationName(articulation.getRelation());
 		if(relation != null) {
-			bw.append("[" + taxonTaxonomyMap.get(taxonA).getYear() + "." + taxonA.getName() + " " + relation + " " + 
-					taxonTaxonomyMap.get(taxonB).getYear() + "." + taxonB.getName() + "]\n");
+			bw.append("[" + taxonTaxonomyMap.get(taxonA).getId() + "." + taxonA.getName() + " " + relation + " " + 
+					taxonTaxonomyMap.get(taxonB).getId() + "." + taxonB.getName() + "]\n");
 		}
 	}
 	
@@ -99,7 +103,7 @@ public class EulerInputFileWriter {
 		Taxon a = new Taxon();
 		a.setName("a");
 		rootA.addChild(a);
-		Taxonomy taxonomyA = new Taxonomy("2001", "tax a", rootTaxaA);
+		Taxonomy taxonomyA = new Taxonomy("2001", "2001", "tax a", rootTaxaA);
 		
 		List<Taxon> rootTaxaB = new LinkedList<Taxon>();
 		Taxon rootB = new Taxon();
@@ -108,7 +112,7 @@ public class EulerInputFileWriter {
 		Taxon b = new Taxon();
 		b.setName("b");
 		rootB.addChild(b);
-		Taxonomy taxonomyB = new Taxonomy("2005", "tax b", rootTaxaB);
+		Taxonomy taxonomyB = new Taxonomy("2005", "2005", "tax b", rootTaxaB);
 		
 		model.getTaxonomies().add(taxonomyA);
 		model.getTaxonomies().add(taxonomyB);

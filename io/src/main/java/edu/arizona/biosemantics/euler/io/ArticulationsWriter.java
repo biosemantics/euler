@@ -13,27 +13,30 @@ public class ArticulationsWriter {
 
 	public String write(Model model) throws Exception {
 		String result = "";
-		String yearsString = "";
-		String taxonomyNamesString = "";
+		String idString = "";
+		//String yearsString = "";
+		//String taxonomyNamesString = "";
 		Map<Taxon, Taxonomy> taxonTaxonomyMap = new HashMap<Taxon, Taxonomy>();
 		
 		
 		for(Taxonomy taxonomy : model.getTaxonomies()) {
-			yearsString += taxonomy.getYear() + "-";
-			taxonomyNamesString += taxonomy.getName() + "-";
+			idString += taxonomy.getId() + "-";
+			//yearsString += taxonomy.getYear() + "-";
+			//taxonomyNamesString += taxonomy.getName() + "-";
 			for(Taxon taxon : taxonomy.getTaxaDFS())
 				taxonTaxonomyMap.put(taxon, taxonomy);
 		}
-		yearsString = yearsString.substring(0, yearsString.length() - 1);
-		taxonomyNamesString = taxonomyNamesString.substring(0, taxonomyNamesString.length() -1);
+		idString = idString.substring(0, idString.length() - 1);
+		//yearsString = yearsString.substring(0, yearsString.length() - 1);
+		//taxonomyNamesString = taxonomyNamesString.substring(0, taxonomyNamesString.length() -1);
 		
-		result += "articulation " +  yearsString + " " + taxonomyNamesString + "\n";
+		result += "articulation " +  idString + "\n"; //yearsString + " " + taxonomyNamesString + "\n";
 		
 		for(Articulation articulation : model.getArticulations()) {
 			Taxon taxonA = articulation.getTaxonA();
 			Taxon taxonB = articulation.getTaxonB();
-			String taxonAString = taxonTaxonomyMap.get(taxonA).getYear() + "." + taxonA.getName();
-			String taxonBString = taxonTaxonomyMap.get(taxonB).getYear() + "." + taxonB.getName();
+			String taxonAString = taxonTaxonomyMap.get(taxonA).getId() + "." + taxonA.getName();
+			String taxonBString = taxonTaxonomyMap.get(taxonB).getId() + "." + taxonB.getName();
 			String relation = getEulerRelation(articulation.getRelation());
 			if(relation != null) 
 				result += "[" + taxonAString + " " + relation + " " + taxonBString + "]\n";

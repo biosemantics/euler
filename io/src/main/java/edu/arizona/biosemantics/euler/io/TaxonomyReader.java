@@ -16,8 +16,9 @@ public class TaxonomyReader {
 
 	public Taxonomy read(String text) throws Exception {
 		try (BufferedReader in = new BufferedReader(new StringReader(text))) {
+			String id = "";
 			String year = "";
-			String name = "";
+			String author = "";
 			List<Taxon> rootTaxa = new LinkedList<Taxon>();
 			Map<String, Taxon> nameTaxonMap = new HashMap<String, Taxon>();
 
@@ -28,15 +29,16 @@ public class TaxonomyReader {
 					continue;
 				Taxonomy taxonomy = new Taxonomy();
 				if (!firstLine) {
-					String[] yearName = extractYearName(line, taxonomy);
-					year = yearName[0];
-					name = yearName[1];
+					String[] idYearName = extractYearName(line, taxonomy);
+					id = idYearName[0];
+					year = idYearName[1];
+					author = idYearName[2];
 					firstLine = true;
 				} else {
 					handleEdgeline(line, rootTaxa, nameTaxonMap);
 				}
 			}
-			return new Taxonomy(year, name, rootTaxa);
+			return new Taxonomy(id, year, author, rootTaxa);
 		} catch (Exception e) {
 			log(LogLevel.ERROR, "Couldn't read input file", e);
 			throw e;
