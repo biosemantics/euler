@@ -11,8 +11,8 @@ public class CharacterOverlap implements Serializable {
 
 	private Taxon taxonA;
 	private Taxon taxonB;
-	private Collection<CharacterState> characterStatesA;
-	private Collection<CharacterState> characterStatesB;
+	private List<CharacterState> characterStatesA;
+	private List<CharacterState> characterStatesB;
 	private List<Overlap> overlap;
 		
 	public CharacterOverlap() { }
@@ -20,8 +20,8 @@ public class CharacterOverlap implements Serializable {
 	public CharacterOverlap(
 			Taxon taxonA,
 			Taxon taxonB,
-			Collection<CharacterState> characterStatesA,
-			Collection<CharacterState> characterStatesB,
+			List<CharacterState> characterStatesA,
+			List<CharacterState> characterStatesB,
 			List<Overlap> overlap) {
 		super();
 		this.taxonA = taxonA;
@@ -45,16 +45,16 @@ public class CharacterOverlap implements Serializable {
 	public void setTaxonB(Taxon taxonB) {
 		this.taxonB = taxonB;
 	}
-	public Collection<CharacterState> getCharacterStatesA() {
+	public List<CharacterState> getCharacterStatesA() {
 		return characterStatesA;
 	}
-	public void setCharacterStatesA(Collection<CharacterState> characterStatesA) {
+	public void setCharacterStatesA(List<CharacterState> characterStatesA) {
 		this.characterStatesA = characterStatesA;
 	}
-	public Collection<CharacterState> getCharacterStatesB() {
+	public List<CharacterState> getCharacterStatesB() {
 		return characterStatesB;
 	}
-	public void setCharacterStatesB(Collection<CharacterState> characterStatesB) {
+	public void setCharacterStatesB(List<CharacterState> characterStatesB) {
 		this.characterStatesB = characterStatesB;
 	}
 	public List<Overlap> getOverlap() {

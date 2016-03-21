@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.sencha.gxt.widget.core.client.menu.Item;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.editor.client.Editor.Path;
 import com.google.gwt.event.logical.shared.SelectionEvent;
@@ -16,6 +17,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Widget;
 import com.sencha.gxt.cell.core.client.form.ComboBoxCell.TriggerAction;
 import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.dom.ScrollSupport.ScrollMode;
 import com.sencha.gxt.core.client.util.Margins;
 import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
@@ -23,9 +25,13 @@ import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.FlowLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.SimpleContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
 import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent;
+import com.sencha.gxt.widget.core.client.event.BeforeShowEvent.BeforeShowHandler;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent;
 import com.sencha.gxt.widget.core.client.event.StartEditEvent;
 import com.sencha.gxt.widget.core.client.event.CompleteEditEvent.CompleteEditHandler;
@@ -42,6 +48,9 @@ import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.ListFilter;
 import com.sencha.gxt.widget.core.client.grid.filters.NumericFilter;
 import com.sencha.gxt.widget.core.client.grid.filters.StringFilter;
+import com.sencha.gxt.widget.core.client.menu.HeaderMenuItem;
+import com.sencha.gxt.widget.core.client.menu.Menu;
+import com.sencha.gxt.widget.core.client.menu.MenuItem;
 import com.sencha.gxt.widget.core.client.treegrid.TreeGrid;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
@@ -70,6 +79,74 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.cha
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.charactertree.StateNodeProperties;
 
 public class TaxonCharactersView extends SimpleContainer {
+	
+	public class CharacterStatesMenu extends Menu implements BeforeShowHandler {
+
+		public CharacterStatesMenu() {
+			this.setWidth(200);
+			
+			this.add(new HeaderMenuItem("View"));
+			MenuItem expand = new MenuItem("Expand All");
+			expand.addSelectionHandler(new SelectionHandler<Item>() {
+				@Override
+				public void onSelection(SelectionEvent<Item> event) {
+					expandAll();
+				}
+			});
+			this.add(expand);
+			MenuItem collapse = new MenuItem("Collapse All");
+			collapse.addSelectionHandler(new SelectionHandler<Item>() {
+				@Override
+				public void onSelection(SelectionEvent<Item> event) {
+					collapseAll();
+				}
+			});
+			this.add(collapse);
+			
+			MenuItem expandOrgans = new MenuItem("Expand Organs");
+			expandOrgans.addSelectionHandler(new SelectionHandler<Item>() {
+				@Override
+				public void onSelection(SelectionEvent<Item> event) {
+					expandOrgans();
+				}
+			});
+			this.add(expandOrgans);
+			
+			MenuItem expandCharacters = new MenuItem("Expand Characters");
+			expandOrgans.addSelectionHandler(new SelectionHandler<Item>() {
+				@Override
+				public void onSelection(SelectionEvent<Item> event) {
+					expandCharacters();
+				}
+			});
+			this.add(expandCharacters);
+			
+			MenuItem collapseOrgans = new MenuItem("Collapse Organs");
+			expandOrgans.addSelectionHandler(new SelectionHandler<Item>() {
+				@Override
+				public void onSelection(SelectionEvent<Item> event) {
+					collapseOrgans();
+				}
+			});
+			this.add(collapseOrgans);
+			
+			MenuItem collapseCharacters = new MenuItem("Collapse Characters");
+			expandOrgans.addSelectionHandler(new SelectionHandler<Item>() {
+				@Override
+				public void onSelection(SelectionEvent<Item> event) {
+					collapseCharacters();
+				}
+			});
+			this.add(collapseCharacters);
+			
+			this.addBeforeShowHandler(this);
+		}
+
+		@Override
+		public void onBeforeShow(BeforeShowEvent event) {
+			this.clear();
+		}
+	}
 	
 	private IEulerAlignmentServiceAsync alignmentService = GWT.create(IEulerAlignmentService.class);	
 	private StateNodeProperties stateNodeProperties = GWT.create(StateNodeProperties.class);
@@ -106,6 +183,7 @@ public class TaxonCharactersView extends SimpleContainer {
 		taxonTreeStore = taxonTree.getTreeStore();
 		vlc.add(taxonTree, new VerticalLayoutData(1, 1));
 		this.setWidget(vlc);
+		this.setContextMenu(new CharacterStatesMenu());
 	}
 	
 	public void addSelectionHandler(SelectionHandler<Node> handler) {
@@ -234,6 +312,37 @@ public class TaxonCharactersView extends SimpleContainer {
 
 	protected void expandAll() {
 		taxonTree.expandAll();
+	}
+	
+	protected void collapseAll() {
+		taxonTree.collapseAll();
+	}
+	
+	protected void collapseCharacters() {
+		for(Node node : this.taxonTreeStore.getRootItems()) {
+			for(Node characterNode : this.taxonTreeStore.getChildren(node)) {
+				this.taxonTree.setExpanded(characterNode, false, true);
+			}
+		}
+	}
+
+	protected void collapseOrgans() {
+		for(Node node : this.taxonTreeStore.getRootItems()) {
+			this.taxonTree.setExpanded(node, false, true);
+		}
+	}
+
+	protected void expandOrgans() {
+		for(Node node : this.taxonTreeStore.getRootItems()) {
+			this.taxonTree.setExpanded(node, false, true);
+			this.taxonTree.setExpanded(node, true, false);
+		}
+	}
+
+	protected void expandCharacters() {
+		for(Node node : this.taxonTreeStore.getRootItems()) {
+			this.taxonTree.setExpanded(node, true, true);
+		}
 	}
 	
 	protected void update(java.util.Collection<CharacterState> characterStates) {

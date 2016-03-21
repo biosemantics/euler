@@ -2,6 +2,7 @@ package edu.arizona.biosemantics.euler.alignment.server.io;
 
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -45,7 +46,7 @@ public class MatrixReviewModelReader {
 		List<edu.arizona.biosemantics.euler.alignment.shared.model.Taxon> rootTaxa = new LinkedList<edu.arizona.biosemantics.euler.alignment.shared.model.Taxon>();
 		rootTaxa.add(rootTaxon);
 		addChildren(rootTaxon, reviewRootTaxon, model);		
-		return new Taxonomy(reviewRootTaxon.getYear(), reviewRootTaxon.getName(), rootTaxa);
+		return new Taxonomy("", reviewRootTaxon.getYear(), reviewRootTaxon.getName(), rootTaxa);
 	}
 
 	private void addChildren(edu.arizona.biosemantics.euler.alignment.shared.model.Taxon rootTaxon, Taxon taxon, Model model) throws Exception {
@@ -68,8 +69,8 @@ public class MatrixReviewModelReader {
 		return newTaxon;
 	}
 
-	private Collection<CharacterState> createCharacters(Taxon taxon, Model model) {
-		Collection<CharacterState> characterStates = new LinkedList<CharacterState>();
+	private List<CharacterState> createCharacters(Taxon taxon, Model model) {
+		List<CharacterState> characterStates = new LinkedList<CharacterState>();
 		List<Organ> charactersByOrgan = model.getTaxonMatrix().getHierarchyCharacters();
 		for(Organ organ : charactersByOrgan) {
 			Set<Character> characters = organ.getCharacters();//[shape of calyx]
@@ -83,6 +84,7 @@ public class MatrixReviewModelReader {
 				}
 			}
 		}
+		Collections.sort(characterStates);
 		return characterStates;
 	}
 

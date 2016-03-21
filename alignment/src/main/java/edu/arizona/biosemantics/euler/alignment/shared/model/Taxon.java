@@ -1,6 +1,7 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -33,7 +34,7 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 	private String author = "";
 	private String year = "";
 	
-	private Collection<CharacterState> characterStates = new HashSet<CharacterState>();
+	private List<CharacterState> characterStates = new ArrayList<CharacterState>();
 	
 	private TaxonIdentification taxonIdentification;
 	
@@ -220,11 +221,11 @@ public class Taxon implements Serializable, Comparable<Taxon> {
 		this.taxonIdentification = taxonIdentification;
 	}
 	
-	public Collection<CharacterState> getCharacterStates() {
+	public List<CharacterState> getCharacterStates() {
 		return this.characterStates;
 	}
 	
-	public void setCharacterStates(Collection<CharacterState> characterStates) {
+	public void setCharacterStates(List<CharacterState> characterStates) {
 		this.characterStates = characterStates;
 	}
 
