@@ -108,7 +108,9 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Cha
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterState;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.Overlap;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.OverlapProperties;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.charactertree.CharacterNode;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.charactertree.Node;
+import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.charactertree.OrganNode;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.charactertree.StateNode;
 
 public class EvidenceBasedCreateDialog extends Dialog {
@@ -169,6 +171,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		uniqueTaxonCharactersViewA.addSelectionHandler(new SelectionHandler<Node>() {
 			@Override
 			public void onSelection(SelectionEvent<Node> event) {
+				selectCharacter(event.getSelectedItem(), uniqueTaxonCharactersViewA);
 				highlightCharacterSelectionA(event.getSelectedItem());
 			}
 		});
@@ -176,6 +179,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		allTaxonCharactersViewA.addSelectionHandler(new SelectionHandler<Node>() {
 			@Override
 			public void onSelection(SelectionEvent<Node> event) {
+				selectCharacter(event.getSelectedItem(), allTaxonCharactersViewA);
 				highlightCharacterSelectionA(event.getSelectedItem());
 			}
 		});
@@ -196,6 +200,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		uniqueTaxonCharactersViewB.addSelectionHandler(new SelectionHandler<Node>() {
 			@Override
 			public void onSelection(SelectionEvent<Node> event) {
+				selectCharacter(event.getSelectedItem(), uniqueTaxonCharactersViewB);
 				highlightCharacterSelectionB(event.getSelectedItem());
 			}
 		});
@@ -203,6 +208,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		allTaxonCharactersViewB.addSelectionHandler(new SelectionHandler<Node>() {
 			@Override
 			public void onSelection(SelectionEvent<Node> event) {
+				selectCharacter(event.getSelectedItem(), allTaxonCharactersViewB);
 				highlightCharacterSelectionB(event.getSelectedItem());
 			}
 		});
@@ -273,6 +279,17 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		this.setModal(true);
 	}	
 	
+	protected void selectCharacter(Node node, Object source) {
+		if(!source.equals(allTaxonCharactersViewA))
+			this.allTaxonCharactersViewA.select(node);
+		if(!source.equals(allTaxonCharactersViewB))
+			this.allTaxonCharactersViewB.select(node);
+		if(!source.equals(uniqueTaxonCharactersViewA))
+			this.uniqueTaxonCharactersViewA.select(node);
+		if(!source.equals(uniqueTaxonCharactersViewB))
+			this.uniqueTaxonCharactersViewB.select(node);
+	}
+
 	protected void highlightCharacterSelectionA(Node selectedItem) {
 		if(selectedItem instanceof StateNode) {
 			StateNode stateNode = (StateNode)selectedItem;

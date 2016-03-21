@@ -23,6 +23,8 @@ import com.sencha.gxt.data.shared.LabelProvider;
 import com.sencha.gxt.data.shared.ListStore;
 import com.sencha.gxt.data.shared.ModelKeyProvider;
 import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.SortDir;
+import com.sencha.gxt.data.shared.Store.StoreSortInfo;
 import com.sencha.gxt.data.shared.TreeStore;
 import com.sencha.gxt.widget.core.client.ContentPanel;
 import com.sencha.gxt.widget.core.client.button.TextButton;
@@ -371,6 +373,34 @@ public class TaxonCharactersView extends SimpleContainer {
 			if(existingNode == null) {
 				stateNode.diagnosticValue = collection.getModel().getDiagnosticValue(stateNode);
 				taxonTreeStore.add(characterNode, stateNode);
+			}
+		}
+		taxonTreeStore.addSortInfo(new StoreSortInfo<Node>(nodeProperties.name(), SortDir.DESC));
+	}
+
+	public void select(Node node) {
+		if(node instanceof OrganNode) {
+			for(Node organNode : taxonTreeStore.getRootItems()) {
+				if(organNode.name.equals(node.name))
+					this.taxonTree.getSelectionModel().select(false, organNode);
+			}
+		}
+		if(node instanceof CharacterNode) {
+			for(Node organNode : taxonTreeStore.getRootItems()) {
+				for(Node characterNode : taxonTreeStore.getChildren(organNode)) {
+					if(characterNode.name.equals(node.name))
+						this.taxonTree.getSelectionModel().select(false, characterNode);
+				}
+			}
+		}
+		if(node instanceof StateNode) {
+			for(Node organNode : taxonTreeStore.getRootItems()) {
+				for(Node characterNode : taxonTreeStore.getChildren(organNode)) {
+					for(Node stateNode : taxonTreeStore.getChildren(characterNode)) {
+						if(stateNode.name.equals(node.name))
+							this.taxonTree.getSelectionModel().select(false, stateNode);
+					}
+				}
 			}
 		}
 	}
