@@ -137,7 +137,7 @@ public class TaxonCharactersView extends SimpleContainer {
 			}
 		};
 		final ColumnConfig<Node, DiagnosticValue> diagnosticValueColumn = new ColumnConfig<Node, DiagnosticValue>(diagnosticValueValueProvider, 70);
-		diagnosticValueColumn.setHeader("Value");
+		diagnosticValueColumn.setHeader("Weight");
 	      
 		/*ValueProvider<Node, Rank> diagnosticScopeValueProvider = new ValueProvider<Node, Rank>() {
 			@Override

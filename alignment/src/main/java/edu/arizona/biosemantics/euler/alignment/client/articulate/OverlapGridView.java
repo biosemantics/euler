@@ -1,5 +1,8 @@
 package edu.arizona.biosemantics.euler.alignment.client.articulate;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -126,7 +129,13 @@ public class OverlapGridView extends SimpleContainer {
 		ValueProvider<Overlap, Double> similarityProvider = new ValueProvider<Overlap, Double>() {
 			@Override
 			public Double getValue(Overlap object) {
-				return object.getSimilarity();
+				BigDecimal bd = new BigDecimal(object.getSimilarity());
+				bd = bd.setScale(2, RoundingMode.HALF_UP);
+				return bd.doubleValue();
+				
+				/*DecimalFormat df = new DecimalFormat("#.####");
+				df.setRoundingMode(RoundingMode.HALF_UP);
+				return Double.valueOf(df.format(object.getSimilarity()));*/
 			}
 			@Override
 			public void setValue(Overlap object, Double value) { }
