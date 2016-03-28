@@ -44,6 +44,7 @@ import com.sencha.gxt.widget.core.client.form.NumberPropertyEditor;
 import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
+import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.grid.editing.GridRowEditing;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
@@ -82,7 +83,7 @@ import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.cha
 
 public class TaxonCharactersView extends SimpleContainer {
 	
-	public class CharacterStatesMenu extends Menu implements BeforeShowHandler {
+	public class CharacterStatesMenu extends Menu {
 
 		public CharacterStatesMenu() {
 			this.setWidth(200);
@@ -105,7 +106,7 @@ public class TaxonCharactersView extends SimpleContainer {
 			});
 			this.add(collapse);
 			
-			MenuItem expandOrgans = new MenuItem("Expand Organs");
+			/*MenuItem expandOrgans = new MenuItem("Expand Organs");
 			expandOrgans.addSelectionHandler(new SelectionHandler<Item>() {
 				@Override
 				public void onSelection(SelectionEvent<Item> event) {
@@ -139,16 +140,18 @@ public class TaxonCharactersView extends SimpleContainer {
 					collapseCharacters();
 				}
 			});
-			this.add(collapseCharacters);
-			
-			this.addBeforeShowHandler(this);
-		}
-
-		@Override
-		public void onBeforeShow(BeforeShowEvent event) {
-			this.clear();
+			this.add(collapseCharacters);*/
 		}
 	}
+	
+	private class MyGridSelectionModel extends GridSelectionModel<Node> {
+		public void select(List<Node> items, boolean keepExisting, boolean surpressEvent) {
+			doSelect(items, keepExisting, surpressEvent);
+		}
+		public void select(boolean keepExisting, boolean surpressEvent, Node... items) {
+			doSelect(Arrays.asList(items), keepExisting, surpressEvent);
+		}
+	};
 	
 	private IEulerAlignmentServiceAsync alignmentService = GWT.create(IEulerAlignmentService.class);	
 	private StateNodeProperties stateNodeProperties = GWT.create(StateNodeProperties.class);
@@ -160,6 +163,7 @@ public class TaxonCharactersView extends SimpleContainer {
 	private TreeStore<Node> taxonTreeStore;
 	private ListStore<DiagnosticValue> diagnosticValueStore;
 	private ListStore<Rank> rankStore;
+	private MyGridSelectionModel selectionModel;
 
 	public TaxonCharactersView(EventBus eventBus, Collection collection) {
 		this.eventBus = eventBus;
@@ -281,6 +285,9 @@ public class TaxonCharactersView extends SimpleContainer {
 		//filters.addFilter(diagnosticScopeFilter);
 		filters.setLocal(true);
 		filters.initPlugin(taxonTreeGrid);
+		
+		selectionModel = new MyGridSelectionModel();
+		taxonTreeGrid.setSelectionModel(selectionModel);
 		return taxonTreeGrid;
 	}
 
@@ -375,33 +382,41 @@ public class TaxonCharactersView extends SimpleContainer {
 				taxonTreeStore.add(characterNode, stateNode);
 			}
 		}
-		taxonTreeStore.addSortInfo(new StoreSortInfo<Node>(nodeProperties.name(), SortDir.DESC));
+		taxonTreeStore.addSortInfo(new StoreSortInfo<Node>(nodeProperties.name(), SortDir.ASC));
 	}
-
-	public void select(Node node) {
-		if(node instanceof OrganNode) {
-			for(Node organNode : taxonTreeStore.getRootItems()) {
-				if(organNode.name.equals(node.name))
-					this.taxonTree.getSelectionModel().select(false, organNode);
+	
+	public void select(OrganNode organNode, CharacterNode characterNode, StateNode stateNode) {
+		if(stateNode == null && characterNode == null && organNode != null) {
+			for(Node organ : taxonTreeStore.getRootItems()) {
+				if(organ.name.equals(organNode.name))
+					selectionModel.select(false, true, organNode);
 			}
-		}
-		if(node instanceof CharacterNode) {
-			for(Node organNode : taxonTreeStore.getRootItems()) {
-				for(Node characterNode : taxonTreeStore.getChildren(organNode)) {
-					if(characterNode.name.equals(node.name))
-						this.taxonTree.getSelectionModel().select(false, characterNode);
+		} else if(stateNode == null && characterNode != null && organNode != null) {
+			for(Node organ : taxonTreeStore.getRootItems()) {
+				if(organ.name.equals(organNode.name)) {
+					for(Node character : taxonTreeStore.getChildren(organNode)) {
+						if(character.name.equals(characterNode.name))
+							selectionModel.select(false, true, characterNode);
+					}
 				}
 			}
-		}
-		if(node instanceof StateNode) {
-			for(Node organNode : taxonTreeStore.getRootItems()) {
-				for(Node characterNode : taxonTreeStore.getChildren(organNode)) {
-					for(Node stateNode : taxonTreeStore.getChildren(characterNode)) {
-						if(stateNode.name.equals(node.name))
-							this.taxonTree.getSelectionModel().select(false, stateNode);
+		} else if(stateNode != null && characterNode != null && organNode != null) {
+			for(Node organ : taxonTreeStore.getRootItems()) {
+				if(organ.name.equals(organNode.name)) {
+					for(Node character : taxonTreeStore.getChildren(organNode)) {
+						if(character.name.equals(characterNode.name)) {
+							for(Node state : taxonTreeStore.getChildren(characterNode)) {
+								if(state.name.equals(stateNode.name))
+									selectionModel.select(false, true, stateNode);
+							}
+						}
 					}
 				}
 			}
 		}
+	}
+
+	public TreeStore<Node> getStore() {
+		return this.taxonTreeStore;
 	}
 }

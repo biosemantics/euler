@@ -73,6 +73,7 @@ import com.sencha.gxt.widget.core.client.grid.ColumnConfig;
 import com.sencha.gxt.widget.core.client.grid.ColumnModel;
 import com.sencha.gxt.widget.core.client.grid.Grid;
 import com.sencha.gxt.widget.core.client.grid.Grid.GridCell;
+import com.sencha.gxt.widget.core.client.grid.GridSelectionModel;
 import com.sencha.gxt.widget.core.client.grid.editing.GridInlineEditing;
 import com.sencha.gxt.widget.core.client.grid.filters.GridFilters;
 import com.sencha.gxt.widget.core.client.grid.filters.ListFilter;
@@ -279,15 +280,31 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		this.setModal(true);
 	}	
 	
-	protected void selectCharacter(Node node, Object source) {
-		if(!source.equals(allTaxonCharactersViewA))
-			this.allTaxonCharactersViewA.select(node);
+	protected void selectCharacter(Node node, TaxonCharactersView source) {
+		OrganNode organNode = null;
+		CharacterNode characterNode = null;
+		StateNode stateNode = null;
+		if(node instanceof OrganNode)
+			organNode = (OrganNode)node;
+		if(node instanceof CharacterNode)
+			characterNode = (CharacterNode)node;
+		if(node instanceof StateNode) 
+			stateNode = (StateNode)node;
+		if(stateNode != null) {
+			characterNode = (CharacterNode)source.getStore().getParent(stateNode);
+			organNode = (OrganNode)source.getStore().getParent(characterNode);
+		} else if(characterNode != null) {
+			organNode = (OrganNode)source.getStore().getParent(characterNode);
+		} 
+		
+		if(!source.equals(allTaxonCharactersViewA)) 
+			this.allTaxonCharactersViewA.select(organNode, characterNode, stateNode);
 		if(!source.equals(allTaxonCharactersViewB))
-			this.allTaxonCharactersViewB.select(node);
+			this.allTaxonCharactersViewB.select(organNode, characterNode, stateNode);
 		if(!source.equals(uniqueTaxonCharactersViewA))
-			this.uniqueTaxonCharactersViewA.select(node);
+			this.uniqueTaxonCharactersViewA.select(organNode, characterNode, stateNode);
 		if(!source.equals(uniqueTaxonCharactersViewB))
-			this.uniqueTaxonCharactersViewB.select(node);
+			this.uniqueTaxonCharactersViewB.select(organNode, characterNode, stateNode);
 	}
 
 	protected void highlightCharacterSelectionA(Node selectedItem) {
