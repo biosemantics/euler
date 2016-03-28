@@ -25,7 +25,7 @@ public class MatrixReviewModelReader {
 	public Taxonomy getTaxonomy(Model model) throws Exception {
 		TaxonMatrix matrix = model.getTaxonMatrix();
 		
-		Taxon reviewRootTaxon = null;
+		/*Taxon reviewRootTaxon = null;
 		if(matrix.getHierarchyRootTaxa().size() == 0) {
 			throw new Exception("Empty taxonomy cannot be used as input.");
 		}
@@ -40,19 +40,24 @@ public class MatrixReviewModelReader {
 			TaxonIdentification taxonIdentification = new TaxonIdentification(rankData, "NA", String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
 			reviewRootTaxon.setTaxonIdentification(taxonIdentification);
 			reviewRootTaxon.setChildren(matrix.getHierarchyRootTaxa());
-		}	
+		}*/	
 		
-		edu.arizona.biosemantics.euler.alignment.shared.model.Taxon rootTaxon = createCharacterizedTaxon(reviewRootTaxon, model);
+		//edu.arizona.biosemantics.euler.alignment.shared.model.Taxon rootTaxon = createCharacterizedTaxon(reviewRootTaxon, model);
 		List<edu.arizona.biosemantics.euler.alignment.shared.model.Taxon> rootTaxa = new LinkedList<edu.arizona.biosemantics.euler.alignment.shared.model.Taxon>();
-		rootTaxa.add(rootTaxon);
-		addChildren(rootTaxon, reviewRootTaxon, model);		
-		return new Taxonomy("", reviewRootTaxon.getYear(), reviewRootTaxon.getName(), rootTaxa);
+		
+		for(Taxon taxon : matrix.getHierarchyRootTaxa()) {
+			edu.arizona.biosemantics.euler.alignment.shared.model.Taxon alignmentTaxon = createCharacterizedTaxon(taxon, model);
+			rootTaxa.add(alignmentTaxon);
+			addChildren(alignmentTaxon, taxon, model);
+		}
+				
+		return new Taxonomy("", "", "", rootTaxa);
 	}
 
-	private void addChildren(edu.arizona.biosemantics.euler.alignment.shared.model.Taxon rootTaxon, Taxon taxon, Model model) throws Exception {
+	private void addChildren(edu.arizona.biosemantics.euler.alignment.shared.model.Taxon parentTaxon, Taxon taxon, Model model) throws Exception {
 		for(Taxon child : taxon.getChildren()) {
 			edu.arizona.biosemantics.euler.alignment.shared.model.Taxon childTaxon = createCharacterizedTaxon(child, model);
-			rootTaxon.addChild(childTaxon);
+			parentTaxon.addChild(childTaxon);
 			addChildren(childTaxon, child, model);
 		}
 	}
