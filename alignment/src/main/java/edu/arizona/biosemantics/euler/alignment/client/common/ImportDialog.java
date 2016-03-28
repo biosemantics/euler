@@ -37,11 +37,12 @@ public class ImportDialog extends CommonDialog {
 		HTML html = new HTML();
 		
 		Taxonomy taxonomy1 = collection.getModel().getTaxonomies().get(0);
-		Taxonomy taxonomy2 = collection.getModel().getTaxonomies().get(0);
+		Taxonomy taxonomy2 = collection.getModel().getTaxonomies().get(1);
 		html.setHTML(SafeHtmlUtils.fromTrustedString("Taxonomy sec. " + 
 				taxonomy1.getAuthor() + " " + taxonomy1.getYear() +  " ID: " + taxonomy1.getId() + " </br>" + 
 				"Taxonomy sec. " + 
-				taxonomy2.getAuthor() + " " + taxonomy2.getYear() +  " ID: " + taxonomy2.getId()));
+				taxonomy2.getAuthor() + " " + taxonomy2.getYear() +  " ID: " + taxonomy2.getId()) + "</br></br>" + 
+				"Articulations: ");
 		
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		vlc.add(html,  new VerticalLayoutData(1, -1));
