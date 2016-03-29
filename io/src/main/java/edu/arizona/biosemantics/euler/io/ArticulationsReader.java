@@ -28,9 +28,9 @@ public class ArticulationsReader {
 	public Articulations read(String text, Model model) throws Exception {
 		Articulations result = new Articulations();
 		try (BufferedReader in = new BufferedReader(new StringReader(text))) {
-			String yearsString = "";
-			String namesString = "";
-			Map<String, Taxonomy> yearTaxonomyMap = new HashMap<String, Taxonomy>();
+			String idsString = "";
+			//String namesString = "";
+			Map<String, Taxonomy> idTaxonomyMap = new HashMap<String, Taxonomy>();
 
 			boolean firstLine = false;
 			String line;
@@ -38,24 +38,24 @@ public class ArticulationsReader {
 				if(line.trim().startsWith("#"))
 					continue;
 				if (!firstLine) {
-					String[] yearsNames = extractYearsNames(line);
-					if(yearsNames.length != 2) 
-						throw new Exception("First line format invalid. Separate taxonomy year and author by space.");
-					yearsString = yearsNames[0];
-					namesString = yearsNames[1];
+					String[] idsNames = extractIdsNames(line);
+					if(idsNames.length != 2 && idsNames.length != 1) 
+						throw new Exception("First line format invalid. Separate \"articulation\" and \"ids\" by space.");
+					idsString = idsNames[0];
+					//namesString = idsNames[1];
 					firstLine = true;
 					
-					String[] years = yearsString.split("-");
-					if(years.length != 2) 
-						throw new Exception("First line format invalid. Separate years by -");
-					for(String year : years) {
-						Taxonomy taxonomy = getTaxonomy(year, model);
+					String[] ids = idsString.split("-");
+					if(ids.length != 2) 
+						throw new Exception("First line format invalid. Separate ids by -");
+					for(String id : ids) {
+						Taxonomy taxonomy = getTaxonomy(id, model);
 						if(taxonomy == null)
-							throw new Exception("Taxonomy of " + year + " could not be found");
-						yearTaxonomyMap.put(year, taxonomy);
+							throw new Exception("Taxonomy of " + id + " could not be found");
+						idTaxonomyMap.put(id, taxonomy);
 					}
 				} else {
-					Articulation articulation = readArticulationLine(line, yearTaxonomyMap);
+					Articulation articulation = readArticulationLine(line, idTaxonomyMap);
 					result.add(articulation);
 				}
 			}
@@ -66,7 +66,7 @@ public class ArticulationsReader {
 		}
 	}
 
-	private Articulation readArticulationLine(String line, Map<String, Taxonomy> yearTaxonomyMap) throws Exception {
+	private Articulation readArticulationLine(String line, Map<String, Taxonomy> idTaxonomyMap) throws Exception {
 		String[] parts = null;
 		try {
 			parts = line.trim().substring(1, line.length() - 1).split(" ");
@@ -79,23 +79,23 @@ public class ArticulationsReader {
 		
 		String[] taxonAParts = taxonA.split("\\.");
 		if(taxonAParts.length != 2) 
-			throw new Exception("Articulation line format invalid. Separate year and taxon-A by a dot. Example: 2015.Rubus. Line: " + line);
-		String yearTaxonA = taxonAParts[0];
+			throw new Exception("Articulation line format invalid. Separate id and taxon-A by a dot. Example: 2015.Rubus. Line: " + line);
+		String idTaxonA = taxonAParts[0];
 		String nameTaxonA = taxonAParts[1];
 		String relation = parts[1];
 		String taxonB = parts[2];
 		String[] taxonBParts = taxonB.split("\\.");
 		if(taxonBParts.length != 2) 
-			throw new Exception("Articulation line format invalid. Separate year and taxon-A by a dot. Example: 2015.Rubus. Line: " + line);
-		String yearTaxonB = taxonBParts[0];
+			throw new Exception("Articulation line format invalid. Separate id and taxon-A by a dot. Example: 2015.Rubus. Line: " + line);
+		String idTaxonB = taxonBParts[0];
 		String nameTaxonB = taxonBParts[1];
 		
-		Taxonomy taxonomyA = yearTaxonomyMap.get(yearTaxonA);
-		Taxonomy taxonomyB = yearTaxonomyMap.get(yearTaxonB);
+		Taxonomy taxonomyA = idTaxonomyMap.get(idTaxonA);
+		Taxonomy taxonomyB = idTaxonomyMap.get(idTaxonB);
 		if(taxonomyA == null)
-			throw new Exception("Could not find taxonomy for the year: " + yearTaxonB + ". Line: " + line);
+			throw new Exception("Could not find taxonomy for the id: " + idTaxonB + ". Line: " + line);
 		if(taxonomyB == null)
-			throw new Exception("Could not find taxonomy for the year: " + yearTaxonB + ". Line: " + line);
+			throw new Exception("Could not find taxonomy for the id: " + idTaxonB + ". Line: " + line);
 		
 		Taxon a = getTaxon(taxonomyA, nameTaxonA);
 		if(a == null)
@@ -136,15 +136,15 @@ public class ArticulationsReader {
 	}
 
 
-	private Taxonomy getTaxonomy(String year, Model model) {
+	private Taxonomy getTaxonomy(String id, Model model) {
 		for(Taxonomy taxonomy : model.getTaxonomies()) {
-			if(taxonomy.getYear().equals(year))
+			if(taxonomy.getId().equals(id))
 				return taxonomy;
 		}
 		return null;
 	}
 
-	private String[] extractYearsNames(String line) {
+	private String[] extractIdsNames(String line) {
 		return line.replaceFirst("articulation", "").trim().split(" ");
 	}
 	
