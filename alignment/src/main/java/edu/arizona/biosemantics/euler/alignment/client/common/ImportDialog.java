@@ -2,6 +2,7 @@ package edu.arizona.biosemantics.euler.alignment.client.common;
 
 import com.google.gwt.core.shared.GWT;
 import com.google.gwt.event.shared.EventBus;
+import com.google.gwt.safehtml.shared.SafeHtml;
 import com.google.gwt.safehtml.shared.SafeHtmlUtils;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
@@ -39,10 +40,16 @@ public class ImportDialog extends CommonDialog {
 		Taxonomy taxonomy1 = collection.getModel().getTaxonomies().get(0);
 		Taxonomy taxonomy2 = collection.getModel().getTaxonomies().get(1);
 		html.setHTML(SafeHtmlUtils.fromTrustedString("Taxonomy sec. " + 
-				taxonomy1.getAuthor() + " " + taxonomy1.getYear() +  " ID: " + taxonomy1.getId() + " </br>" + 
+				taxonomy1.getAuthor() + " " + taxonomy1.getYear() +  " has ID: " + taxonomy1.getId() + " </br>" + 
 				"Taxonomy sec. " + 
-				taxonomy2.getAuthor() + " " + taxonomy2.getYear() +  " ID: " + taxonomy2.getId()) + "</br></br>" + 
-				"Articulations: ");
+				taxonomy2.getAuthor() + " " + taxonomy2.getYear() +  " has ID: " + taxonomy2.getId() + "</br></br>"
+						+ "e.g. </br>"
+						+ "articulation " + taxonomy1.getId() + "-" + taxonomy2.getId() + "</br>" 
+						+ "[" + taxonomy1.getId() + "." + taxonomy1.getRootTaxa().get(0).getName() + 
+						" equals "
+						+ taxonomy2.getId() + "." + taxonomy2.getRootTaxa().get(0).getName() + "]" +
+						"</br></br>" +
+				"Import Articulations below: "));
 		
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		vlc.add(html,  new VerticalLayoutData(1, -1));
