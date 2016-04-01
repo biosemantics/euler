@@ -49,7 +49,7 @@ public class MyOverlapCalculator implements CharacterOverlapCalculator, TaxonSim
 		for(CharacterState characterStateA : characterStatesA) {
 			double maxSimilarity = 0;
 			for(CharacterState characterStateB : characterStatesB) {
-				double similarity = betweenTaxaMap.get(characterStateA).get(characterStateB).getSimilarity();
+				double similarity = betweenTaxaMap.get(characterStateA).get(characterStateB).getMinimalSimilarity();
 				if(similarity > maxSimilarity) 
 					maxSimilarity = similarity;
 			}
@@ -107,7 +107,7 @@ public class MyOverlapCalculator implements CharacterOverlapCalculator, TaxonSim
 			
 			for(AsymmetricSimilarity<CharacterState> similarity : maximumSimilarityPairs) {
 				if(similarity.getAverageSimilarity() >= threshold) {
-					overlap.add(new Overlap(similarity.getItemA(), similarity.getItemB(), similarity.getAverageSimilarity(), 
+					overlap.add(new Overlap(similarity.getItemA(), similarity.getItemB(), similarity.getMinimalSimilarity(), 
 							DiagnosticValue.MEDIUM));
 					remainingTaxonACharacterStates.remove(similarity.getItemA());;
 					remainingTaxonBCharacterStates.remove(similarity.getItemB());

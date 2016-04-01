@@ -4,7 +4,7 @@
 	<groupId>edu.arizona.biosemantics.euler</groupId>
 	<artifactId>alignment</artifactId>
 	<packaging>war</packaging>
-	<version>0.0.79-SNAPSHOT</version>
+	<version>0.0.80-SNAPSHOT</version>
 	
 	<properties>
 		<gwtVersion>2.6.1</gwtVersion>
@@ -36,7 +36,7 @@
 		<dependency>
 		  <groupId>edu.arizona.biosemantics.common</groupId>
 		  <artifactId>ling</artifactId>
-		  <version>0.0.13-SNAPSHOT</version>
+		  <version>0.0.16-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 		  <groupId>edu.arizona.biosemantics.common</groupId>

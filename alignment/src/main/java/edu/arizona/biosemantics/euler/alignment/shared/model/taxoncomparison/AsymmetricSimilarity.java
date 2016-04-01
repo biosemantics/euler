@@ -46,7 +46,7 @@ public class AsymmetricSimilarity<T> implements Serializable {
 	}
 	
 	public double getAverageSimilarity() {
-		return Math.abs((similarity - oppositeSimilarity) / 2);
+		return (similarity + oppositeSimilarity) / 2;
 	}
 	
 	public T getItemA() {
@@ -55,5 +55,9 @@ public class AsymmetricSimilarity<T> implements Serializable {
 	
 	public T getItemB() {
 		return itemB;
+	}
+
+	public double getMinimalSimilarity() {
+		return Math.min(similarity, oppositeSimilarity);
 	}
 }
