@@ -244,7 +244,7 @@ public class EulerAlign {
 				Field field = process.getClass().getDeclaredField("pid");
 				field.setAccessible(true);
 				int pid = field.getInt(process);
-				Runtime.getRuntime().exec("kill -9 " + pid);
+				Runtime.getRuntime().exec("kill -SIGTERM " + pid);
 
 			} catch (Throwable t) {
 				log(LogLevel.ERROR,
