@@ -4,10 +4,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.python.core.Py;
+import org.python.core.PyString;
+import org.python.core.PySystemState;
+import org.python.util.PythonInterpreter;
 
 import edu.arizona.biosemantics.common.log.LogLevel;
 
@@ -26,15 +31,47 @@ public class Euler2 {
 		this.help = help;
 	}
 
-	public String run() throws IOException, EulerException {
-		List<String> commands = new LinkedList<String>();
-		if (version)
-			commands.add("--version");
-		if (help)
-			commands.add("--help");
-
-		return runCommand(Configuration.eulerPath + File.separator + "euler2 "
-				+ StringUtils.join(commands, " "));
+	public String run() throws EulerException {
+		log(LogLevel.INFO, "Run euler2");
+		StringWriter outWriter = new StringWriter();
+		StringWriter errWriter = new StringWriter();
+		PythonInterpreter.initialize(System.getProperties(), System.getProperties(), new String[0]);
+		try(PythonInterpreter interpreter = new PythonInterpreter()) {
+			interpreter.setOut(outWriter);
+			interpreter.setErr(outWriter);
+			PySystemState sys = Py.getSystemState();
+			sys.path.append(new PyString(Configuration.pythonModulesPath));
+			sys.path.append(new PyString(Configuration.eulerPath));
+			
+			List<String> commands = new LinkedList<String>();
+			if (version)
+				addCommand(commands, "--version");
+			if (help)
+				addCommand(commands, "--help");
+			
+			String joinedCommands = StringUtils.join(commands, ", ");
+			interpreter.exec("import subprocess");
+			String pythonCommand = "subprocess.call(['" + Configuration.eulerPath + File.separator + "src-el" + File.separator + "euler2', " + joinedCommands + "])";
+			log(LogLevel.INFO, "Run: " + pythonCommand);
+			interpreter.exec(pythonCommand);
+			interpreter.cleanup();
+			interpreter.close();
+		}
+		
+		String outString = outWriter.toString().trim();
+		String errorString = errWriter.toString().trim();
+		if(!outString.isEmpty())
+			log(LogLevel.INFO, outWriter.toString());
+		if(!errorString.isEmpty()) {
+			log(LogLevel.ERROR, errWriter.toString());
+			throw new EulerException(errorString);
+		}	
+		log(LogLevel.INFO, "Done running euler2");
+		return outWriter.toString() + "\n" + errWriter.toString();
+	}
+	
+	private void addCommand(List<String> commands, String command) {
+		commands.add("'" + command + "'");
 	}
 
 	public boolean isVersion() {
@@ -51,50 +88,5 @@ public class Euler2 {
 
 	public void setHelp(boolean help) {
 		this.help = help;
-	}
-
-	private String runCommand(String command) throws EulerException {
-		log(LogLevel.DEBUG, "Run: " + command);
-		StringBuilder input = new StringBuilder();
-		StringBuilder error = new StringBuilder();
-		long time = System.currentTimeMillis();
-		Process p;
-		try {
-			p = Runtime.getRuntime().exec(command);
-
-			try (BufferedReader stdInput = new BufferedReader(
-					new InputStreamReader(p.getInputStream()))) {
-				String s = "";
-				while ((s = stdInput.readLine()) != null) {
-					log(LogLevel.DEBUG,
-							s + " at " + (System.currentTimeMillis() - time)
-									/ 1000 + " seconds");
-					input.append(s + "\n");
-				}
-			}
-
-			try (BufferedReader errInput = new BufferedReader(
-					new InputStreamReader(p.getErrorStream()))) {
-				String e = "";
-				while ((e = errInput.readLine()) != null) {
-					log(LogLevel.DEBUG,
-							e + " at " + (System.currentTimeMillis() - time)
-									/ 1000 + " seconds");
-					error.append(e + "\n");
-				}
-			}
-
-			int exitStatus = p.waitFor();
-			if (exitStatus == 0)
-				return input.toString() + "\n" + error.toString();
-			else
-				log(LogLevel.ERROR, "Euler exit status " + exitStatus);
-		} catch (IOException | InterruptedException e) {
-			log(LogLevel.ERROR, "Couldn't execute euler", e);
-			throw new EulerException("Euler execution failed: \n"
-					+ error.toString() + "... " + e.toString());
-		}
-		throw new EulerException("Euler execution failed: \n"
-				+ error.toString());
 	}
 }

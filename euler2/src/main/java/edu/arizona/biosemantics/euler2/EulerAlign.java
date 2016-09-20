@@ -24,6 +24,12 @@ import edu.arizona.biosemantics.euler2.Encoding;
 
 public class EulerAlign {
 	
+	public static void main(String[] args) throws IOException, EulerException {
+		EulerAlign align = new EulerAlign();
+		align.setInputFile("abstract.txt");
+		align.run();
+	}
+	
 	private String inputFile;
 	private String outputDirectory;
 	private File workingDir;
@@ -64,7 +70,8 @@ public class EulerAlign {
 		this.ieo = ieo;
 	}
 	
-	public String run() throws IOException, EulerException {
+	public String run() throws EulerException {
+		log(LogLevel.INFO, "Run euler2 align");
 		StringWriter outWriter = new StringWriter();
 		StringWriter errWriter = new StringWriter();
 		PythonInterpreter.initialize(System.getProperties(), System.getProperties(), new String[0]);
@@ -77,51 +84,66 @@ public class EulerAlign {
 			
 			List<String> commands = new LinkedList<String>();
 			if(inputFile != null)
-				commands.add(inputFile);
+				addCommand(commands, inputFile);
 			if(encoding != null)
-				commands.add("-e " + encoding.toString().toLowerCase());
+				addCommand(commands, "-e " + encoding.toString().toLowerCase());
 			if(reasoner != null)
-				commands.add("-r " + reasoner.toString().toLowerCase());
+				addCommand(commands, "-r " + reasoner.toString().toLowerCase());
 			if (consistency)
-				commands.add("--consistency");
+				addCommand(commands, "--consistency");
 			if (hidemirdisjoint)
-				commands.add("--hidemirdisjoint");
+				addCommand(commands, "--hidemirdisjoint");
 			if (disablecov)
-				commands.add("--disablecov");
+				addCommand(commands, "--disablecov");
 			if (disablesib)
-				commands.add("--disablesib");
+				addCommand(commands, "--disablesib");
 			if (repairWay != null)
-				commands.add("--repair=" + repairWay);
+				addCommand(commands, "--repair=" + repairWay);
 			if (artRem)
-				commands.add("--artRem");
+				addCommand(commands, "--artRem");
 			if (fourinone)
-				commands.add("--fourinone");
+				addCommand(commands, "--fourinone");
 			if (xia)
-				commands.add("--xia");
+				addCommand(commands, "--xia");
 			if (ur)
-				commands.add("--ur");
+				addCommand(commands, "--ur");
 			if (ie)
-				commands.add("--ie");
+				addCommand(commands, "--ie");
 			if (ieo)
-				commands.add("--ieo");
+				addCommand(commands, "--ieo");
 			if(outputDirectory != null)
-				commands.add("-o " + outputDirectory);
+				addCommand(commands, "-o " + outputDirectory);
 	
 			String joinedCommands = StringUtils.join(commands, ", ");
+			//use subprocess.call() or execfile()
 			interpreter.exec("import subprocess");
-			interpreter.exec("subprocess.call(['" + Configuration.eulerPath + File.separator + "euler2', align, " + joinedCommands + "])");
+			String pythonCommand = "subprocess.call(['" + Configuration.eulerPath + File.separator + "src-el" + File.separator + "euler2', 'align', " + joinedCommands + "])";
+			//interpreter.exec("import sys");
+			//String args = "'align'" + ", " + joinedCommands;
+			//interpreter.exec("sys.argv = [" + args + "]");
+			//interpreter.exec("execfile('" + Configuration.eulerPath + File.separator + "src-el" + File.separator + "euler2')");
+			log(LogLevel.INFO, "Run: " + pythonCommand);
+			interpreter.exec(pythonCommand);
 			interpreter.cleanup();
 			interpreter.close();
-			
 		}
-		//return runCommand("notepad");
-		//return runCommand(Configuration.eulerPath + File.separator + "euler2 align "
-		//		+ StringUtils.join(commands, " "));
-		log(LogLevel.INFO, outWriter.toString());
-		log(LogLevel.ERROR, errWriter.toString());
+		
+		String outString = outWriter.toString().trim();
+		String errorString = errWriter.toString().trim();
+		if(!outString.isEmpty())
+			log(LogLevel.INFO, outWriter.toString());
+		if(!errorString.isEmpty()) {
+			log(LogLevel.ERROR, errWriter.toString());
+			throw new EulerException(errorString);
+		}	
+		log(LogLevel.INFO, "Done running euler2 align");
 		return outWriter.toString() + "\n" + errWriter.toString();
 	}
 	
+	private void addCommand(List<String> commands, String command) {
+		commands.add("'" + command + "'");
+	}
+
 	public String getInputFile() {
 		return inputFile;
 	}
@@ -253,108 +275,4 @@ public class EulerAlign {
 	public void setWorkingDir(String workingDir) {
 		this.workingDir = new File(workingDir);
 	}
-
-	private class TerminatePythonHook extends Thread {
-		final Process process;
-		
-		public TerminatePythonHook(Process process){
-			this.process = process;
-		}
-		
-		@Override
-		public void run() {
-			log(LogLevel.INFO, "Running shutdown hook...");
-			PrintWriter writer;
-			try {
-				File file = new File("/var/lib/etcsite/test-jetty/my-debug.txt");
-				file.createNewFile();
-				writer = new PrintWriter(file);
-				writer.println("running shutdown hook");
-				try {
-					process.getInputStream().close();
-					process.getOutputStream().close();
-					process.getErrorStream().close();
-
-					Field field = process.getClass().getDeclaredField("pid");
-					field.setAccessible(true);
-					int pid = field.getInt(process);
-					String killCommand = "kill -9 " + pid;
-					writer.println("Issue kill command as: " + killCommand);
-					writer.close();
-					System.out.println("Issue kill command as: " + killCommand);
-					log(LogLevel.ERROR, "Issue kill command as: " + killCommand);
-					Runtime.getRuntime().exec(killCommand);
-
-				} catch (Throwable t) {
-					log(LogLevel.ERROR, "Could not kill perl process. Running on non-Unix OS?",
-							t);
-					writer.close();
-				}
-			} catch (Exception e1) {
-				e1.printStackTrace();
-			} 
-			
-			process.destroy();
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				log(LogLevel.ERROR, "Interrupted", e);
-			}
-		}
-	}
-
-	/*private String runCommand(String command) throws EulerException {
-		log(LogLevel.DEBUG, "Run: " + command);
-		StringBuilder input = new StringBuilder();
-		StringBuilder error = new StringBuilder();
-		long time = System.currentTimeMillis();
-		Process process;
-		try {
-			process = Runtime.getRuntime().exec(command, null, workingDir);
-			
-			TerminatePythonHook terminatePythonHook = new TerminatePythonHook(process);
-			Runtime.getRuntime().addShutdownHook(terminatePythonHook);
-			log(LogLevel.DEBUG, "Added shutdown hook: " + terminatePythonHook);
-
-			try (BufferedReader stdInput = new BufferedReader(
-					new InputStreamReader(process.getInputStream()))) {
-				String s = "";
-				while ((s = stdInput.readLine()) != null) {
-					log(LogLevel.DEBUG,
-							s + " at " + (System.currentTimeMillis() - time)
-									/ 1000 + " seconds");
-					input.append(s + "\n");
-				}
-			}
-
-			try (BufferedReader errInput = new BufferedReader(
-					new InputStreamReader(process.getErrorStream()))) {
-				String e = "";
-				while ((e = errInput.readLine()) != null) {
-					log(LogLevel.DEBUG,
-							e + " at " + (System.currentTimeMillis() - time)
-									/ 1000 + " seconds");
-					error.append(e + "\n");
-				}
-			}
-
-			int exitStatus = process.waitFor();
-			
-			//remove shutdown hook
-			Runtime.getRuntime().removeShutdownHook(terminatePythonHook);
-			
-			if (exitStatus == 0)
-				return input.toString() + "\n" + error.toString();
-			else
-				log(LogLevel.ERROR, "Euler exit status " + exitStatus);
-		} catch (IOException | InterruptedException e) {
-			log(LogLevel.ERROR, "Couldn't execute euler", e);
-			throw new EulerException("Euler execution failed: \n"
-					+ error.toString() + "... " + e.toString());
-		}
-		throw new EulerException("Euler execution failed: \n"
-				+ error.toString());
-	}*/
-
-
 }
