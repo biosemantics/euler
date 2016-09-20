@@ -11,7 +11,8 @@ public class Configuration {
 
 	private final static Logger logger = Logger.getLogger(Configuration.class);
 	
-	public static String path;
+	public static String eulerPath;
+	public static String pythonModulesPath;
 	private static Properties properties;
 
 	static {		
@@ -20,7 +21,8 @@ public class Configuration {
 			properties = new Properties(); 
 			properties.load(loader.getResourceAsStream("edu/arizona/biosemantics/euler2/config.properties"));
 			
-			path = properties.getProperty("path");
+			eulerPath = properties.getProperty("eulerPath");
+			pythonModulesPath = properties.getProperty("pythonModulesPath");
 		} catch(Exception e) {
 			logger.error("Couldn't read configuration", e);
 		}

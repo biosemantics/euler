@@ -15,20 +15,20 @@ public class Test2 {
 		
 		EulerCheck eulerCheck = new EulerCheck();
 		System.out.println("\n=================  CHECK  =================");
-		eulerCheck.setInputFile(Configuration.path + File.separator + "../example/abstract4/abstract4.txt");
+		eulerCheck.setInputFile(Configuration.eulerPath + File.separator + "../example/abstract4/abstract4.txt");
 		result = eulerCheck.run();
 		System.out.println(result);
 		
 		System.out.println("\n=================  ALIGN  =================");
 		EulerAlign eulerAlign = new EulerAlign();
-		eulerAlign.setInputFile(Configuration.path + File.separator + "../example/abstract4/abstract4.txt");
+		eulerAlign.setInputFile(Configuration.eulerPath + File.separator + "../example/abstract4/abstract4.txt");
 		eulerAlign.setReasoner(Reasoner.GRINGO);
 		result = eulerAlign.run();
 		System.out.println(result);
 		
 		System.out.println("\n=================  SHOW IV  =================");
 		EulerShow eulerShow = new EulerShow();
-		eulerShow.setInputFile(Configuration.path + File.separator + "../example/abstract4/abstract4.txt");
+		eulerShow.setInputFile(Configuration.eulerPath + File.separator + "../example/abstract4/abstract4.txt");
 		eulerShow.setName("iv");
 		result = eulerShow.run();
 		System.out.println(result);

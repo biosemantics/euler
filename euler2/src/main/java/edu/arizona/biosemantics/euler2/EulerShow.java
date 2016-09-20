@@ -44,7 +44,7 @@ public class EulerShow {
 		if(outputDirectory != null)
 			commands.add("-o " + outputDirectory);
 		
-		return runCommand(Configuration.path + File.separator + "euler2 show "
+		return runCommand(Configuration.eulerPath + File.separator + "euler2 show "
 				+ StringUtils.join(commands, " "));
 	}
 	

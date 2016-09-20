@@ -28,7 +28,7 @@ public class EulerCheck {
 		if(inputFile != null)
 			commands.add(inputFile);
 
-		return runCommand(Configuration.path + File.separator + "euler2 check "
+		return runCommand(Configuration.eulerPath + File.separator + "euler2 check "
 				+ StringUtils.join(commands, " "));
 	}
 

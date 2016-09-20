@@ -33,7 +33,7 @@ public class Euler2 {
 		if (help)
 			commands.add("--help");
 
-		return runCommand(Configuration.path + File.separator + "euler2 "
+		return runCommand(Configuration.eulerPath + File.separator + "euler2 "
 				+ StringUtils.join(commands, " "));
 	}
 
