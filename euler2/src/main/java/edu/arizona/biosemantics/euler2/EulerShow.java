@@ -64,7 +64,7 @@ public class EulerShow {
 			
 			String joinedCommands = StringUtils.join(commands, ", ");
 			interpreter.exec("import subprocess");
-			String pythonCommand = "subprocess.call(['" + Configuration.eulerPath + File.separator + "src-el" + File.separator + "euler2', 'show', " + joinedCommands + "])";
+			String pythonCommand = "subprocess.call(['" + Configuration.eulerPath + File.separator + "src-el" + File.separator + "euler2', 'show', " + joinedCommands + "], cwd='" + workingDir + "')";
 			log(LogLevel.INFO, "Run: " + pythonCommand);
 			interpreter.exec(pythonCommand);
 			interpreter.cleanup();

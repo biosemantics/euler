@@ -122,7 +122,7 @@ public class EulerAlign {
 			String joinedCommands = StringUtils.join(commands, ", ");
 			//use subprocess.call() or execfile()
 			interpreter.exec("import subprocess");
-			String pythonCommand = "subprocess.call(['" + Configuration.eulerPath + File.separator + "src-el" + File.separator + "euler2', 'align', " + joinedCommands + "])";
+			String pythonCommand = "subprocess.call(['" + Configuration.eulerPath + File.separator + "src-el" + File.separator + "euler2', 'align', " + joinedCommands + "], cwd='" + workingDir.getAbsolutePath() + "')";
 			//interpreter.exec("import sys");
 			//String args = "'align'" + ", " + joinedCommands;
 			//interpreter.exec("sys.argv = [" + args + "]");
