@@ -22,6 +22,7 @@ public class Test2 {
 		System.out.println("\n=================  ALIGN  =================");
 		EulerAlign eulerAlign = new EulerAlign();
 		eulerAlign.setInputFile(Configuration.eulerPath + "example/abstract4/abstract4.txt");
+		eulerAlign.setReasoner(Reasoner.GRINGO);
 		result = eulerAlign.run();
 		System.out.println(result);
 		

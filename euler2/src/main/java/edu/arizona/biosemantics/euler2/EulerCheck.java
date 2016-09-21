@@ -66,7 +66,7 @@ public class EulerCheck {
 	}
 	
 	private void addCommand(List<String> commands, String command) {
-		commands.add("'" + command + "'");
+		commands.add("'" + command.trim() + "'");
 	}
 
 	public String getInputFile() {

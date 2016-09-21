@@ -85,10 +85,14 @@ public class EulerAlign {
 			List<String> commands = new LinkedList<String>();
 			if(inputFile != null)
 				addCommand(commands, inputFile);
-			if(encoding != null)
-				addCommand(commands, "-e " + encoding.toString().toLowerCase());
-			if(reasoner != null)
-				addCommand(commands, "-r " + reasoner.toString().toLowerCase());
+			if(encoding != null) {
+				addCommand(commands, "-e");
+				addCommand(commands, encoding.toString().toLowerCase());
+			}
+			if(reasoner != null) {
+				addCommand(commands, "-r");
+				addCommand(commands, reasoner.toString().toLowerCase());
+			}
 			if (consistency)
 				addCommand(commands, "--consistency");
 			if (hidemirdisjoint)
@@ -111,9 +115,10 @@ public class EulerAlign {
 				addCommand(commands, "--ie");
 			if (ieo)
 				addCommand(commands, "--ieo");
-			if(outputDirectory != null)
-				addCommand(commands, "-o " + outputDirectory);
-	
+			if(outputDirectory != null) {
+				addCommand(commands, "-o");
+				addCommand(commands, outputDirectory);
+			}
 			String joinedCommands = StringUtils.join(commands, ", ");
 			//use subprocess.call() or execfile()
 			interpreter.exec("import subprocess");
@@ -141,7 +146,7 @@ public class EulerAlign {
 	}
 	
 	private void addCommand(List<String> commands, String command) {
-		commands.add("'" + command + "'");
+		commands.add("'" + command.trim() + "'");
 	}
 
 	public String getInputFile() {

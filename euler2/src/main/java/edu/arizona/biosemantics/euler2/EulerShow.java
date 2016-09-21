@@ -57,8 +57,10 @@ public class EulerShow {
 				addCommand(commands, inputFile);
 			if (name != null)
 				addCommand(commands, name);
-			if(outputDirectory != null)
-				addCommand(commands, "-o " + outputDirectory);
+			if(outputDirectory != null) {
+				addCommand(commands, "-o");
+				addCommand(commands, outputDirectory);
+			}
 			
 			String joinedCommands = StringUtils.join(commands, ", ");
 			interpreter.exec("import subprocess");
@@ -82,7 +84,7 @@ public class EulerShow {
 	}
 	
 	private void addCommand(List<String> commands, String command) {
-		commands.add("'" + command + "'");
+		commands.add("'" + command.trim() + "'");
 	}
 	
 	public String getOutputDirectory() {
