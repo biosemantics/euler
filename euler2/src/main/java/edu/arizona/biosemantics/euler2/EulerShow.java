@@ -49,6 +49,9 @@ public class EulerShow {
 			PySystemState sys = Py.getSystemState();
 			sys.path.append(new PyString(Configuration.pythonModulesPath));
 			sys.path.append(new PyString(Configuration.eulerPath));
+			sys.path.append(new PyString(Configuration.eulerPath + "src-el"));
+			sys.path.append(new PyString(Configuration.eulerPath + "bbox-lattice"));
+			sys.path.append(new PyString(Configuration.eulerPath + "default-stylesheet"));
 			
 			List<String> commands = new LinkedList<String>();
 			if (folder != null)
