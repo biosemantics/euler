@@ -1,9 +1,13 @@
 package edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -15,8 +19,19 @@ import edu.arizona.biosemantics.common.log.LogLevel;
 import edu.arizona.biosemantics.euler.alignment.server.Configuration;
 import edu.arizona.biosemantics.euler.alignment.server.db.CollectionDAO;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterStateSimilarityMetric;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.DummyKnowsModifier;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.DummyKnowsSynonymy;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.KnowsModifier;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.KnowsPartOf;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.KnowsSynonymy;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.PartOfModel;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.CategoricalReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.DiscreteNumericalRangeReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.LikelyStateReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.ModifiedStateReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.NumericalRangeReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.State;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.StateSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.AsymmetricSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterState;
 
@@ -25,27 +40,17 @@ public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilari
 	private KnowsPartOf knowsPartOf;
 	private IGlossary glossary;
 	private double stateWeight;
-	private Map<String, Double> modifierWeights = new HashMap<String, Double>();
-	private static String units = "(?:(?:pm|cm|mm|dm|ft|m|meters|meter|micro_m|micro-m|microns|micron|unes|µm|μm|um|centimeters|"
-			+ "centimeter|millimeters|millimeter|transdiameters|transdiameter)[23]?)"; //squared or cubed
+	private LikelyStateReader likelyStateReader;
+	private StateSimilarity stateSimilarity;
 	
-	public MyCharacterStateSimilarlityMetric(KnowsPartOf knowsPartOf, IGlossary glossary, double stateWeight) { 
+	public MyCharacterStateSimilarlityMetric(KnowsPartOf knowsPartOf, IGlossary glossary, 
+			LikelyStateReader likelyStateReader, 
+			double stateWeight, StateSimilarity stateSimilarity) { 
 		this.knowsPartOf = knowsPartOf;
+		this.likelyStateReader = likelyStateReader;
 		this.glossary = glossary;
 		this.stateWeight = stateWeight;
-		
-		initModifierWeights();
-	}
-
-	private void initModifierWeights() {
-		modifierWeights.put("always", 1.0);
-		modifierWeights.put("usually", 1.0);
-		modifierWeights.put("generally", 1.0);
-		modifierWeights.put("often", 1.0);
-		modifierWeights.put("sometimes", 1.0);
-		modifierWeights.put("less frequently", 1.0);
-		modifierWeights.put("not", 1.0);
-		modifierWeights.put("never", 1.0);
+		this.stateSimilarity = stateSimilarity;
 	}
 
 	public static void main(String[] args) {
@@ -64,9 +69,24 @@ public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilari
 			e.printStackTrace();
 			partOfModel = new PartOfModel();
 		}
-		MyCharacterStateSimilarlityMetric similarityMetric = new MyCharacterStateSimilarlityMetric(partOfModel, glossary, 3.0);
-		CharacterState characterStateA = new CharacterState("ovary", "position", "inferior | superior");
-		CharacterState characterStateB = new CharacterState("ovary", "position", "inferior | semi-inferior | superior");
+		
+		KnowsModifier knowsModifier = new DummyKnowsModifier();
+		KnowsSynonymy knowsSynonymy = new DummyKnowsSynonymy();
+		CategoricalReader categoricalReader = new CategoricalReader();
+		DiscreteNumericalRangeReader discreteNumericalRangeReader = new DiscreteNumericalRangeReader();
+		ModifiedStateReader modifiedStateReader = new ModifiedStateReader(knowsModifier);
+		NumericalRangeReader numericalRangeReader = new NumericalRangeReader();
+		LikelyStateReader likelyStateReader = new LikelyStateReader(categoricalReader, 
+				discreteNumericalRangeReader, modifiedStateReader, numericalRangeReader);
+		modifiedStateReader.setLikelyStateReader(likelyStateReader);
+		StateSimilarity stateSimilarity = new StateSimilarity(knowsModifier, knowsSynonymy);
+		MyCharacterStateSimilarlityMetric similarityMetric = 
+				new MyCharacterStateSimilarlityMetric(partOfModel, glossary, likelyStateReader, 3.0, stateSimilarity);
+		CharacterState characterStateA = new CharacterState("organ", "character", "3-foliate");
+		CharacterState characterStateB = new CharacterState("organ", "character", "3-9-foliate");
+		
+		//CharacterState characterStateA = new CharacterState("ovary", "position", "inferior | superior");
+		//CharacterState characterStateB = new CharacterState("ovary", "position", "inferior | semi-inferior | superior");
 		AsymmetricSimilarity<CharacterState> similarity = similarityMetric.get(characterStateA, characterStateB);
 		System.out.println(similarity.getAverageSimilarity());
 	}
@@ -167,147 +187,135 @@ public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilari
 		double oppositeSimilarity = getSimilarity(stateB, stateA);
 		return new AsymmetricSimilarity<String>(stateA, stateB, similarity, oppositeSimilarity);
 	}
-
-	private double getSimilarity(String stateA, String stateB) {
-		if(isNumeric(stateA) && isNumeric(stateB)) {
-			return getNumericalStateSimilarity(stateA, stateB);
-		} else if((isNumeric(stateA) && !isNumeric(stateB)) || 
-				!isNumeric(stateA) && isNumeric(stateB)) {
-			return 0.0;
-		} else {
-			return getOtherStateSimiliarty(stateA, stateB);			
+	
+	private class StatePair {
+		
+		public State stateA;
+		public State stateB;
+		public double similarity = 0.0;
+		
+		public StatePair(State stateA, State stateB, double similarity) {
+			this.stateA = stateA;
+			this.stateB = stateB;
+			this.similarity = similarity;
 		}
+		
 	}
 
-	private double getOtherStateSimiliarty(String stateAString, String stateBString) {
-		/*
-		Set<String> aTokens = new HashSet<String>();
-		aTokens.addAll(Arrays.asList(stateA.split("\\s+"))); 
-		Set<String> bTokens = new HashSet<String>();
-		bTokens.addAll(Arrays.asList(stateB.split("\\s+")));
-		*/
+	private double getSimilarity(String stateAString, String stateBString) {
 		String[] stateAs = stateAString.split("\\|");
 		String[] stateBs = stateBString.split("\\|");
 		
-		Map<String, Double> aStateWeights = new HashMap<String, Double>();
-		for(String stateA : stateAs) {
-			stateA = stateA.trim();
-			double weight = 1;
-			for(String token : stateA.split("\\s+")) {
-				token = token.trim();
-				if(isModifier(token)) {
-					weight = weight * modifierWeights.get(token);
-				} else if(isState(token)) {
-					aStateWeights.put(token, weight);
-				} else {
-					// nothing todo
-				}
+		List<State> sAs = new ArrayList<State>(stateAs.length);
+		List<State> sBs = new ArrayList<State>(stateBs.length);
+		for(String stateA : stateAs) 
+			sAs.add(likelyStateReader.read(stateA));
+		for(String stateB : stateBs)
+			sBs.add(likelyStateReader.read(stateB));
+		List<StatePair> pairs = new ArrayList<StatePair>();
+		for(State sA : sAs) 
+			for(State sB : sBs) 
+				pairs.add(new StatePair(sA, sB, stateSimilarity.getSimilarity(sA, sB)));
+		
+		Collections.sort(pairs, new Comparator<StatePair>() {
+			@Override
+			public int compare(StatePair o1, StatePair o2) {
+				return Double.compare(o1.similarity, o2.similarity);
 			}
-		}
-		Map<String, Double> bStateWeights = new HashMap<String, Double>();
-		for(String stateB : stateBs) {
-			stateB = stateB.trim();
-			double weight = 1;
-			for(String token : stateB.split("\\s+")) {
-				token = token.trim();
-				if(isModifier(token)) {
-					weight = weight * modifierWeights.get(token);
-				} else if(isState(token)) {
-					bStateWeights.put(token, weight);
-				} else {
-					// nothing todo
-				}
+		});
+		
+		Set<State> usedStatesA = new HashSet<State>();
+		Set<State> usedStatesB = new HashSet<State>();
+		Set<StatePair> selectedPairs = new HashSet<StatePair>();
+		for(StatePair p : pairs) {
+			if(!usedStatesA.contains(p.stateA) && !usedStatesB.contains(p.stateB) && p.similarity > 0.0) {
+				usedStatesA.add(p.stateA);
+				usedStatesB.add(p.stateB);
+				selectedPairs.add(p);
 			}
 		}
 		
-		double overlap = 0;
-		double maxOverlap = 0;
-		for(String aState : aStateWeights.keySet()) {
-			maxOverlap += aStateWeights.get(aState);
-			if(bStateWeights.containsKey(aState)) {
-				overlap += bStateWeights.get(aState) / aStateWeights.get(aState);
-			}
+		double maxSimilarity = Math.max(stateAs.length, stateBs.length);
+		double accumulatedSimilarity = 0.0;
+		for(StatePair selected : selectedPairs) {
+			accumulatedSimilarity += selected.similarity;
 		}
-		return overlap / maxOverlap;
-	}
-
-	private boolean isModifier(String token) {
-		return modifierWeights.containsKey(token);
-	}
-
-	//for now assume units are always the same
-	private double getNumericalStateSimilarity(String stateA, String stateB) {
-		Pattern numericalPart = Pattern.compile(".*?(\\d+)\\s*"+ units + "?");
-
-		double[] aMinMax = new double[2];
-		if(stateA.contains("-")) {
-			String[] parts = stateA.split("-");
-			if(parts.length == 2) {
-				for(int i=0; i<2; i++) {
-					String part = parts[i].trim();
-					Matcher matcher = numericalPart.matcher(part);
-					if(matcher.matches()) {
-						aMinMax[i] = Double.valueOf(matcher.group(1));
-					} else {
-						return 0;
-					}
-				}
-			} else {
-				return 0;
-			}
-		} 
-
-		double[] bMinMax = new double[2];
-		if(stateB.contains("-")) {
-			String[] parts = stateB.split("-");
-			if(parts.length == 2) {
-				for(int i=0; i<2; i++) {
-					String part = parts[i].trim();
-					Matcher matcher = numericalPart.matcher(part);
-					if(matcher.matches()) {
-						bMinMax[i] = Double.valueOf(matcher.group(1));
-					} else {
-						return 0;
-					}
-				}
-			} else {
-				return 0;
-			}
-		} 
 		
-		
-		double commonStart = Math.max(aMinMax[0], bMinMax[0]);
-		double commonEnd = Math.min(aMinMax[1], bMinMax[1]);
-		if (commonEnd < commonStart)
-			return 0;
-		return (commonEnd - commonStart) / (aMinMax[1]-aMinMax[0]);
+		return accumulatedSimilarity / maxSimilarity;
 	}
 
-	private boolean isNumeric(String state) {
-		Pattern pattern = Pattern.compile(".*?\\d+\\s*"+ units + "?");
-		boolean numeric = true;
-		if(state.contains("-")) {
-			String[] parts = state.split("-");
-			for(String part : parts) {
-				part = part.trim();
-				numeric &= pattern.matcher(part).matches();
-			}
-		} else {
-			numeric &= state.matches(".*?\\d+\\s*"+ units + "?");
-		}
-		return numeric;
-	}
-
-	private boolean isState(String token) {
-		Set<String> categories = glossary.getCategories(token);
-		categories.remove("substance");
-		categories.remove("structure_subtype");
-		categories.remove("structure_in_adjective_form");
-		categories.remove("structure");
-		categories.remove("taxon_name");
-		categories.remove("season");
-		return !categories.isEmpty();
-	}
+	//
+//	//for now assume units are always the same
+//	private double getNumericalStateSimilarity(String stateA, String stateB) {
+//		Pattern numericalPart = Pattern.compile(".*?(\\d+)\\s*"+ units + "?");
+//
+//		double[] aMinMax = new double[2];
+//		if(stateA.contains("-")) {
+//			String[] parts = stateA.split("-");
+//			if(parts.length == 2) {
+//				for(int i=0; i<2; i++) {
+//					String part = parts[i].trim();
+//					Matcher matcher = numericalPart.matcher(part);
+//					if(matcher.matches()) {
+//						aMinMax[i] = Double.valueOf(matcher.group(1));
+//					} else {
+//						return 0;
+//					}
+//				}
+//			} else {
+//				return 0;
+//			}
+//		} 
+//
+//		double[] bMinMax = new double[2];
+//		if(stateB.contains("-")) {
+//			String[] parts = stateB.split("-");
+//			if(parts.length == 2) {
+//				for(int i=0; i<2; i++) {
+//					String part = parts[i].trim();
+//					Matcher matcher = numericalPart.matcher(part);
+//					if(matcher.matches()) {
+//						bMinMax[i] = Double.valueOf(matcher.group(1));
+//					} else {
+//						return 0;
+//					}
+//				}
+//			} else {
+//				return 0;
+//			}
+//		} 
+//		
+//		
+//		double commonStart = Math.max(aMinMax[0], bMinMax[0]);
+//		double commonEnd = Math.min(aMinMax[1], bMinMax[1]);
+//		if (commonEnd < commonStart)
+//			return 0;
+//		return (commonEnd - commonStart) / (aMinMax[1]-aMinMax[0]);
+//	}
+//
+//	private boolean isNumeric(String state) {
+//		Pattern pattern = Pattern.compile(".*?\\d+\\s*"+ units + "?");
+//		boolean numeric = true;
+//		if(state.contains("-")) {
+//			String[] parts = state.split("-");
+//			for(String part : parts) {
+//				part = part.trim();
+//				numeric &= pattern.matcher(part).matches();
+//			}
+//		} else {
+//			numeric &= state.matches(".*?\\d+\\s*"+ units + "?");
+//		}
+//		return numeric;
+//	}
+//
+//	private boolean isState(String token) {
+//		Set<String> categories = glossary.getCategories(token);
+//		categories.remove("substance");
+//		categories.remove("structure_subtype");
+//		categories.remove("structure_in_adjective_form");
+//		categories.remove("structure");
+//		categories.remove("taxon_name");
+//		categories.remove("season");
+//		return !categories.isEmpty();
+//	}
 }
-
-

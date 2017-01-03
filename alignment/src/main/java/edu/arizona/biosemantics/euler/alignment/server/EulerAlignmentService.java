@@ -8,6 +8,7 @@ import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 import com.google.inject.Inject;
 
 import edu.arizona.biosemantics.common.biology.TaxonGroup;
+import edu.arizona.biosemantics.common.ling.know.IGlossary;
 import edu.arizona.biosemantics.common.ling.know.lib.InMemoryGlossary;
 import edu.arizona.biosemantics.common.log.LogLevel;
 import edu.arizona.biosemantics.euler.alignment.server.db.CollectionDAO;
@@ -35,10 +37,19 @@ import edu.arizona.biosemantics.euler.alignment.server.db.Query.QueryException;
 import edu.arizona.biosemantics.euler.alignment.server.io.MatrixReviewModelReader;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterOverlapCalculator;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.RelationGenerator;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.KnowsModifier;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.KnowsPartOf;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.KnowsSynonymy;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.PartOfModel;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.MyCharacterStateSimilarlityMetric;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.MyOverlapCalculator;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.lib.TTestBasedRelationGenerator;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.CategoricalReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.DiscreteNumericalRangeReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.LikelyStateReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.ModifiedStateReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.NumericalRangeReader;
+import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.StateSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.Highlight;
 import edu.arizona.biosemantics.euler.alignment.shared.IEulerAlignmentService;
 import edu.arizona.biosemantics.euler.alignment.shared.model.Articulations;
@@ -210,7 +221,42 @@ public class EulerAlignmentService extends RemoteServiceServlet implements IEule
 			log(LogLevel.ERROR, "Could not deserialize partOfModel", e);
 			partOfModel = new PartOfModel();
 		}
-		MyCharacterStateSimilarlityMetric characterStateSimilarityMetric = new MyCharacterStateSimilarlityMetric(partOfModel, glossary, Configuration.stateWeight);
+		
+		KnowsModifier knowsModifier = new KnowsModifier() {
+			@Override
+			public boolean isModifier(String candidate) {
+				return false;
+			}
+
+			@Override
+			public double getWeight(String modifier) {
+				return 1.0;
+			}
+		};
+		KnowsSynonymy knowsSynonymy = new KnowsSynonymy() {
+			@Override
+			public Set<String> getSynonyms(String term) {
+				return new HashSet<String>();
+			}
+			@Override
+			public boolean isPreferredTerm(String term) {
+				return true;
+			}
+			@Override
+			public String getPreferredTerm(String term) {
+				return term;
+			}
+		};		
+		
+		ModifiedStateReader modifiedStateReader = new ModifiedStateReader(knowsModifier);
+		LikelyStateReader likelyStateReader = new LikelyStateReader(new CategoricalReader(), new DiscreteNumericalRangeReader(), 
+				modifiedStateReader, new NumericalRangeReader());
+		modifiedStateReader.setLikelyStateReader(likelyStateReader);
+		
+		MyCharacterStateSimilarlityMetric characterStateSimilarityMetric = new MyCharacterStateSimilarlityMetric(partOfModel, 
+				glossary, new LikelyStateReader(new CategoricalReader(), new DiscreteNumericalRangeReader(), 
+						modifiedStateReader, new NumericalRangeReader()), Configuration.stateWeight, new StateSimilarity(knowsModifier, knowsSynonymy));
+		
 		CharacterOverlapCalculator pairwiseArticulationGenerator = new MyOverlapCalculator(characterStateSimilarityMetric);
 		CharacterOverlap overlap = pairwiseArticulationGenerator.getCharacterOverlap(taxonA, taxonB, threshold);
 		return overlap;
