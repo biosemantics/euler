@@ -54,6 +54,7 @@ public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilari
 	}
 
 	public static void main(String[] args) {
+		
 		CollectionDAO collectionDAO = new CollectionDAO();
 		InMemoryGlossary glossary = null;
 		try {
