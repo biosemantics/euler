@@ -18,7 +18,8 @@ public class LikelyStateReader implements StateReader {
 	}
 	
 	@Override
-	public State read(String value) {		
+	public State read(String value) {
+		value = value.trim();
 		State state = null;
 		for(StateReader reader : new StateReader[] { 
 				modifiedStateReader,

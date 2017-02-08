@@ -82,8 +82,11 @@ public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilari
 		StateSimilarity stateSimilarity = new StateSimilarity(knowsModifier, knowsSynonymy);
 		MyCharacterStateSimilarlityMetric similarityMetric = 
 				new MyCharacterStateSimilarlityMetric(partOfModel, glossary, likelyStateReader, 3.0, stateSimilarity);
-		CharacterState characterStateA = new CharacterState("organ", "character", "3-foliate");
-		CharacterState characterStateB = new CharacterState("organ", "character", "3-9-foliate");
+		//CharacterState characterStateA = new CharacterState("stem", "architecture", "unarmed | with a few weak bristles");
+		//CharacterState characterStateB = new CharacterState("stem", "architecture", "unarmed");
+		
+		CharacterState characterStateA = new CharacterState("stem", "orientation", "horizontal | upright | of near the base or along the length the horizontal ones; arising");
+		CharacterState characterStateB = new CharacterState("stem", "orientation", "upright");
 		
 		//CharacterState characterStateA = new CharacterState("ovary", "position", "inferior | superior");
 		//CharacterState characterStateB = new CharacterState("ovary", "position", "inferior | semi-inferior | superior");
@@ -208,10 +211,14 @@ public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilari
 		
 		List<State> sAs = new ArrayList<State>(stateAs.length);
 		List<State> sBs = new ArrayList<State>(stateBs.length);
-		for(String stateA : stateAs) 
+		for(String stateA : stateAs) {
+			stateA = stateA.trim();
 			sAs.add(likelyStateReader.read(stateA));
-		for(String stateB : stateBs)
+		}
+		for(String stateB : stateBs) {
+			stateB = stateB.trim();
 			sBs.add(likelyStateReader.read(stateB));
+		}
 		List<StatePair> pairs = new ArrayList<StatePair>();
 		for(State sA : sAs) 
 			for(State sB : sBs) 
