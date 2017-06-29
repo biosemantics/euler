@@ -82,14 +82,14 @@ public class TaxonomyView extends ContentPanel {
 		tree = createTree();
 		
 		//this.setTitle("Right-clicks on taxa to bring up more taxa management functions");
-		//this.setHeadingText("Select Taxa for the Matrix");
+		//this.setHeading("Select Taxa for the Matrix");
 		
 		BorderLayoutContainer borderLayoutContainer = new BorderLayoutContainer();
 		borderLayoutContainer.setBorders(true);
 		
 		ContentPanel center = new ContentPanel();
 		//taxonFieldSet.setCollapsible(true);
-		center.setHeadingText("Taxonomic Concepts");
+		center.setHeading("Taxonomic Concepts");
 		center.setWidget(tree);
 		
 		//FieldSet infoFieldSet = new FieldSet();
@@ -104,7 +104,7 @@ public class TaxonomyView extends ContentPanel {
 		flowInfoHtml.add(infoHtml);
 		flowInfoHtml.getScrollSupport().setScrollMode(ScrollMode.AUTO);
 		east.setWidget(flowInfoHtml);
-		east.setHeadingText("Taxonomic Concept Details");
+		east.setHeading("Taxonomic Concept Details");
 		
 		borderLayoutContainer.setEastWidget(east, eastData);
 		borderLayoutContainer.setCenterWidget(center);
@@ -356,7 +356,7 @@ public class TaxonomyView extends ContentPanel {
 	
 	public void loadModel(Taxonomy taxonomy) {
 		this.taxonomy = taxonomy;
-		this.setHeadingText(taxonomy.getSecString());
+		this.setHeading(taxonomy.getSecString());
 		store.clear();
 		for(Taxon rootTaxon : taxonomy.getRootTaxa()) {
 			store.add(rootTaxon);

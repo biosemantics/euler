@@ -40,7 +40,7 @@ public class ViewDiagnosisDialog extends CommonDialog {
 		add(panel);
 		
 		setBodyBorder(false);
-		setHeadingText("Conflicting Input");
+		setHeading("Conflicting Input");
 		setWidth(200);
 		setHeight(400);
 		setHideOnButtonClick(true);

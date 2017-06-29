@@ -177,8 +177,9 @@ public class TTestBasedRelationGenerator implements RelationGenerator, TaxonSimi
 		characterOverlap.setOverlap(overlap);
 		List<CharacterState> characterStatesA = new ArrayList<CharacterState>(remainingTaxonACharacterStates);
 		List<CharacterState> characterStatesB = new ArrayList<CharacterState>(remainingTaxonBCharacterStates);
-		Lists.sort(characterStatesA);
-		Lists.sort(characterStatesB);
+		Lists.sort(characterStatesA, new CharacterState()); 
+		Lists.sort(characterStatesB, new CharacterState());
+		
 		characterOverlap.setCharacterStatesA(characterStatesA);
 		characterOverlap.setCharacterStatesB(characterStatesB);
 		characterOverlap.setTaxonA(taxonA);

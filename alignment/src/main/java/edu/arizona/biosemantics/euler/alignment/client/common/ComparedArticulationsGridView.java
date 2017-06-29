@@ -74,7 +74,7 @@ public class ComparedArticulationsGridView extends ContentPanel {
 			}
 		});
 
-		setHeadingText("Articulation Changes");
+		setHeading("Articulation Changes");
 		add(createComparedArticulationsGrid());
 	}
 

@@ -26,7 +26,7 @@ public class ViewHistoryDialog extends CommonDialog {
 		add(panel);
 		
 		setBodyBorder(false);
-		setHeadingText("Run History");
+		setHeading("Run History");
 		setWidth(1000);
 		setHeight(600);
 		setHideOnButtonClick(true);

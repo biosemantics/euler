@@ -70,7 +70,7 @@ public class SingleRunView extends BorderLayoutContainer {
 		
 
 		ContentPanel panel = new ContentPanel();
-		panel.setHeadingText("Run History");
+		panel.setHeading("Run History");
 		
 		BorderLayoutData westData = new BorderLayoutData(400);
 		westData.setMargins(new Margins(1));
@@ -96,19 +96,19 @@ public class SingleRunView extends BorderLayoutContainer {
 		
 		verticalLayoutContainer = new VerticalLayoutContainer();
 		ContentPanel articulationsView = new ContentPanel();
-		articulationsView.setHeadingText("Articulations");
+		articulationsView.setHeading("Articulations");
 		articulationsView.setWidget(articulationsGridView);
 		verticalLayoutContainer.add(articulationsView,
 				new VerticalLayoutData(1, 0.5, new Margins(5)));
 		verticalLayoutContainer.add(runConfigPanel, new VerticalLayoutData(1,
 				0.5, new Margins(5)));
 		ContentPanel viewResultPanel = new ContentPanel();
-		viewResultPanel.setHeadingText("Results");
+		viewResultPanel.setHeading("Results");
 		viewResultPanel.add(viewResultButton);
 		verticalLayoutContainer.add(viewResultPanel, new VerticalLayoutData(1,
 				-1, new Margins(5)));
 		panel.add(verticalLayoutContainer);
-		panel.setHeadingText("Run Info");
+		panel.setHeading("Run Info");
 		setCenterWidget(panel);
 	}
 	

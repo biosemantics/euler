@@ -20,18 +20,22 @@
 	</profiles>
 	
 	<properties>
-		<gwtVersion>2.7.0</gwtVersion>
+		<gwtVersion>2.8.0</gwtVersion>
 		<java.version>1.8</java.version>
 		<!-- GWT needs at least java 1.5 -->
 		<!-- But we need at least java 1.6 -->
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 		<webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 
 	<repositories>
+	    <repository>
+			<id>sencharepo</id>
+			<url>https://maven.sencha.com/repo/gpl-release/</url>
+		</repository>
 		<repository>
 			<id>sgmavenrepo</id>
 			<url>http://sgmavenrepo.googlecode.com/svn/maven/repo/</url>
@@ -91,7 +95,7 @@
 		<dependency>
 			<groupId>com.sencha.gxt</groupId>
 			<artifactId>gxt-chart</artifactId>
-			<version>3.1.1</version>
+			<version>4.0.0</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>gxt</artifactId>
@@ -99,12 +103,26 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		
 		<dependency>
 			<groupId>com.google.gwt</groupId>
 			<artifactId>gwt-user</artifactId>
 			<version>${gwtVersion}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+		    <groupId>com.google.gwt</groupId>
+		    <artifactId>gwt-dev</artifactId>
+		    <version>${gwtVersion}</version>
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+	        <groupId>com.google.gwt</groupId>
+	        <artifactId>gwt-servlet</artifactId>
+	        <version>${gwtVersion}</version>
+	        <scope>runtime</scope>
+	    </dependency>
+	
 		<dependency>
 			<groupId>edu.arizona.biosemantics.common</groupId>
 			<artifactId>taxonomy</artifactId>
@@ -165,13 +183,13 @@
 		<dependency>
 			<groupId>edu.arizona.biosemantics.etcsite</groupId>
 			<artifactId>matrix-review</artifactId>
-			<version>0.0.51-SNAPSHOT-debug</version>
+			<version>0.0.52-SNAPSHOT-debug</version>
 			<classifier>classes</classifier>
 		</dependency>
 		<dependency>
 			<groupId>edu.arizona.biosemantics.etcsite</groupId>
 			<artifactId>matrix-review</artifactId>
-			<version>0.0.51-SNAPSHOT-debug</version>
+			<version>0.0.52-SNAPSHOT-debug</version>
 			<classifier>sources</classifier>
 		</dependency>
 		<dependency>
@@ -190,6 +208,12 @@
 			<version>1.7.25</version>
 		</dependency>
 		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.25</version>
+			<classifier>sources</classifier>
+		</dependency>
+		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
@@ -204,6 +228,11 @@
 			<artifactId>jul-to-slf4j</artifactId>
 			<version>1.7.25</version>
 		</dependency>
+		<!-- <dependency>
+		  	<groupId>com.google.code.findbugs</groupId>
+		  	<artifactId>jsr305</artifactId>
+		  	<version>3.0.0</version>
+		</dependency>  -->
 	</dependencies>
 
 	
@@ -228,7 +257,25 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>gwt-maven-plugin</artifactId>
-				<version>2.7.0</version>
+				<version>${gwtVersion}</version>
+				<dependencies>
+	                <!-- <dependency>
+	                    <groupId>com.google.gwt</groupId>
+	                    <artifactId>gwt-user</artifactId>
+	                    <version>${gwtVersion}</version>
+	                </dependency>
+	                <dependency>
+	                    <groupId>com.google.gwt</groupId>
+	                    <artifactId>gwt-dev</artifactId>
+	                    <version>${gwtVersion}</version>
+	                </dependency>
+	                <dependency>
+	                    <groupId>com.google.gwt</groupId>
+	                    <artifactId>gwt-servlet</artifactId>
+	                    <version>${gwtVersion}</version>
+	                </dependency>
+	                 -->
+                </dependencies>
 				<executions>
 					<execution>
 						<goals>
@@ -251,6 +298,7 @@
 					<!--<packageNamePerModule> <edu.arizona.biosemantics.etcsite.EtcSite>edu.arizona.biosemantics.etcsite</edu.arizona.biosemantics.etcsite.EtcSite> 
 						</packageNamePerModule> -->
 					<!-- <scanRemoteServiceRelativePathAnnotation>true</scanRemoteServiceRelativePathAnnotation> -->
+				 <extraJvmArgs>-Xmx4096M -Xms4096m</extraJvmArgs>
 				</configuration>
 			</plugin>
 

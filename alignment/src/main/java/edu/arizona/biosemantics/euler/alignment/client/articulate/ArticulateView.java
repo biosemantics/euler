@@ -54,7 +54,7 @@ public class ArticulateView extends BorderLayoutContainer {
 		setBorders(true);
 		//ContentPanel center = new ContentPanel();
 		//taxonFieldSet.setCollapsible(true);
-		//center.setHeadingText("Center");
+		//center.setHeading("Center");
 		//center.setWidget(horizontalLayoutContainer);
 		
 		BorderLayoutData southData = new BorderLayoutData(0.33);
@@ -63,7 +63,7 @@ public class ArticulateView extends BorderLayoutContainer {
 		southData.setSplit(true);
 		ContentPanel south = new ContentPanel();
 		south.setWidget(verticalLayoutPanel);
-		south.setHeadingText("Articulations");
+		south.setHeading("Articulations");
 		
 		setSouthWidget(south, southData);
 		setCenterWidget(horizontalLayoutContainer);

@@ -110,7 +110,7 @@ public class CompareRunView  extends BorderLayoutContainer {
 		
 		*/
 		ContentPanel panel = new ContentPanel();
-		panel.setHeadingText("Run History");
+		panel.setHeading("Run History");
 		
 		BorderLayoutData westData = new BorderLayoutData(400);
 		westData.setMargins(new Margins(1));
@@ -142,7 +142,7 @@ public class CompareRunView  extends BorderLayoutContainer {
 		verticalLayoutContainer.add(createCompareRunConfigPanel(), new VerticalLayoutData(1,
 				0.5, new Margins(5)));
 		panel.add(verticalLayoutContainer);
-		panel.setHeadingText("Run Comparison");
+		panel.setHeading("Run Comparison");
 		setCenterWidget(panel); 
 		
 		removeComparison();

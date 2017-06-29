@@ -74,12 +74,12 @@ public class DescriptionsView extends SimpleContainer {
 	}
 
 	public void setTaxonA(Taxon taxonA) {
-		taxonAContentPanel.setHeadingText("Description of " + taxonA.getBiologicalName());
+		taxonAContentPanel.setHeading("Description of " + taxonA.getBiologicalName());
 		this.setTaxonADescription(SafeHtmlUtils.fromTrustedString(taxonA.getDescription()));
 	}
 	
 	public void setTaxonB(Taxon taxonB) {
-		taxonBContentPanel.setHeadingText("Description of " + taxonB.getBiologicalName());
+		taxonBContentPanel.setHeading("Description of " + taxonB.getBiologicalName());
 		this.setTaxonBDescription(SafeHtmlUtils.fromTrustedString(taxonB.getDescription()));
 	}
 

@@ -53,7 +53,7 @@
 //	public AddArticulationsDropdownView(EventBus eventBus, ArticulateView articulateView) {
 //		this.eventBus = eventBus;
 //		this.articulateView = articulateView;
-//		setHeadingText("Create Articulation");
+//		setHeading("Create Articulation");
 //		
 //		add(createArticulationButtons());
 //		bindEvents();

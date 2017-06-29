@@ -75,7 +75,7 @@ public class AddArticulationsCheckboxesView extends SimpleContainer {
 	
 	public AddArticulationsCheckboxesView(EventBus eventBus) {
 		this.eventBus = eventBus;
-		//setHeadingText("Create Articulation");
+		//setHeading("Create Articulation");
 		
 		add(createArticulationButtons());
 		bindEvents();

@@ -98,7 +98,8 @@ public abstract class MenuExtendedCell<C> extends AbstractCell<C> {
 				//aParent.addClassName(styles.headInner());
 			}
 			if(event.getType().equals(BrowserEvents.MOUSEOUT)) {
-				if(!aGrandParent.hasClassName(columnHeaderStyles.headMenuOpen())) {
+				if(aGrandParent.getClassName().compareToIgnoreCase(columnHeaderStyles.headMenuOpen())!=0) {	
+				//if(!aGrandParent.hasClassName(columnHeaderStyles.headMenuOpen())) { //hasClassName is gone, not getClassNames is the right replacement. hong 618
 					aGrandParent.removeClassName(columnHeaderStyles.headOver());
 				}
 			}

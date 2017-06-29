@@ -14,7 +14,7 @@ public class RunConfigPanel extends ContentPanel  {
 	private VerticalLayoutContainer verticalLayoutContainer = new VerticalLayoutContainer();
 	
 	public RunConfigPanel() {
-		setHeadingText("Configuration");
+		setHeading("Configuration");
 		//simplifyAggregateCheckBox.setBoxLabel("Simplify Aggregate View");
 		simplifyAggregateFieldLabel.setLabelWidth(200);
 		verticalLayoutContainer.add(simplifyAggregateFieldLabel);

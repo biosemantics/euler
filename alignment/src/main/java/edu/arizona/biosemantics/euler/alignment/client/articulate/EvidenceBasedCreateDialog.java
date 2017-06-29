@@ -166,7 +166,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		westData.setSplit(true);
 		taxonAContentPanel = new ContentPanel((ContentPanelAppearance) GWT.create(RedContentPanelAppearance.class));
 		taxonAContentPanel.getHeader().getElement().getStyle().setBackgroundColor("red");
-		taxonAContentPanel.setHeadingText(taxonA.getBiologicalName());
+		taxonAContentPanel.setHeading(taxonA.getBiologicalName());
 		tabPanelA = new TabPanel();
 		uniqueTaxonCharactersViewA = new TaxonCharactersView(eventBus, collection);
 		uniqueTaxonCharactersViewA.addSelectionHandler(new SelectionHandler<Node>() {
@@ -195,7 +195,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		eastData.setFloatable(true);
 		eastData.setSplit(true);
 		taxonBContentPanel = new ContentPanel((ContentPanelAppearance) GWT.create(GreenContentPanelAppearance.class));
-		taxonBContentPanel.setHeadingText(taxonB.getBiologicalName());
+		taxonBContentPanel.setHeading(taxonB.getBiologicalName());
 		tabPanelB = new TabPanel();
 		uniqueTaxonCharactersViewB = new TaxonCharactersView(eventBus, collection);
 		uniqueTaxonCharactersViewB.addSelectionHandler(new SelectionHandler<Node>() {
@@ -266,7 +266,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 				update();
 			}
 		});*/
-		overlapContentPanel.setHeadingText("Character overlap");
+		overlapContentPanel.setHeading("Character overlap");
 		overlapContentPanel.setWidget(overlapGridView);
 		blc.setCenterWidget(overlapContentPanel);		
 		
@@ -276,7 +276,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 		this.setMaximizable(true);
 		TextButton button = this.getButton(PredefinedButton.OK);
 		button.setText("Close");
-		this.setHeadingText("Character Comparison");
+		this.setHeading("Character Comparison");
 		this.setModal(true);
 	}	
 	
@@ -353,7 +353,7 @@ public class EvidenceBasedCreateDialog extends Dialog {
 			}
 			@Override
 			public void onSuccess(CharacterOverlap characterOverlap) {
-				overlapContentPanel.setHeadingText("Character overlap (" + characterOverlap.getOverlap().size() + ")");
+				overlapContentPanel.setHeading("Character overlap (" + characterOverlap.getOverlap().size() + ")");
 				taxonCirclesView.update(characterOverlap);
 				uniqueTaxonCharactersViewA.update(characterOverlap.getCharacterStatesA());
 				tabPanelA.getConfig(uniqueTaxonCharactersViewA).setText("Unique characters (" + characterOverlap.getCharacterStatesA().size() + ")");

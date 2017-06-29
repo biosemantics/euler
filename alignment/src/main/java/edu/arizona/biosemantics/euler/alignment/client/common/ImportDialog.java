@@ -77,7 +77,7 @@ public class ImportDialog extends CommonDialog {
 		
 		add(panel);
 		setBodyBorder(false);
-		setHeadingText("Import Articulations");
+		setHeading("Import Articulations");
 		setWidth(600);
 		setHeight(400);
 		setHideOnButtonClick(true);

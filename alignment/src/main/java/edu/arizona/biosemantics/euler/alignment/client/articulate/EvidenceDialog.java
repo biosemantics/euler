@@ -80,7 +80,7 @@ public class EvidenceDialog extends CommonDialog {
 		
 		this.setWidth(800);
 		this.setHeight(800);
-		this.setHeadingText("Character Evidence for Articulations");
+		this.setHeading("Character Evidence for Articulations");
 		this.borderLayoutContainer = new BorderLayoutContainer();
 		this.setWidget(borderLayoutContainer);
 		borderLayoutContainer.setCenterWidget(createUserVsMachinePanel());
@@ -92,7 +92,7 @@ public class EvidenceDialog extends CommonDialog {
 		southData.setSplit(true);
 		ContentPanel south = new ContentPanel();
 		south.setWidget(southBorderLayoutContainer);
-		south.setHeadingText("Character Comparison");
+		south.setHeading("Character Comparison");
 		borderLayoutContainer.setSouthWidget(south, southData);
 				
 		availableRelationsStore = new ListStore<Relation>(new ModelKeyProvider<Relation>() {
@@ -116,7 +116,7 @@ public class EvidenceDialog extends CommonDialog {
 		eastData.setCollapsed(false);
 		ContentPanel east = new ContentPanel();
 		east.setWidget(createDescriptionPanel());
-		east.setHeadingText("Descriptions");
+		east.setHeading("Descriptions");
 		
 		VerticalLayoutContainer vlc = new VerticalLayoutContainer();
 		ToolBar toolBar = new ToolBar();
@@ -219,7 +219,7 @@ public class EvidenceDialog extends CommonDialog {
 		vlc.add(toolBar);
 		vlc.add(machineArticulationsGridView);
 		toolBar.add(new ToolButton(ToolButton.REFRESH));
-		panel.setHeadingText("Machine");
+		panel.setHeading("Machine");
 		panel.setWidget(vlc);
 		return panel;
 	}
@@ -277,7 +277,7 @@ public class EvidenceDialog extends CommonDialog {
 			}
 		});
 		toolBar.add(removeButton);	
-		panel.setHeadingText("User");
+		panel.setHeading("User");
 		panel.setWidget(vlc);
 		return panel;
 	}
@@ -295,7 +295,7 @@ public class EvidenceDialog extends CommonDialog {
 		
 		ContentPanel center = new ContentPanel();
 		center.setWidget(vlc);
-		center.setHeadingHtml(SafeHtmlUtils.fromTrustedString("Articulations: "
+		center.setHeading(SafeHtmlUtils.fromTrustedString("Articulations: "
 				+ "<b>" + articulation.getTaxonA().getBiologicalName() + " <-> " + articulation.getTaxonB().getBiologicalName() + "</b>"));
 		return center;
 	}
@@ -310,7 +310,7 @@ public class EvidenceDialog extends CommonDialog {
 		machines.retainAll(users);
 		double agreement = (double)(users.size() + machines.size()) / (initialUserSize + initialMachineSize); 
 		
-		agreementPanel.setHeadingText(agreement * 100 + "% Agreement");
+		agreementPanel.setHeading(agreement * 100 + "% Agreement");
 	}
 	
 }

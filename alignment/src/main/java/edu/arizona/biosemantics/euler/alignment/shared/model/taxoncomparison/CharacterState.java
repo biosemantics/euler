@@ -1,11 +1,12 @@
 package edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
 import edu.arizona.biosemantics.euler.alignment.shared.model.DiagnosticValue;
 
-public class CharacterState implements Serializable, Comparable<CharacterState> {
+public class CharacterState implements Serializable, Comparable<CharacterState>, Comparator<CharacterState> {
 
 	private String organ;
 	private String character;
@@ -54,5 +55,10 @@ public class CharacterState implements Serializable, Comparable<CharacterState> 
 	@Override
 	public int compareTo(CharacterState o) {
 		return this.toString().compareTo(o.toString());
+	}	
+	
+	@Override
+	public int compare(CharacterState a, CharacterState b) {
+		return a.toString().compareTo(b.toString());
 	}	
 }

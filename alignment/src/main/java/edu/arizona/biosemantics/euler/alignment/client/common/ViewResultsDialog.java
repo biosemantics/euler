@@ -63,7 +63,7 @@ public class ViewResultsDialog extends CommonDialog {
 		});
 		
 		ContentPanel panel = new ContentPanel();
-		panel.setHeadingText("Possible Worlds");
+		panel.setHeading("Possible Worlds");
 		VerticalLayoutContainer verticalLayoutContainer = new VerticalLayoutContainer();
 		verticalLayoutContainer.add(resultList, new VerticalLayoutData(1, 1));
 		verticalLayoutContainer.add(viewButton, new VerticalLayoutData(1, -1, new Margins(5)));
@@ -72,7 +72,7 @@ public class ViewResultsDialog extends CommonDialog {
 		add(panel);
 		
 		setBodyBorder(false);
-		setHeadingText("Possible Worlds Result");
+		setHeading("Possible Worlds Result");
 		setWidth(200);
 		setHeight(400);
 		setHideOnButtonClick(true);
