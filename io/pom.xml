@@ -60,7 +60,7 @@
 		<dependency>
 			<groupId>edu.arizona.biosemantics.euler</groupId>
 			<artifactId>alignment</artifactId>
-			<version>0.0.82-SNAPSHOT-debug</version>
+			<version>0.0.82-SNAPSHOT-debug-a</version>
 			<classifier>classes</classifier>
 			<exclusions>
 				<exclusion>
