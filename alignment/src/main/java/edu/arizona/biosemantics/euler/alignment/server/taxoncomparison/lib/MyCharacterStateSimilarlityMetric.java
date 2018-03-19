@@ -34,6 +34,7 @@ import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.Sta
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.StateSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.AsymmetricSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterState;
+import edu.arizona.biosemantics.matrixreview.shared.model.core.Value;
 
 public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilarityMetric {
 
@@ -86,8 +87,11 @@ public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilari
 		//CharacterState characterStateA = new CharacterState("stem", "architecture", "unarmed | with a few weak bristles");
 		//CharacterState characterStateB = new CharacterState("stem", "architecture", "unarmed");
 		
-		CharacterState characterStateA = new CharacterState("stem", "orientation", "horizontal | upright | of near the base or along the length the horizontal ones; arising");
-		CharacterState characterStateB = new CharacterState("stem", "orientation", "upright");
+		Value stateA = new Value("horizontal | upright | of near the base or along the length the horizontal ones; arising");
+		Value stateB = new Value("upright");
+		
+		CharacterState characterStateA = new CharacterState("stem", "orientation", stateA);
+		CharacterState characterStateB = new CharacterState("stem", "orientation", stateB);
 		
 		//CharacterState characterStateA = new CharacterState("ovary", "position", "inferior | superior");
 		//CharacterState characterStateB = new CharacterState("ovary", "position", "inferior | semi-inferior | superior");
@@ -99,10 +103,10 @@ public class MyCharacterStateSimilarlityMetric implements CharacterStateSimilari
 	public AsymmetricSimilarity<CharacterState> get(CharacterState characterStateA, CharacterState characterStateB) {
 		String organA = characterStateA.getOrgan();
 		String characterA = characterStateA.getCharacter();
-		String stateA = characterStateA.getState();
+		String stateA = characterStateA.getState().getValue();
 		String organB = characterStateB.getOrgan();
 		String characterB = characterStateB.getCharacter();
-		String stateB = characterStateB.getState();
+		String stateB = characterStateB.getState().getValue();
 		if(equals(characterA, characterB)) {
 			if(organA.equals(organB)) {
 				AsymmetricSimilarity<String> similarity = getStateSimilarity(stateA, stateB);

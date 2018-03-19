@@ -5,18 +5,22 @@ import java.util.Comparator;
 
 import edu.arizona.biosemantics.common.taxonomy.Rank;
 import edu.arizona.biosemantics.euler.alignment.shared.model.DiagnosticValue;
+import edu.arizona.biosemantics.matrixreview.shared.model.core.Value;
 
 public class CharacterState implements Serializable, Comparable<CharacterState>, Comparator<CharacterState> {
 
 	private String organ;
-	private String character;
-	private String state;
-		
+	//character attributes
+	private String character; //"name" attribute
+	private Value state; //"value" attribute
+
+
 	public CharacterState() {
 		
 	}
 	
-	public CharacterState(String organ, String character, String state) {
+	//based on schema at https://github.com/biosemantics/schemas/blob/master/semanticMarkupOutput.xsd
+	public CharacterState(String organ, String character, Value state) {
 		super();
 		this.organ = organ;
 		this.character = character;
@@ -31,7 +35,7 @@ public class CharacterState implements Serializable, Comparable<CharacterState>,
 		this.character = character;
 	}
 
-	public void setState(String state) {
+	public void setState(Value state) {
 		this.state = state;
 	}
 
@@ -43,7 +47,7 @@ public class CharacterState implements Serializable, Comparable<CharacterState>,
 		return character;
 	}
 
-	public String getState() {
+	public Value getState() {
 		return state;
 	}
 

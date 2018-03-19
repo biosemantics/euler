@@ -17,11 +17,11 @@ public class ContainmentCharacterStateSimilarityMetric implements CharacterState
 		Vector<String> refTokens = new Vector<String>();
 		refTokens.addAll(Arrays.asList(characterStateA.getCharacter().split("\\s+"))); 
 		refTokens.addAll(Arrays.asList(characterStateA.getOrgan().split("\\s+")));
-		refTokens.addAll(Arrays.asList(characterStateA.getState().split("\\s+")));
+		refTokens.addAll(Arrays.asList(characterStateA.getState().getValue().split("\\s+")));
 		Vector<String> comTokens = new Vector<String>();
 		comTokens.addAll(Arrays.asList(characterStateB.getCharacter().split("\\s+")));
 		comTokens.addAll(Arrays.asList(characterStateB.getOrgan().split("\\s+")));
-		comTokens.addAll(Arrays.asList(characterStateB.getState().split("\\s+")));
+		comTokens.addAll(Arrays.asList(characterStateB.getState().getValue().split("\\s+")));
 		
 		//ref:[architecture, flower, regular], comp: [fusion, distinct, stamen, united, |, quite, distinct]
 		//sim: 0; oppSim:0

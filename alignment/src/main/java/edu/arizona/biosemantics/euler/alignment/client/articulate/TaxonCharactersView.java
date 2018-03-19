@@ -359,7 +359,7 @@ public class TaxonCharactersView extends SimpleContainer {
 		for(CharacterState characterState : characterStates) {
 			String organ = characterState.getOrgan();
 			String character = characterState.getCharacter();
-			String state = characterState.getState();
+			String state = characterState.getState().getValue();
 			
 			OrganNode organNode = new OrganNode(organ, organ);
 			Node existingNode = taxonTreeStore.findModel(organNode);
