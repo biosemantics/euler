@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>edu.arizona.biosemantics.euler</groupId>
 	<artifactId>euler2</artifactId>
-	<version>0.0.15-SNAPSHOT</version>
+	<version>0.0.16-SNAPSHOT</version>
 
  	<!-- disable java doc generation, because source code are not annotated to java 8 doc standards -->
 	<profiles>
