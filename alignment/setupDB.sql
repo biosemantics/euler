@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS `alignment_collection` (
   `glossary_path1` varchar(300),
   `glossary_path2` varchar(300),
   `ontology_path` varchar(300),
-  `lastretrieved` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `lastretrieved` TIMESTAMP NOT NULL DEFAULT 0,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id` (`id`)
