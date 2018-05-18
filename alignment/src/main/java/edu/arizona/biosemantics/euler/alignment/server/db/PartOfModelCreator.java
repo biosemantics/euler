@@ -3,6 +3,8 @@ package edu.arizona.biosemantics.euler.alignment.server.db;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -44,7 +46,8 @@ public class PartOfModelCreator {
 				iriClassMap.put(owlClass.getIRI().toString(), owlClass);
 			
 			for(OWLClass owlClass : owlOntology.getClassesInSignature()) {
-				for(OWLAxiom axiom : EntitySearcher.getReferencingAxioms(owlClass, owlOntology)) {
+				Set<OWLAxiom> axioms = EntitySearcher.getReferencingAxioms(owlClass, owlOntology).collect(Collectors.toSet());
+				for(OWLAxiom axiom : axioms ) {
 					if(axiom instanceof OWLSubClassOfAxiom) {
 						OWLSubClassOfAxiom owlSubClassOfAxiom = (OWLSubClassOfAxiom)axiom;
 						OWLClassExpression owlClassExpression = owlSubClassOfAxiom.getSuperClass();
@@ -80,7 +83,8 @@ public class PartOfModelCreator {
 	}
 	
 	private static String getLabel(OWLClass owlClass, OWLOntology owlOntology, OWLAnnotationProperty labelProperty) {
-		for (OWLAnnotation annotation : EntitySearcher.getAnnotations(owlClass, owlOntology, labelProperty)) {
+		Set<OWLAnnotation> annotations = EntitySearcher.getAnnotations(owlClass, owlOntology, labelProperty).collect(Collectors.toSet());
+		for (OWLAnnotation annotation : annotations) {
 			if (annotation.getValue() instanceof OWLLiteral) {
 				OWLLiteral val = (OWLLiteral) annotation.getValue();
 				//if (val.hasLang("en")) {

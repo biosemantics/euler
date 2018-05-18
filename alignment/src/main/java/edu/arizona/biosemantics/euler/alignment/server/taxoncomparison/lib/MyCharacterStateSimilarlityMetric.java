@@ -5,18 +5,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import edu.arizona.biosemantics.common.ling.know.IGlossary;
 import edu.arizona.biosemantics.common.ling.know.lib.InMemoryGlossary;
-import edu.arizona.biosemantics.common.log.LogLevel;
-import edu.arizona.biosemantics.euler.alignment.server.Configuration;
 import edu.arizona.biosemantics.euler.alignment.server.db.CollectionDAO;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.CharacterStateSimilarityMetric;
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.know.DummyKnowsModifier;
