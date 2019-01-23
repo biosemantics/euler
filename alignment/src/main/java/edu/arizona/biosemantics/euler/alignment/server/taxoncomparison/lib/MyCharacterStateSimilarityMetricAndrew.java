@@ -36,6 +36,7 @@ import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.Sta
 import edu.arizona.biosemantics.euler.alignment.server.taxoncomparison.state.StateSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.AsymmetricSimilarity;
 import edu.arizona.biosemantics.euler.alignment.shared.model.taxoncomparison.CharacterState;
+import edu.arizona.biosemantics.matrixreview.shared.model.core.Value;
 
 /**
  * new untested code to compute character similarity based on  James/Nico cases.
@@ -94,8 +95,8 @@ public class MyCharacterStateSimilarityMetricAndrew extends MyCharacterStateSimi
 			//CharacterState characterStateA = new CharacterState("stem", "architecture", "unarmed | with a few weak bristles");
 			//CharacterState characterStateB = new CharacterState("stem", "architecture", "unarmed");
 			
-			CharacterState characterStateA = new CharacterState("leaf", "architecture", "long-petiolate | 3-foliate | stipulate");
-			CharacterState characterStateB = new CharacterState("leaf", "architecture", "3-9-foliolate");
+			CharacterState characterStateA = new CharacterState("leaf", "architecture", new Value("long-petiolate | 3-foliate | stipulate"));
+			CharacterState characterStateB = new CharacterState("leaf", "architecture", new Value("3-9-foliolate"));
 
 			AsymmetricSimilarity<CharacterState> similarity = similarityMetric.get(characterStateA, characterStateB);
 			System.out.println(similarity.getAverageSimilarity());
@@ -105,10 +106,10 @@ public class MyCharacterStateSimilarityMetricAndrew extends MyCharacterStateSimi
 		public AsymmetricSimilarity<CharacterState> get(CharacterState characterStateA, CharacterState characterStateB) {
 			String organA = characterStateA.getOrgan();
 			String characterA = characterStateA.getCharacter();
-			String stateA = characterStateA.getState();
+			String stateA = characterStateA.getState().getValue();
 			String organB = characterStateB.getOrgan();
 			String characterB = characterStateB.getCharacter();
-			String stateB = characterStateB.getState();
+			String stateB = characterStateB.getState().getValue();
 			if(equals(characterA, characterB)) {
 				if(organA.equals(organB)) {
 					if(characterA.equals("quantity")) {
