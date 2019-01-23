@@ -1,8 +1,10 @@
 package edu.arizona.biosemantics.euler.alignment.server.db;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,15 +39,16 @@ public class GlossaryCreator {
 			SingularPluralProvider singularPluralProvider = new SingularPluralProvider();
 			IInflector inflector = new SomeInflector(wordNetPOSKnowledgeBase, singularPluralProvider.getSingulars(), singularPluralProvider.getPlurals());
 			initGlossary(glossary, inflector, taxonGroup, categoryTermFiles, synonymFiles);
-		} catch(IOException e) {
+		} catch(Exception e) {
 			log(LogLevel.ERROR, "Could not initialize glossary", e);
 		}	
 		return glossary;
 	}
 	
 	private void initGlossary(IGlossary glossary, IInflector inflector, TaxonGroup taxonGroup, Set<File> categoryTermFiles, 
-			Set<File> synonymFiles) throws IOException {
-		OTOClient otoClient = new OTOClient(Configuration.otoURL);
+			Set<File> synonymFiles) throws IOException, ClassNotFoundException {
+		
+		/*OTOClient otoClient = new OTOClient(Configuration.otoURL);
 		GlossaryDownload glossaryDownload = new GlossaryDownload();		
 		String glossaryVersion = "latest";
 		otoClient.open();
@@ -58,7 +61,12 @@ public class GlossaryCreator {
 			e.printStackTrace();
 		}
 		otoClient.close();
-				
+		*/
+		ObjectInputStream objectIn = new ObjectInputStream(new FileInputStream(Configuration.glossariesDownloadDirectory + File.separator +
+				"GlossaryDownload." + taxonGroup.getDisplayName() + ".ser"));
+		GlossaryDownload glossaryDownload = (GlossaryDownload) objectIn.readObject();
+		objectIn.close();
+			
 		//add the syn set of the glossary
 		HashSet<Term> gsyns = new HashSet<Term>();
 		for(TermSynonym termSyn: glossaryDownload.getTermSynonyms()){

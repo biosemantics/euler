@@ -14,3 +14,4 @@ collectionsPath=
 wordnet_directory=
 oto_url=http://biosemantics.arizona.edu:8080/OTO
 stateWeight=
+glossariesDownloadDirectory=

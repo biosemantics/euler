@@ -1,5 +1,6 @@
 package edu.arizona.biosemantics.euler.alignment.server;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
@@ -24,6 +25,7 @@ public class Configuration {
 	public static int database_partitionCount;
 
 	public static String wordNetDirectory;
+	public static String glossariesDownloadDirectory;
 	public static String otoURL;
 	
 	/** Files **/
@@ -49,6 +51,7 @@ public class Configuration {
 			database_partitionCount = Integer.valueOf(properties.getProperty("database_partitionCount"));
 
 			wordNetDirectory = properties.getProperty("wordnet_directory");
+			glossariesDownloadDirectory = properties.getProperty("glossariesDownloadDirectory");
 			collectionsPath = properties.getProperty("collections_path");
 			otoURL = properties.getProperty("oto_url");
 			
